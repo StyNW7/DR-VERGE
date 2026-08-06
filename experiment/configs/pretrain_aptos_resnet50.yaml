@@ -1,0 +1,11 @@
+# For TEACHER backbone pretraining (Section 7)
+backbone_type: resnet50
+seed: 42
+train_csv: ../dataset/APTOS/train_1.csv
+train_root_dir: ../dataset/APTOS/train_images/train_images
+val_csv: ../dataset/APTOS/valid.csv
+val_root_dir: ../dataset/APTOS/val_images/val_images
+batch_size: 32
+lr: 0.0001
+epochs: 20
+output_backbone_ckpt: checkpoints/pretrained_backbones/aptos_resnet50_backbone.pt

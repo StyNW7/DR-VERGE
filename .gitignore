@@ -6,3 +6,10 @@ DeepDRiD/
 APTOS/
 DeepDRiD-master/
 past-paper-reference/
+reference/
+
+# experiment/ — generated artifacts, not source
+__pycache__/
+*.pyc
+experiment/checkpoints/
+experiment/results/

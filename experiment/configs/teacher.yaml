@@ -1,0 +1,10 @@
+seed: 42
+train_csv: data/splits/drtid_train.csv
+val_csv: data/splits/drtid_val.csv
+batch_size: 8
+freeze_epochs: 5
+finetune_epochs: 15
+patience: 5
+lambda_aux: 0.5
+aptos_backbone_ckpt: checkpoints/pretrained_backbones/aptos_resnet50_backbone.pt
+output_ckpt: checkpoints/teacher/teacher_final.pt

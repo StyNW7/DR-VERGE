@@ -1,0 +1,17 @@
+# Standard-KD baseline -- primary comparator for RQ1
+run_name: dual_logitkd
+seed: 42
+train_csv: data/splits/drtid_train.csv
+val_csv: data/splits/drtid_val.csv
+batch_size: 16
+lr: 0.001
+epochs: 30
+patience: 5
+teacher_ckpt: checkpoints/teacher/teacher_final.pt
+student_backbone_ckpt: checkpoints/pretrained_backbones/aptos_lightweight_backbone.pt
+output_ckpt: checkpoints/student/dual_logitkd/best.pt
+view_mode: dual
+alpha: 0.5
+beta: 0.0
+lambda_aux: 0.5
+tau_kd: 2.0

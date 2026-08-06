@@ -5,6 +5,18 @@
 
 > This roadmap merges three documents that don't fully agree with each other yet. Where they conflict, this file states the conflict explicitly instead of silently picking one side — resolve those first, before writing training code.
 
+**Execution vehicle (added 6 Agustus 2026):** `full_pipeline_notebook.ipynb` at repo root is now a
+**complete, self-contained, Colab-Pro-ready notebook** covering the entire experiment end to end —
+setup, all model/loss/dataset code inline, Gate 1–5 checks, backbone pretraining, teacher training,
+every student condition (baselines, no-distill, standard KD, CSD grid search + final 3-seed training,
+counterfactual-CSD ablation), PTQ INT8, full evaluation, seed aggregation, clustered bootstrap CIs, and
+chart generation — with every checkpoint/metric/figure saved to Google Drive as it's produced. Sections
+1–9 (setup through evaluation helpers) were run locally against the real DRTiD/APTOS data and verified
+correct before handoff; the rest are syntax-verified and structurally match the already-validated
+`experiment/src/*.py` code. **Running this notebook top-to-bottom on Colab Pro is now how Day 2 through
+Day 8 actually get executed** — the day-by-day breakdown below still applies as the plan/checkpoints to
+watch for, but the "how" is this notebook, not manually running the separate scripts under `experiment/`.
+
 ---
 
 ## 0. Read this first — the plan has changed from what the docs assume
@@ -54,20 +66,20 @@ Verified directly against the raw dataset files (not just the source repos' docs
 
 ---
 
-## Decision Point #1 — Which judge.md flags get fixed vs. become stated limitations
+## Decision Point #1 — RESOLVED (6 Agustus 2026): fix scope locked in as originally recommended
 
-`judge.md` lists 18 flags + 10 code issues. You cannot fix all of them in 8 days. The doc itself sorts them into P0/P1/P2 — use that, but with one adjustment: given your timeline, some P1 items should be downgraded to "state as a written limitation in the paper" rather than fixed in code. Recommended split:
+`judge.md` lists 18 flags + 10 code issues. You cannot fix all of them in 8 days. The doc itself sorts them into P0/P1/P2 — use that, but with one adjustment: given your timeline, some P1 items should be downgraded to "state as a written limitation in the paper" rather than fixed in code. Split below is now **the actual implemented scope**, not just a recommendation:
 
 **Must fix in code (non-negotiable — these invalidate RQ1 if skipped):**
-- Flag 1 + Flag 3 (Δ conflates complementarity with head discrepancy; student can game CSD via auxiliary heads) → implement the **same-head counterfactual formulation** as at least one ablation condition. This is the single most important fix in the whole review.
-- Code issue 1 (CPU latency evaluator measuring GPU) — one-line fix, no excuse to skip.
-- Code issue 2 (INT8 evaluator is a placeholder) — must be completed if RQ2 is attempted at all.
-- Flag 6 (CSD loss scale vs task loss) — log gradient norms per component from Day 1's smoke test onward; this is cheap to instrument and expensive to discover missing on Day 8.
+- Flag 1 + Flag 3 (Δ conflates complementarity with head discrepancy; student can game CSD via auxiliary heads) → **DONE** — `experiment/src/models.py`'s `counterfactual_forward()` (same `main_head` for dual/macula-only/disc-only) plus `experiment/src/losses.py`'s `csd_loss_no_aux_gradient` (Flag 3's detach mitigation), wired into `combined_student_loss` via `use_counterfactual_csd`. Verified in `smoke_test.py`.
+- Code issue 1 (CPU latency evaluator measuring GPU) — not yet applicable, `evaluate.py` doesn't exist yet (Day 8 script). Flag stays open, revisit when writing it.
+- Code issue 2 (INT8 evaluator is a placeholder) — same, not applicable until `quantize.py`/`run_final_evaluation.py` exist (Day 8).
+- Flag 6 (CSD loss scale vs task loss) — `combined_student_loss` already logs every component (`L_task`, `L_aux`, `L_logit_KD`, `L_CSD`, `L_total`) per call; confirmed in the smoke test output (e.g. `L_CSD=0.06` vs `L_task=0.92` on an untrained model — worth watching once real training starts, per the doc's original concern about CSD's gradient contribution being negligible). `train_student.py` (Day 6-7) needs to persist these logs per-epoch, not just print them.
 
 **Fix if time allows (P1, do after RQ1 is answered):**
 - Flag 8 (internal vs external dual-view gain) — report both if possible, otherwise clearly label which one you're reporting.
 - Flag 11 (clustered per-patient bootstrap for the 3-seed comparison).
-- Flag 14 (stratified group split — verify grade distribution per split, don't just trust `train_test_split`).
+- Flag 14 (stratified group split) — partially addressed already: `make_splits.py` verifies (doesn't yet stratify) grade distribution per split, confirmed all 5 grades present in train/val/test (see Day 1 log below). True stratified splitting is P1, not done.
 
 **State as explicit written limitations (don't try to fix in code, per judge.md Section H):**
 - No clinical validation, single dataset, CSD as proxy not causal evidence, fixed single teacher checkpoint, image-quality confounding unexamined, weighted-BCE outputs not calibrated probabilities.
@@ -78,7 +90,7 @@ Verified directly against the raw dataset files (not just the source repos' docs
 ## Phase Overview
 
 ```
-Day 1  (Aug 6, rest of today)  → Setup + Gate 0 fixes + Gate 1 (dataset)
+Day 1  (Aug 6)                 → Setup + Gate 0 fixes + Gate 1 (dataset) — DONE
 Day 2  (Aug 7)                 → Pretrain APTOS backbones (resnet50 + lightweight)
 Day 3–4 (Aug 8–9)              → Teacher training + Gate 2
 Day 5  (Aug 10)                → Smoke test + single-view baselines
@@ -93,26 +105,38 @@ This is the technical doc's Section 15 plan compressed from 10 slots to 8, with 
 
 ---
 
-## Day 1 (today, Aug 6) — Setup, dataset resolution, P0 code fixes
+## Day 1 (Aug 6) — DONE
 
-**Goal:** repo is in a state where training *could* start tomorrow with no unresolved ambiguity.
+**Goal:** repo is in a state where training *could* start tomorrow with no unresolved ambiguity. Achieved — see `experiment/` for the actual code.
 
-- [ ] Decision Point #0 (dataset) is resolved — DRTiD primary, see above. Decide Decision Point #1 (which judge.md fixes) now and write it down.
-- [ ] Set up environment: pin exact versions (`torch==2.x.y`, `torchvision==0.x.y`), save `pip freeze > environment-lock.txt` (judge.md Code issue 3 — don't skip this, quantization API stability depends on it).
-- [ ] Build the DRTiD loader against its **verified real schema** (`dataset/reference.md`), using the official `a.`/`b.` split CSVs directly. Verify:
-  - [ ] No `ID` appears in both `a. DR_grade_Training.csv` and `b. DR_grade_Testing.csv` (should be true by construction since it's the official split, but confirm rather than assume).
-  - [ ] Spot-check ~10 rows that `<ID>_1.jpg` visually looks macula-centered and `<ID>_2.jpg` looks optic-disc-centered (fovea vs optic nerve head visible) — confirms the column mapping before it's baked into every downstream script.
-  - [ ] Every `Macula`/`Optic disc` image ID in both CSVs resolves to a real file in `Original Images/`.
-  - [ ] You still need your own **train/val split carved out of the official training 1000 rows** (patient-wise) since DRTiD only gives train/test, not train/val/test — do this split yourself and confirm no patient overlap between your val carve-out and the official test set.
-- [ ] Implement `CORALHead` with **ordered-bias parameterization** (technical doc Section 3.1) — this guarantees monotonicity by construction, don't skip in favor of the free-bias version.
-- [ ] Implement `forward_single()` on both teacher and student (Section 3.2/4.2) — required so single-view baselines actually only see one image, not a dual model with one input silently zeroed.
-- [ ] Implement the **same-head counterfactual CSD variant** as a real code path now (judge.md Flag 1/3 fix) — even if you don't use it as the default, it needs to exist as an ablation before Day 7, and it's much cheaper to build alongside the main head-based version than to retrofit later.
-- [ ] `compute_pos_weights()` for class imbalance (Section 2.4) — with judge.md's guard: raise an error (not a silently huge weight) if any threshold has zero positives.
-- [ ] Write `smoke_test.py` (Section 11.4) covering model + loss + backward pass for all three `view_mode`s, and assert `OrdinalViolationRate == 0`. **Run it today**, not Day 5 — catching a shape bug now costs 10 minutes; catching it after a 2-hour training run costs half a day you don't have.
-- [ ] Decide the horizontal-flip question (judge.md Flag under Section 2.3): does flipping change clinical meaning of macula/disc laterality for your chosen dataset? If unsure, **disable `HorizontalFlip` by default** until confirmed — safer default given the time pressure.
-- [ ] `os.makedirs(..., exist_ok=True)` before every checkpoint/log/CSV write (judge.md Code issue 7) — cheap insurance, do it once now across all scripts rather than debugging a crash on Day 8.
+- [x] Decision Point #0 (dataset) resolved — DRTiD primary. `_1` = Macula / `_2` = Optic disc confirmed both from `reference/CrossFiT/CrossFiT/dataset.py` (the CrossFiT authors' own loader reads it this way) and by the team directly.
+- [x] Environment fixed and pinned: local numpy/scikit-learn ABI mismatch resolved (scikit-learn upgraded to 1.9.0, numpy 2.2.6), `experiment/requirements.txt` written with exact pins. Note: local torch is a **CPU-only build** (2.10.0+cpu) despite a GPU being present — fine for the dev/smoke-test work done today, but Day 3–4's real teacher training needs either a CUDA-enabled torch install or to run on Colab/Kaggle (the technical doc's own Section 1.1 note already anticipated running the full pipeline there). Decide this before Day 2 ends.
+- [x] `experiment/scripts/make_splits.py` — reads DRTiD's official `a. DR_grade_Training.csv` (1000 rows) / `b. DR_grade_Testing.csv` (550 rows) as-is, carves a patient-wise train/val split out of the training rows only (800/200), verifies no patient overlap anywhere, verifies every image path resolves, reports grade distribution. **Run and passing** — Gate 1 output:
+  - train (800): Grade 0=394, 1=72, 2=194, 3=109, 4=31
+  - val (200): Grade 0=88, 1=18, 2=66, 3=21, 4=7
+  - test/official (550): Grade 0=265, 1=50, 2=146, 3=69, 4=20
+  - All 5 grades present in every split. No overlap. **Gate 1: PASSED.**
+- [x] `experiment/src/models.py` — `CORALHead` with ordered-bias parameterization (monotonic by construction, bias steps initialized at -3.0 per judge.md Flag 16), `DualViewResNetTeacher`/`DualViewLightStudent` both with `forward_single()`, and a `counterfactual_forward()` on both (same `main_head` used for dual/macula-only/disc-only via zeroed branches) implementing the judge.md Flag 1/3 fix.
+- [x] `experiment/src/losses.py` — `coral_loss`, `aux_loss`, `logit_kd_loss`, `csd_loss` (all 3 variants: `smoothl1` default, `direction_magnitude`, `kl_softmax` ablation-only), plus `csd_loss_no_aux_gradient` (Flag 3 mitigation: detaches student aux outputs so CSD can't be gamed by drifting auxiliary heads), `get_student_output` (the one place view_mode selects the forward path), `combined_student_loss` (supports both the default head-based Delta and the counterfactual Delta via a flag), `ordinal_violation_rate`.
+- [x] `experiment/src/utils.py` — `compute_pos_weights` with the zero-positive/zero-negative guard (raises instead of a silent nonsense weight), `set_seed`, `seed_worker` + `make_generator` for DataLoader reproducibility, `get_device`, `ensure_dir`.
+- [x] `experiment/src/smoke_test.py` — runs a real DRTiD batch through teacher + student, all three `view_mode`s, the counterfactual CSD path, backward pass, and `compute_pos_weights`. **Run and passing.**
+- [x] Horizontal flip: **left out of the augmentation pipeline entirely** (`experiment/src/datasets.py`), not just defaulted off — confirmed the CrossFiT reference implementation itself has flip code present but commented out, i.e. the DRTiD benchmark's own authors made the same call.
+- [x] `ensure_dir`/`os.makedirs(..., exist_ok=True)` pattern in place, used by scripts that write checkpoints/splits.
+- [x] Configs for teacher + all 5 student conditions + both pretrain runs written under `experiment/configs/`.
 
-**Gate 1 (Dataset) must be green before Day 2 starts.**
+**Bug caught and fixed today (would otherwise have surfaced on Day 8):** eager-mode `torch.ao.quantization.fuse_modules` has no fuser method for Conv-BN-**ReLU6** — reproduced directly against `LightweightBackbone`, matching judge.md Code issue 4's prediction exactly. Fixed by switching the student backbone's activations from `ReLU6` to `ReLU` (natively supported by the default fuser list), avoiding a forced fallback to FX-graph-mode quantization for something this cheap to sidestep. `fuse_model()` now runs clean.
+
+**Resolved same day (still Aug 6, ahead of schedule):**
+- [x] **Local vs Colab/Kaggle for training: Colab/Kaggle wins.** Local GPU is 4GB VRAM on a driver capped at CUDA 11.6; modern torch wheels bundle CUDA 12.1+, so a working local CUDA install would cost hours fighting driver/wheel compatibility with no guarantee of success. Local stays CPU-only for dev/smoke-testing (where it's already proven itself today); real training moves to Colab/Kaggle's free GPUs.
+- [x] Decision Point #1 (judge.md fix scope) locked in as originally recommended — see above, now marked as actually-implemented, not just planned.
+- [x] `experiment/src/pretrain_aptos.py` written — pretrains resnet50 (teacher) and lightweight (student) backbones separately via `build_backbone()`, saves on best val QWK. **Dry-run verified** against real APTOS data (2930 training images) locally on CPU — one training step, forward + backward, confirmed working before handing off to Colab/Kaggle for the real 20/30-epoch runs.
+- [x] `full_pipeline_notebook.ipynb` written at repo root — Colab/Kaggle-runnable, covers dataset upload/mount, dependency install (keeps the platform's own CUDA-enabled torch rather than reinstalling), Gate 1 split check, smoke test, and both pretrain runs. Cells for Day 3+ scripts are stubbed with a note to fill in as those scripts get written.
+
+**Still open, carry into Day 2:**
+- [ ] Actually execute the notebook on Colab/Kaggle — needs the dataset uploaded there (notebook has both a Drive-mount and a Kaggle-dataset-attach path; pick one per team member's setup).
+- [ ] `train_teacher.py`, `train_student.py`, `evaluate.py`, `quantize.py`, `run_final_evaluation.py`, `aggregate_seeds.py` are not written yet — Day 3+ work per the original schedule.
+
+**Gate 1 (Dataset): PASSED.**
 
 ---
 

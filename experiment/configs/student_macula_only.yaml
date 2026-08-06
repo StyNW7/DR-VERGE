@@ -1,0 +1,16 @@
+# Single-view baseline
+run_name: macula_only
+seed: 42
+train_csv: data/splits/drtid_train.csv
+val_csv: data/splits/drtid_val.csv
+batch_size: 16
+lr: 0.001
+epochs: 30
+patience: 5
+teacher_ckpt: checkpoints/teacher/teacher_final.pt
+student_backbone_ckpt: checkpoints/pretrained_backbones/aptos_lightweight_backbone.pt
+output_ckpt: checkpoints/student/macula_only/best.pt
+view_mode: macula_only
+alpha: 0.0
+beta: 0.0
+# lambda_aux not relevant -- single-view has no auxiliary heads to supervise
