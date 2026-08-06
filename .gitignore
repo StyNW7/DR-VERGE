@@ -6,7 +6,7 @@ DeepDRiD/
 APTOS/
 DeepDRiD-master/
 past-paper-reference/
-reference/
+big-reference/
 
 # experiment/ — generated artifacts, not source
 __pycache__/
