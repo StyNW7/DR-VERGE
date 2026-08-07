@@ -7,6 +7,44 @@ caveat rather than a bug.
 
 ---
 
+## 0. Resuming after the Gate 2 fusion fix (7 Agustus 2026)
+
+Your first real Colab run got through Day 2 (APTOS pretraining, both backbones succeeded) and
+Day 3–4 (teacher training completed but **Gate 2 failed**: `QWK_dual=0.558` was actually *below*
+`QWK_macula=0.572` — see `experiment/notebook-result/result-note.md`). Root cause and fix:
+
+- **The fusion mechanism was architecturally too weak.** The original design concatenated the two
+  views and passed them through a single Linear layer + `BatchNorm1d` — no way to represent
+  multiplicative or differential interaction between views. This is exactly what `judge.md`'s
+  Flag 2 predicted, now confirmed empirically. **Fixed**: `InteractionFusion` (Section 6 of the
+  notebook) adds `|z_m − z_d|` and `z_m ⊙ z_d` interaction terms through a small MLP, and replaces
+  `BatchNorm1d` with `LayerNorm` (batch-size-8 BatchNorm statistics were a plausible contributor
+  to the volatile epoch-to-epoch QWK swings visible in the log even during the frozen-backbone
+  phase).
+- Teacher training batch size bumped 8 → 16 to further reduce gradient noise on the small
+  (800-image) training set.
+- The dataset-path resolution now **auto-detects** whether DRTiD is nested as `DRTiD/DRTiD/...` or
+  flat as `DRTiD/...` under `dataset/`, rather than assuming one layout — this was found to differ
+  between the local repo copy and what may be on your Drive.
+
+**What this means for your Drive state right now:**
+- Your two pretrained-backbone checkpoints (`aptos_resnet50_backbone.pt`,
+  `aptos_lightweight_backbone.pt`) are **still valid** — only the fusion/head layers changed, not
+  the backbones. Re-running will detect them as compatible and skip straight past Day 2's
+  training, no wasted compute.
+- Your existing `teacher_final.pt` was trained with the *old* fusion architecture and is no longer
+  compatible with the model class. **You don't need to delete it manually** — every checkpoint
+  load in this notebook now goes through `checkpoint_is_compatible()` (Section 3), which checks
+  the saved state's keys/shapes against the current architecture before deciding whether to skip
+  training. An incompatible checkpoint prints exactly why, then retrains automatically. Just
+  re-run the notebook from the top; Day 3–4 will redo itself with the fixed fusion, and Day 2 will
+  be skipped.
+- `GATE2_PASSED` is now a global flag, checked (and loudly warned about, not silently ignored) by
+  the Gate 3 and CSD-training cells if it's still `False` after a re-run — so if the fix isn't
+  enough on its own, you'll see that clearly rather than discovering it only at Gate 4.
+
+---
+
 ## 1. What this notebook is
 
 `full_pipeline_notebook.ipynb` is a **single, self-contained** notebook that runs the entire
