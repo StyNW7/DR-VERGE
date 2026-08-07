@@ -15,13 +15,21 @@ means DR-VERGE's own macula-only/disc-only/dual-view results are directly compar
 benchmark, not just citing it as motivation.
 
 - **Verified structure:** `Ground Truths/DR_grade/a. DR_grade_Training.csv` and `b. DR_grade_Testing.csv`,
-  columns: `ID, Grade, Macula, Optic disc, LR`. Each row is one patient-eye with the macula and optic-disc
+  columns: `ID, Grade, Macula, Optic disc, LR`. Each row is one eye-record with the macula and optic-disc
   image IDs already paired — no macula/disc field-type guessing needed (unlike DeepDRiD, see below).
 - **This IS the official split** — use `a.`/`b.` as-is. Do **not** re-run `train_test_split` on this
   dataset; that would throw away the one dataset here that actually resolves Gate 1's "resmi vs custom
   split" ambiguity cleanly.
+- **Verified 7 Agustus 2026: `ID` is a per-eye identifier, not a patient identifier.** Checked every row
+  across both official CSVs directly — all 1550 `ID` values are unique, and none appears with both an
+  `L` and `R` row. DRTiD's public ground truth exposes no field linking two eyes back to the same real
+  patient. Any split, "patient overlap" check, or bootstrap grouped by `ID` (as the pipeline does,
+  since it's the finest key the data provides) is therefore **eye-wise, not verified patient-wise** —
+  it's possible both eyes of one real person land in different splits, and nothing in the released
+  metadata rules that out. State this explicitly as a limitation in the paper; don't claim "patient-wise
+  split" without the caveat.
 - **Counts (verified 2026-08-06):** Training = 1000 rows (2000 images), Testing = 550 rows (1100 images).
-  Total 1550 patient-eyes / 3100 images.
+  Total 1550 eye-records / 3100 images.
 - **Grade distribution (verified):**
 
   | Grade | Train | Test |
@@ -61,7 +69,7 @@ Checked directly and it does **not** cleanly support the dual-view pipeline the 
   **empty DR_Level labels** in `Challenge1_upload.csv` — it's a blind competition test set with no ground
   truth available here, so it can't be used for any metric you'd report.
 - Usable labeled data is smaller than DRTiD regardless: ~400 patients (1200 train + 400 val images) vs
-  DRTiD's 1550 patient-eyes / 3100 images.
+  DRTiD's 1550 eye-records / 3100 images.
 
 **Only reconsider DeepDRiD if** someone confirms the `_1`/`_2` field-type mapping cheaply (check the
 dataset's own paper/Readme.docx) and there's spare time after the core DRTiD pipeline is done — treat it

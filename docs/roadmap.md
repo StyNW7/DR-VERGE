@@ -36,6 +36,13 @@ The technical doc's Section 15 timeline is written for **10 days**. You have **8
 Verified directly against the raw dataset files (not just the source repos' docs) — see
 `dataset/reference.md` for the full detail. Summary:
 
+> **Correction added 7 Agustus 2026** (see `dataset/reference.md`): every "patient-wise split" /
+> "patient overlap" reference below and in `experiment/` actually means **eye-wise**, grouped by
+> DRTiD's `ID` column. Checked directly: all 1550 `ID` values are unique, none has both an `L` and
+> `R` row, and DRTiD's public metadata has no field linking two eyes back to the same real patient.
+> The split logic itself doesn't need to change — `ID` is the finest grouping key the data
+> provides — but don't claim "patient-wise" without this caveat in the paper.
+
 - **DRTiD → primary training + evaluation.** It ships an explicit macula/optic-disc pairing per
   patient-eye (`ID, Grade, Macula, Optic disc, LR`) and an **official** train/test split
   (`a. DR_grade_Training.csv` = 1000 rows, `b. DR_grade_Testing.csv` = 550 rows, all 5 grades present in
