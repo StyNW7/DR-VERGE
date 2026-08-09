@@ -6,17 +6,20 @@ Estimates for a **full final run** of `experiment/full_pipeline_notebook_final.i
 Produced 2026-08-09. Numbers below are separated into **measured** and **estimated** — read
 §7 before trusting any single figure.
 
+**§11 covers `full_pipeline_notebook_simple.ipynb`**, which runs the same experiment with the
+cache and early stopping built in — **≈ 4.9 h on a T4, one session.**
+
 ---
 
 ## 1. Headline
 
-| GPU | As shipped | With the image cache (§5) |
-|---|---:|---:|
-| **T4 (16 GB)** — Colab free / Pro | **≈ 46 h** | **≈ 5.3 h** |
-| L4 (24 GB) — Colab Pro | ≈ 44 h | ≈ 3.7 h |
-| V100 (16 GB) | ≈ 44 h | ≈ 3.6 h |
-| A100 40 GB — Colab Pro+ | ≈ 43 h | ≈ 2.9 h |
-| H100 80 GB (non-Colab) | ≈ 43 h | ≈ 2.6 h |
+| GPU | As shipped | With the image cache (§5) | Simple notebook (§11) |
+|---|---:|---:|---:|
+| **T4 (16 GB)** — Colab free / Pro | **≈ 46 h** | **≈ 5.3 h** | **≈ 4.9 h** |
+| L4 (24 GB) — Colab Pro | ≈ 44 h | ≈ 3.7 h | ≈ 3.4 h |
+| V100 (16 GB) | ≈ 44 h | ≈ 3.6 h | ≈ 3.3 h |
+| A100 40 GB — Colab Pro+ | ≈ 43 h | ≈ 2.9 h | ≈ 2.7 h |
+| H100 80 GB (non-Colab) | ≈ 43 h | ≈ 2.6 h | ≈ 2.4 h |
 
 *"Realistic" = 65% of the maximum epoch budget, i.e. early stopping fires as it normally does.
 Worst case (no early stopping anywhere) is ~1.5× these figures.*
@@ -264,5 +267,107 @@ One session. No resume needed, and none of the multi-session hazards apply.
 | Drive space for results | ~1.1 GB |
 | Wall-clock, as shipped (T4) | ~46 h over 5–6 sessions |
 | Wall-clock, with cache (T4) | ~5 h in one session |
+| Wall-clock, simple notebook (T4) | ~4.9 h in one session |
 | Compute units, as shipped (T4) | ~82 |
 | Compute units, with cache (T4) | ~10 |
+| Compute units, simple notebook (T4) | ~9 |
+
+---
+
+## 11. The simplified notebook
+
+`experiment/full_pipeline_notebook_simple.ipynb` — same experiment, same outputs, less machinery.
+Written from scratch rather than trimmed, so it carries none of the multi-session scaffolding.
+
+### 11.1 What it runs
+
+**Exactly the same experiment budget** — the science was not reduced:
+
+| | Complex | Simple |
+|---|---:|---:|
+| Training jobs | 102 | **102** |
+| Maximum epoch-runs | 3,315 | **3,315** |
+| Seeds (core / tuning / ablation) | 5 / 3 / 3 | **5 / 3 / 3** |
+| Hyperparameter grids | 3 × 4 | **3 × 4** |
+| Figures | 14 | **14** |
+
+An independent parity audit checks **67/67 load-bearing science elements** — CORAL initialisation
+from empirical marginals, the fixed global CSD scale, two-stage selection, matched per-seed RQ2,
+hierarchical paired cluster bootstrap, paired cluster permutation, Holm per RQ family, matched
+quantization scope, Set-C as the confirmatory partition. All present.
+
+### 11.2 What was removed
+
+| Removed | Why it was safe |
+|---|---|
+| `RESUME_EXACT` / checkpoint-envelope machinery | a ~5 h run does not need cross-session resume |
+| `PROTOCOL_HASH` and the hashed/unhashed config split | that split existed only to make resume safe |
+| PT2E supplementary quantization path | supplementary; `RUN_PT2E_SUPPLEMENTARY` shipped `False` anyway |
+| `torch.export` / `.pt2` artifact | optional export; ONNX + `state_dict` remain |
+| Local-disk staging (`USE_LOCAL_DATA_CACHE`) | superseded — the image cache reads each file once |
+| Dependency-pin audit gate | environment check, not a result |
+| Legacy name aliases and duplicated smoke checks | dead weight |
+
+Source size: **93 → 69 cells**, **66 → 45 code cells**, **5,039 → 2,649 non-blank code lines
+(−47%)**.
+
+### 11.3 Gates
+
+Renamed to a linear `Gate1 … Gate12` scheme. **28 static names, 31 firings at runtime**
+(`Gate5_Grid_{tag}` fires once per grid). Nearly all map 1:1 to a complex-notebook gate; the only
+genuine drops are the four scaffolding gates in §11.2, and two were added
+(`Gate10_Statistics`, `Gate4b_SelectedCSD_Gradient`). **Gates were not cut to save time.**
+
+The one dropped output is `table_02c_validation_viability` — the check survives as
+`Gate6b_ValidationViability`, it just no longer writes its own CSV.
+
+### 11.4 Where the time goes
+
+| Change | Saving |
+|---|---|
+| Image cache on by default (§5) | the ~40 h bottleneck, gone |
+| Teacher forward skipped when no distillation term consumes it | ~6% — 15 of 75 student jobs (10 single-view + 5 no-distill) were paying for a dual ResNet-50 forward whose output was discarded |
+| Dual-view gain in one forward pass instead of three | <1% — `forward()` already returns all three heads |
+| Early stopping in every trainer, with a shared `min_delta = 1e-4` | 0–5% — noise-level "improvements" no longer reset patience |
+
+`USE_AMP` exists but ships **off**: it helps the ResNet-50 teacher, barely helps the 330K depthwise
+student, and changes numerics.
+
+**≈ 4.9 h on a T4** (5.3 h cached baseline × ~0.92). Estimated, same confidence class as §7.
+
+### 11.5 Verification performed
+
+| Check | Result |
+|---|---|
+| All code cells compile | 45/45 |
+| Definition-before-use scan | clean (A/B/C) |
+| Science parity audit | **67/67** |
+| Cleanliness scan | 12/12 |
+| Runtime dry-run on the real datasets | **18/18** |
+
+Notable individual results from the dry-run:
+
+- image cache **byte-identical** to `Resize(224)` on the original; 0.000 ms on a hit vs ~32 ms decoding
+- QWK vs `sklearn.cohen_kappa_score`: max difference **1.11e-16** over 105 cases
+- CORAL monotone, matches empirical marginals, 3.32-logit spread; fusion is view-order sensitive
+- early stopping fires on pure noise (`best=0.2000 @ep1`, stopped at ep4) and restores best weights
+- the objective evaluates with `t_out=None`, so the teacher skip is real and not just unused
+- one-pass dual-view gain **identical to 1e-12** to the three-pass version, verified on
+  non-degenerate predictions (5/5/5 distinct grades per head — an untrained model predicts one grade
+  for every eye and makes the comparison vacuous)
+- DeepDRiD Set-C loads 100 patients / 200 eyes / 400 images, 0 exclusions
+
+### 11.6 Running it
+
+```python
+DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"
+RUN_TAG    = "simple_v1"
+QUICK      = False      # True = 1 seed, few epochs, ~15 min rehearsal
+USE_AMP    = False
+```
+
+Set `QUICK = True` once to prove the pipeline runs end to end, then `False` and Run All. No
+preflight/final duality, no resume flag, no protocol hash to keep aligned across sessions.
+
+RAM: ~3–4 GB base + **918 MB** for the image cache (measured: DRTiD 445 MB, +APTOS train 866 MB,
++APTOS val 918 MB). Standard Colab runtime is fine.
