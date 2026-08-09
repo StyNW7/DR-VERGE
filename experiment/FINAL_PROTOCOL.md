@@ -480,6 +480,125 @@ session N:  PREFLIGHT=False, RESUME_EXACT=True    # same RUN_TAG; finished model
 Because reuse is gated on `PROTOCOL_HASH`, resuming can never mix protocols — if anything about the
 configuration or the splits changed, every checkpoint is rejected and retrained.
 
+## 15e. Response to `last-revision.md` — protocol **DR_VERGE_FINAL_V3**
+
+Static audit **69/69**, runtime verification on real data **18/18** (plus 22/22 and 19/19 on the two
+earlier suites, re-run against V3), cross-cell name resolution **clean**, 66/66 code cells compile,
+**32 gates** of which **26 block** the final run.
+
+### The bug that would have stopped the run
+
+`robust_torch_save()` injected `protocol_hash` and `run_tag` into **any** dict it was handed. A raw
+`model.state_dict()` is a dict, and the APTOS backbones and every deployment `checkpoint.pt` were
+saved that way — so `load_state_dict()` would have raised
+`RuntimeError: Unexpected key(s) in state_dict: "protocol_hash", "run_tag"` at the first student
+training and again at the deployment reload gate. It never surfaced in the preflight because that run
+predates the change. **Verified fixed:** a saved deployment artifact now contains 95 tensors and no
+metadata keys, and loads cleanly.
+
+### P0 — checkpoint and protocol integrity
+
+| Item | Fix |
+|---|---|
+| P0-1 | `robust_torch_save` is side-effect-free; `save_training_checkpoint` writes an explicit envelope; `save_deployment_state_dict` writes a pure state_dict; `load_model_state` accepts either |
+| P0-2 | APTOS backbones are proper training checkpoints; every load unwraps through one function |
+| P0-5 | Every checkpoint carries `completed`. A run interrupted at epoch 8/40 is **retrained**, never skipped — verified |
+| P0-6 | Atomic writes: `<path>.tmp` → `os.replace`, so a truncated file never takes the final name |
+| P0-7 | `best = -np.inf` everywhere (QWK legitimately reaches −1) |
+| P0-3 | `PROTOCOL_CONFIG` (scientific) is hashed; `RUNTIME_CONFIG` (preflight/run tag/resume) is not. **Verified**: identical hash with `RESUME_EXACT` False and True, so session 2 can reuse session 1 |
+| P0-4 | Every grid, recipe, engine and rule is defined **before** `compute_protocol_hash()`. **Verified**: changing a CSD β moves the hash |
+| P0-8 | One source of truth. `TEACHER_CFG` now says `finetune_lr=1e-5, patience=8` and `STUDENT_CFG` batch 16 — the values the trainers actually used — and every trainer is called with `**CFG` |
+| P0-9 | Backbone freeze documented honestly: weights frozen, **BatchNorm statistics still adapt**. The paper says "backbone weights were frozen while BatchNorm running statistics were allowed to adapt", not "frozen backbone" |
+
+### P0 — data
+
+| Item | Fix |
+|---|---|
+| P0-10 | Gate 1 is blocking and checks schema, nulls, grade/laterality domains, duplicate IDs, duplicate image assignment, official train/test overlap, per-split disjointness, image existence, and the expected **800/200/550** |
+| P0-12 | Split CSVs store `macula_filename`/`disc_filename`; the dataset joins `DRTID_IMAGE_ROOT` at runtime. **Verified**: the same protocol hashes identically from two different artifact namespaces |
+| P0-13 | Split reuse verifies a recorded policy (seed, fraction, source hashes, split hashes) and rebuilds on any mismatch |
+| P0-14 | New blocking `Gate1b_APTOS`: schema, unique `id_code`, train/val disjoint, grades 0–4 present, all images resolve, manifest + SHA-256 |
+| P0-15 | The SSD cache is verified against a source file manifest every session; a mismatch deletes and re-copies, and the copy lands in a temp dir before being renamed into place |
+
+### P0 — experiment control
+
+| Item | Fix |
+|---|---|
+| P0-16 | The CSD grid searches **β and the variant only** — `alpha` and `tau` are inherited from the logit-KD winner, so "logit-KD" and "logit-KD + CSD" differ by exactly one term. **Verified**: `GRID_CSD` keys are `{beta, csd_variant}` |
+| P0-17 | Every CSD ablation runs at the selected `alpha`/`tau`/`β`; only the formulation changes |
+| P0-19 | Gate 4b reads the **actual** candidate βs and the real `alpha`/`tau`; new **Gate 4c** checks the selected configuration itself |
+| P0-20 | Gate 4's threshold is labelled a numerical sanity criterion, never evidence of complementarity |
+| P0-21 | `Gate3A_ValidationViability` runs on **validation, before the test set is opened**; `Gate3B_TestDiagnostics` is reported and never blocking |
+| P0-22 | Single-view baselines on all 5 core seeds, so `G_independent` is formed within a seed |
+| P0-23 | `G_aux` (own auxiliary heads) and `G_independent` (independently trained single-view) replace the ambiguous `G_external` |
+| P0-24–27 | Blocking completeness: 3/3 tuning seeds per grid candidate (an incomplete candidate is INVALID, not partially credited), 5/5 core seeds, 5/5 RQ2 base, 5/5 for every RQ2 variant |
+
+### P0 — statistics and quantization
+
+| Item | Fix |
+|---|---|
+| P0-28 | Primary paired comparisons **raise** on unequal seed sets. Positional pairing survives only in `_seed_pairs_exploratory` — verified |
+| P0-29 | The point estimate is the **observed** paired difference; `bootstrap_mean_diff` and `bootstrap_bias` are reported alongside |
+| P0-30/32 | Permutations 10,000; the deployment-safety bootstrap 10,000 |
+| P0-33 | Deployment selection is **fail-closed**: a missing severe-error row, a non-finite CI, an unmeasured latency, failed integrity or an incomplete seed set all reject. Previously a missing row read as "not worse" |
+| P0-34 | 95% retention is described as a *pre-specified engineering retention criterion*, never a clinical margin |
+| P0-35 | One symmetric rule picks every variant's representative seed on validation (QWK ↑ → Macro-F1 ↑ → SER ↓ → MAE ↓) |
+| P0-36 | A QAT learning rate is valid only with 3/3 tuning seeds |
+| AL | QAT early stopping, best checkpoint and LR grid are decided on the **converted INT8** model — the artifact that ships |
+| AM | The QAT objective is task-supervised only; no KD/CSD continues into quantization, and the FP32 control uses the identical loss |
+| AO | Backend resolved once (`x86` → `fbgemm` → `onednn`) and recorded in `PROTOCOL_CONFIG` |
+| P0-38 | Coverage is measured against the **backbone** scope, with intended/actual/missing/unexpected paths. **Verified**: 13 eligible in the backbone vs 17 model-wide, so a correct run no longer looks partial |
+| P0-39 | Operator-set equality is checked for **every seed** across PTQ/QAT/FT-PTQ |
+
+### P0 — environment, external data, deployment
+
+| Item | Fix |
+|---|---|
+| P0-42 | `CUBLAS_WORKSPACE_CONFIG` is set in the **first cell**, before `import torch` |
+| P0-43 | `use_deterministic_algorithms(True, warn_only=False)` on the final run; `warn_only=True` only in rehearsal |
+| P0-44/41 | Hardware provenance (GPU, CUDA, cuDNN, CPU, RAM, OS) recorded per session and stamped into every checkpoint; `requirements_final_exact.txt` written for later sessions |
+| P0-48 | `RUN_CONFIRMATORY_SETC = not PREFLIGHT` — a rehearsal exercises the external pipeline on Set-B and **never opens Set-C** |
+| P0-49 | Blocking `Gate9c_SetCCompleteness`: 100 patients / 200 eyes / 400 images. **Verified**: exactly that, 0 exclusions |
+| P0-50 | `sample_id` is the eye (`347_l`), `cluster_id` is the patient (`347`) — verified |
+| P0-51 | Set-C pairing requires exactly fields `{1, 2}`; anything else is audited under `MISSING_FIELD` / `DUPLICATE_FIELD` / `UNEXPECTED_FIELD_COUNT` |
+| BN/BO/BP | FT-PTQ joins the reload gate and the registry; `deployable` requires `deployment_verified` |
+| BQ/BR | `_deployment_builder(choice)` takes its argument; `STRICT_DEPLOYMENT` **raises** instead of silently serving FP32 under another model's name |
+| BS/BT | `selected_deployment/` is populated only after reload + parity + stability pass, with protocol hash, metrics, preprocessing, artifact SHA-256s and hardware |
+| BK/BL | The FP32 ONNX gate judges FP32 models only, over a fixed batch of 16 validation eyes, requiring identical predicted grades |
+| P0-65 | `record_gate()` writes the report on **every** call, so it survives a blocking raise — observed working when Gate 0 correctly aborted a CPU-only test run |
+
+### Documentation and figures
+
+Figure 8's caption now matches what it plots (ShiftL1). Three figures added: **12** effect forest plot
+with 95% CIs, **13** QWK-vs-size Pareto, **14** Set-C confirmatory comparison. The reading order names
+**Set-C** as the confirmatory headline, and the grid description says 3 tuning seeds. A limitations
+block is embedded in the notebook.
+
+### Locked run configuration
+
+```python
+PROTOCOL_VERSION = "DR_VERGE_FINAL_V3"
+PREFLIGHT             = False
+RESUME_EXACT          = False        # True only to continue an interrupted session
+RUN_TAG               = "final_locked_v3_20260809"
+FINAL_DETERMINISTIC   = True
+DEFAULT_NUM_WORKERS   = 0
+RUN_CONFIRMATORY_SETC = not PREFLIGHT   # True on the final run
+RUN_PT2E_SUPPLEMENTARY = False
+STRICT_DEPLOYMENT     = not PREFLIGHT
+```
+
+A fresh run refuses to start inside a populated namespace: if checkpoints already exist under
+`artifacts_final_locked_v3_20260809` and `RESUME_EXACT=False`, the notebook raises rather than mixing
+old and new results.
+
+### Stopping rules
+
+Before the DRTiD test set is opened, a failed blocking gate means **stop**; fix the technical or
+methodological error, increment `PROTOCOL_VERSION`, and use a new `RUN_TAG`. After the test set is
+opened, nothing may change because of performance. After Set-C is opened there is no fine-tuning, no
+threshold change, no field-order switch, no seed choice and no re-tuning — it is evaluation only.
+
 ## 16. Reading order when writing the paper
 
 1. `tables/table_gate_report.csv` — did anything fail?
