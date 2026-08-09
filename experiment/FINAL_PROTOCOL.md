@@ -382,6 +382,104 @@ Static audit **20/20**, runtime verification on real data **17/17**, cross-cell 
 * **PT2E may fall back on some runtimes.** On a machine with only the `onednn` engine it converted
   0 ops; it is supplementary and non-blocking, and whichever happened is printed and stored.
 
+## 15d. Response to the `rev-fix.md` audit (post-preflight)
+
+The first pre-flight ran end-to-end (**15/17 gates**). The two failures were PT2E (a moved import)
+and student viability (deliberately undertrained 2-epoch models). Everything below is what the
+successful run *revealed* — validity, statistics and hygiene problems that no gate could have caught
+without real outputs.
+
+**Verification of this revision:** rev-fix static audit **43/43**, rev-final-2 **20/20**, rev-final
+**37/37**, runtime checks on real data **22/22**, cross-cell name resolution **clean**, 63/63 code
+cells compile.
+
+### P0 — required before the final run
+
+| # | What was wrong | Fix |
+|---|---|---|
+| 1 | `choose_deployment_model()` read `RAW`, i.e. **DRTiD test** results — the test set was a selection set | New section 29b computes `RQ2_VALIDATION_RESULTS` and decides on validation, then sets `DEPLOY_CHOICE_FROZEN`; the test-side cell only *asserts* that flag |
+| 2 | The `severe_error_must_not_credibly_worsen` clause consulted the **QWK** CI | `SevereErrorRate` is a bootstrap metric; the rule rejects a candidate when the 95% CI of ΔSER lies entirely above zero |
+| 3 | `best_fp32`/PTQ on 1 seed vs QAT on 3 — `QAT_s ↔ FP32_s` was impossible | Every variant derives from `FP32_s` on all 5 core seeds: `FP32_s → {PTQ_s, QAT_s, FP32FT_s, FP32FT-plain_s → FT-PTQ_s}` |
+| 4 | `M*` = the best single `(method, seed)` row out of 20 — a seed lottery with winner's curse | Two-stage: **method** by mean validation QWK, then a **checkpoint** within that method |
+| 5 | Hyperparameters chosen on seed 42 alone | Grids scored as mean validation QWK over `SEEDS_TUNING = [42, 123, 2026]`, with a per-seed CSV |
+| 6 | PTQ calibrated on a **shuffled 512-eye subset** — non-reproducible INT8 | `shuffle=False`, the full 800-eye training split, `ptq_calibration_manifest.csv` + SHA-256 |
+| 7 | `PTQ ops == QAT ops == 15` treated as proof of identical scope | Sorted quantized **module paths** must match exactly; `Gate6c` is blocking. Verified: 15 modules, identical sets |
+| 8 | `gnorm_aux = 0.0` — the probe used `fusion + main_head`, which the aux heads bypass | Two probe groups; the **shared backbone** is the apples-to-apples one. Measured: aux gnorm **0.4884** on the backbone vs **0.0000** on fusion+head |
+| 9 | `float(tensor_requiring_grad)` warned on every batch | `.detach().item()` everywhere. Verified: **0** warnings |
+| 10 | The CSD/task gradient ratio was measured before the teacher and the global scale existed | **Gate 4b** re-measures it with the frozen teacher, the real `CSD_GLOBAL_SCALE`, an APTOS-pretrained student and a β sweep |
+| 11 | 210 `can only test a child process` DataLoader assertions | `DEFAULT_NUM_WORKERS = 0` everywhere; input data staged to local SSD, artifacts still on Drive |
+| 12 | Determinism was opt-in per call | `FINAL_DETERMINISTIC = True` drives `set_seed`; cuDNN benchmark off, deterministic algorithms on (`warn_only`), `CUBLAS_WORKSPACE_CONFIG` set |
+| 13 | `record_gate("Gate0_Environment", True, …)` — any environment passed | Validates torch/torchvision/numpy/sklearn/python versions, CUDA presence and a usable quant engine; blocking on the final run |
+| 14 | Unresolved pip conflicts | `pip check` runs and is recorded. Conflicts are split: load-bearing packages block, unrelated pre-installed ones (tensorflow/streamlit) are reported via `Gate0b` |
+| 15 | `No module named torch.ao.quantization.quantize_pt2e` (torch 2.11 moved it) | Imports from `torchao.quantization.pt2e` first, then the legacy path; still **supplementary**, never in RQ2. Verified working via torchao |
+| 16 | Every ONNX export failed (`onnxscript` missing) | `onnxscript` installed; FP32 ONNX + ONNX Runtime parity is its own gate |
+| 17 | One `Gate8_Export` hid ONNX and `.pt2` failures | Split: **8a** mandatory artifacts, **8b** FP32 ONNX + parity, **8c** optional `.pt2`, **8d** reload |
+| 18 | The artifact-reload gate was advisory | `Gate8d_ArtifactReload` blocks on the final run |
+| 19 | `predict_dr()` always served the FP32 student | Serves `DEPLOY_CHOICE`, rebuilt from its **exported artifact on disk** (INT8 via the quantized skeleton) |
+| 20 | Gate 3 failed the whole study when any ablation missed a rare grade (15 flagged in preflight) | **3A** core dual-view students + `best_fp32`, incl. finiteness and ≥3 distinct grades → blocking; **3B** baselines/ablations/INT8 → reported |
+| 21 | The primary metric had no reference test | `fast_qwk` checked against `cohen_kappa_score(weights="quadratic", labels=0..4)` on 105 cases. Max deviation **1.11e-16** |
+
+### B — DeepDRiD
+
+| # | Fix |
+|---|---|
+| 22 | `deepdrid_exclusion_audit.csv` names every dropped eye. Cause found: patients **77** and **164** have `left_eye_DR_Level`/`right_eye_DR_Level` **swapped** relative to image laterality, and 164's left eye has one field. A fourth anomaly surfaced that nobody had noticed — 164's right eye has **three** images — and is recorded as *kept* (`excluded=False`) rather than mislabelled as dropped |
+| 23 | **Set-C** (`Online-Challenge1&2-Evaluation`) is now the PRIMARY confirmatory external test: 100 patients / 200 eyes, all five grades, 0 exclusions, labels in `Challenge1_labels.xlsx`. Patient IDs confirm zero overlap with Set-A (1–330) or Set-B (265–433). Set-B becomes *external validation* — honest, since its aggregate performance was already seen in the preflight |
+| 24 | `_1=macula` stays primary. The preflight scored slightly better under the reverse ordering; switching on that basis would be post-hoc selection, so the reverse remains a sensitivity analysis |
+| 25 | Patient-clustered bootstrap (B=10,000) on the primary partition for QWK/Accuracy/Macro-F1/MAE/SER, plus paired PTQ−FP32, QAT−FP32, FT-PTQ−FP32, QAT−PTQ |
+| 39 | `Gate9_ExternalValidation` and `Gate9c_DeepDRiD_ExclusionAudit` block on the final run |
+
+### C–E — statistics, CSD, QAT
+
+| # | Fix |
+|---|---|
+| 26–27 | RQ1's matched-seed bootstrap is unchanged. With the per-seed RQ2 design every comparison has common seeds, so the positional fallback is unreachable; if it ever fires it prints a warning and stamps `matched_seeds=False` |
+| 28 | Holm is applied **within** each pre-registered family (RQ1: 3 hypotheses, RQ2: 5). Verified: p=0.01 → 0.0300 within RQ1 vs 0.0700 if all 8 were pooled |
+| 29 | Effect sizes with CIs remain the headline; p-values secondary |
+| 30 | `compute_shift_fidelity(..., counterfactual=True)` scores every dual-view student in same-head space too, so the counterfactual ablation is judged in the objective it was trained on. Verified: ShiftL1 0.9461 (three-head) vs CF_ShiftL1 0.7024 |
+| 31–32 | Δ stays an *operational proxy*; "student variability is conditional on a fixed teacher checkpoint" is stated in the loss section |
+| 33 | QAT learning rate chosen from `{1e-5, 3e-5, 1e-4}` on validation over the tuning seeds; the FP32 control inherits the identical setting |
+| 34 | `ft_ptq_int8` answers "is adapting to quantization noise better than fine-tuning *then* quantizing?" |
+
+### F–G — hygiene and deployment
+
+| # | Fix |
+|---|---|
+| 35 | `RUN_TAG = "final_locked_v2_20260809"`; preflight uses `preflight_v2`. No old namespace is reused |
+| 36 | `PROTOCOL_HASH` = SHA-256 over the locked config + the three split files, stamped onto every dict checkpoint |
+| 37 | `RESUME_EXACT=False` ignores all checkpoints; `True` reuses only hash-matching ones. This also covers the two prepared-graph caches (`run_qat`, `run_fp32_ft_control`), which previously resumed on `os.path.exists` alone |
+| 38 | `CONFIG_SNAPSHOT` now carries teacher/student/QAT/PTQ configs, all seed lists, the pre-registered comparisons, the selection rule, determinism flags and the DeepDRiD protocol |
+| 40 | `PeakRSS_MB` (a final sample) → `RSS_AfterInference_MB`, `ModelLoadRSSDelta_MB`, and a genuinely polled `PeakRSS_during_inference_MB`; the process-level scope is named in the output |
+| 41 | Latency is the **median-of-medians** over 5 independent 500-inference blocks, with the between-block IQR reported |
+| 42 | `models/selected_deployment/` holds the chosen artifact plus provenance: method, seed, quantization, validation/test/Set-C metrics, preprocessing, grade mapping, torch version, quant engine, protocol hash |
+| 43 | `predict_dr()` returns `grade`, `grade_name`, `ordinal_scores`, `uncalibrated_score` (never "confidence"), `model_version`, `latency_ms` and a clinical `disclaimer` |
+
+### Found by us, beyond the audit
+
+* **The FT→PTQ control was silently broken when first written.** Mapping a QAT-prepared `state_dict`
+  back onto a plain student transferred only **27 of 95** tensors — Conv-BN fusion renames every
+  BatchNorm parameter, so they all kept their pre-fine-tuning values. The control would have been a
+  hybrid. The remap was deleted; `FT-PTQ_s` is now built from an ordinary FP32 fine-tune of the plain
+  student, verified to carry **95/95** tensors.
+* **The cross-cell checker was upgraded** to catch module-level forward references *and* the harder
+  case where a cell defines a helper and calls it in the same cell (validated on a synthetic case).
+  Moving the deployment decision earlier had introduced exactly that, which it caught.
+* **`fix_escapes.py`** normalises single-backslash escapes inside the build script's cell strings —
+  the recurring cause of "unterminated string literal" at build time.
+
+### Practical note: the final run is long
+
+The locked protocol trains ≈ **99 models** (5 core seeds, 3 tuning seeds per grid point, 5-seed RQ2,
+QAT LR grid). That will not finish inside one Colab session. The intended workflow is:
+
+```
+session 1:  PREFLIGHT=False, RESUME_EXACT=False   # fresh, artifacts_final_locked_v2_20260809
+session N:  PREFLIGHT=False, RESUME_EXACT=True    # same RUN_TAG; finished models are skipped
+```
+
+Because reuse is gated on `PROTOCOL_HASH`, resuming can never mix protocols — if anything about the
+configuration or the splits changed, every checkpoint is rejected and retrained.
+
 ## 16. Reading order when writing the paper
 
 1. `tables/table_gate_report.csv` — did anything fail?
