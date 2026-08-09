@@ -9,9 +9,15 @@ past-paper-reference/
 big-reference/
 claude.md
 archieved/
+revision/
 
 # experiment/ — generated artifacts, not source
 __pycache__/
 *.pyc
 experiment/checkpoints/
 experiment/results/
+
+
+*.pt
+*.pth
+*.ckpt
