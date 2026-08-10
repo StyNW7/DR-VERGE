@@ -602,9 +602,15 @@ threshold change, no field-order switch, no seed choice and no re-tuning — it 
 ## 15f. The simple notebook (`full_pipeline_notebook_simple.ipynb`)
 
 A second notebook implements **this same protocol** with the multi-session scaffolding removed. It
-is not a reduced experiment: 102 training jobs, 3,315 maximum epoch-runs, 5/3/3 seeds, three 4-point
-grids, 14 figures and 24 tables — identical to the numbers in §12 and §15. A parity audit verifies
-**67/67** load-bearing science elements from this protocol are present.
+is not a reduced experiment: 102 training jobs, 5/3/3 seeds, three 4-point grids, 14 figures and 24
+tables — identical to §12 and §15. A parity audit verifies **67/67** load-bearing science elements
+from this protocol are present.
+
+The one numeric difference is 3,285 maximum epoch-runs rather than 3,315. This protocol trains the
+final QAT model for each tuning seed at the winning learning rate — a computation the learning-rate
+grid has *already* performed with the same base checkpoint, seed, learning rate and config. The
+simple notebook keys its fine-tune cache on the learning rate and reuses those 3 results. Identical
+outputs, 30 fewer epochs.
 
 What differs is engineering:
 

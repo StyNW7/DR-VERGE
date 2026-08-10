@@ -9,7 +9,7 @@ multi-session protocol machinery. Revised against every numbered item in
 | | |
 |---|---|
 | Notebook | `experiment/full_pipeline_notebook_simple.ipynb` |
-| Size | 69 cells (45 code, 24 markdown), 2,941 non-blank code lines |
+| Size | 69 cells (45 code, 24 markdown), 3,004 non-blank code lines |
 | Protocol | identical to `DR_VERGE_FINAL_V3` in scientific content |
 | Gates | 29 named + 1 parametric → **32 results in a full run** |
 | Expected runtime | ≈ 4.9 h on a T4, one session (see `resource.md` §11) |
@@ -45,22 +45,41 @@ Every training stage writes a checkpoint when it finishes and reuses it on the n
 | Teacher | 1 | `checkpoints/teacher.pt` |
 | Students (baselines, grids, core, ablations) | 75 | `checkpoints/student/<condition>/seed<seed>.pt` |
 | QAT learning-rate grid | 9 | `checkpoints/finetune/QAT_s<seed>_lr<lr>.pt` |
-| QAT final | 5 | `checkpoints/finetune/QAT_s<seed>.pt` |
+| QAT final | 5 (3 are cache hits) | same key — see below |
 | FP32 fine-tune control | 5 | `checkpoints/finetune/FP32FT_s<seed>.pt` |
 | FP32 fine-tune (plain) | 5 | `checkpoints/student/fp32_ft_plain/seed<seed>.pt` |
-| **Total** | **102** | |
+| **Total** | **102 jobs, 99 distinct fine-tunes** | |
 
-The QAT and control stages previously retrained unconditionally — 24 fine-tune jobs, ~240 epochs,
-redone on every restart. They now cache like everything else.
+Two separate savings here:
 
-**Reuse is verified, not assumed.** `reusable_checkpoint()` reads the file back and loads it into a
-freshly constructed model before accepting it. Three outcomes:
+1. **The QAT and control stages previously retrained on every restart** — 24 fine-tune jobs, ~240
+   epochs, redone from scratch each session. They now cache like everything else.
+2. **The final QAT run for a tuning seed is the grid's winning run.** The learning-rate search
+   already trained `(seed, QAT_LR)` for each of the 3 tuning seeds; the final QAT then repeated
+   exactly that computation — same base checkpoint, same seed, same learning rate, same config.
+   The cache key now includes the learning rate, so those 3 are reused. **30 epochs saved, identical
+   results.** Maximum epoch-runs: 3,315 → **3,285**.
+
+**Reuse is verified, not assumed.** `reusable_checkpoint()` reads the file back, loads it into a
+freshly constructed model, and checks what it was trained for before accepting it:
 
 | Situation | What happens |
 |---|---|
-| Checkpoint loads and the condition matches | reused; recorded in `run_summary.json` under `checkpoints_reused_from_disk` |
+| Loads, condition matches, config matches | reused; recorded in `run_summary.json` under `checkpoints_reused_from_disk` |
 | File truncated by a disconnect mid-write | deleted, stage retrained — instead of an exception 40 minutes later |
 | Checkpoint belongs to a different condition | rejected, never silently inherited |
+| **You edited a setting and resumed** | rejected and retrained, naming the setting: `lr: 0.001 -> 0.0003` |
+
+That last row is the one thing the complex notebook's `PROTOCOL_HASH` really bought, and rev-simple
+item 78 rules out bringing the hash back. The checkpoint path encodes the condition and the seed but
+not the settings, so without this check, changing `STUDENT_CFG["lr"]` and resuming the same
+`RUN_TAG` would leave every student checkpoint "existing" and the run would report results for the
+**old** learning rate. Each checkpoint already stores the config that produced it; comparing it costs
+four lines and fails in the safe direction — an unrecognised checkpoint is retrained, never trusted.
+
+Only keys present in *both* configs are compared, so adding a new field does not invalidate earlier
+checkpoints. `lr_grid` is excluded from a fine-tune's identity: it describes the *search*, not the
+individual run, so widening the grid does not invalidate a run at a learning rate it still contains.
 
 Splits and the image cache behave the same way: split CSVs are reused when present (so the split is
 identical across sessions), and the cache is rebuilt in RAM each session, which costs a few minutes
@@ -224,12 +243,30 @@ produce a *finite* APTOS QWK — the full run still requires better than a major
 `WeightedPrecision` and `WeightedRecall` were genuinely missing from `all_metrics` and are now
 computed and reported. The suite is 43 metrics.
 
-### Corrections
+### Defects found and fixed
 
-Two f-strings escaped their braces where they should have interpolated, so the log printed the
-source text of a dict comprehension instead of its values — one in the student epoch line, one in
-the `Gate11b_PartitionsDisjoint` detail. Both fixed. Figure 11's caption said "Accuracy against CPU
-latency" while the figure plots QWK; corrected per item 54.
+Beyond the guideline items, a line-by-line read of the notebook turned up eleven genuine defects.
+Listed most-consequential first.
+
+| # | Defect | Consequence if shipped |
+|---|---|---|
+| 1 | **Figure 8 read the training logs by their pre-rename filename** (`<cond>_seed42.csv`, now `<cond>_seed42_history.csv`) | the CSD-gradient figure would have rendered a **blank panel in silence** — no error, no warning, just an empty plot in the paper |
+| 2 | **`credibly_worse` was hard-coded as `ci_low > 0`** | correct for severe error, **inverted for QWK**: a quantized model that was credibly *better* on QWK was labelled credibly worse in `table_rq2_validation_deltas.csv`. The deployment rule only reads the severe-error row, so the *decision* was right — the published table was not |
+| 3 | **The QAT LR grid and the final QAT cached under different keys** | for each of the 3 tuning seeds the winning configuration was fine-tuned twice — an identical computation, 30 wasted epochs |
+| 4 | **`Gate7c_PTQ_Integrity` built its detail by indexing `PTQ_I[RQ2_SEEDS[0]]`** | if PTQ failed for the *first* seed, the gate raised `KeyError` while evaluating its own message instead of failing cleanly with it |
+| 5 | **`WeightedPrecision` / `WeightedRecall` missing** from `all_metrics` | two metrics rev-simple §48 requires were absent from every table |
+| 6 | **The FP32-FT control reported the parameter count of its fused QAT-prepared graph** | one row of the efficiency table counted a structurally different thing from every other row |
+| 7 | **Deployment metadata hard-coded the key `deepdrid_setC`** | in a rehearsal the primary partition is Set-B, so Set-B numbers were labelled Set-C |
+| 8 | **Two f-strings escaped braces that should have interpolated** | the log printed the *source text* of a dict comprehension instead of its values — student epoch line and `Gate11b` detail |
+| 9 | **Resume did not check the configuration** a checkpoint was trained under | editing `STUDENT_CFG["lr"]` and resuming the same `RUN_TAG` would leave every checkpoint "existing" and report results for the **old** learning rate — the exact hole `PROTOCOL_HASH` fills, closed in four lines instead |
+| 10 | **`save_json(default=str)` quoted numpy scalars** | pandas hands back `np.int64` / `np.bool_`, so a count became `"5"` and a flag `"True"` in every metadata file — unusable to any reader that compares them numerically |
+| 11 | **Cells carried no `id`**, which `nbformat_minor: 5` requires | validation warned today and is documented to become a hard error; worse, every tool that saved the file invented its own ids and produced a spurious whole-file diff |
+
+Figure 11's caption also said "Accuracy against CPU latency" while the figure plots QWK (item 54).
+
+Defect 1 is the one worth dwelling on: every static check passed, and the figure *rendered*. It was
+caught only by executing the reporting cells and then asserting that each figure's companion CSV
+carries rows. That assertion is now part of the test suite.
 
 ### Deliberately not added (item 78)
 
@@ -303,13 +340,32 @@ gates 1–19 on disk.
 | Check | Result |
 |---|---|
 | All code cells compile | **45/45** |
+| `nbformat` schema validation | **PASS, zero warnings** |
 | Definition-before-use scan (A/B/C) | **clean** |
 | Science parity vs the complex notebook | **67/67** load-bearing elements retained |
 | rev-simple static compliance (80 items) | **79/79** verifiable items |
-| rev-simple runtime dry-run on the real datasets | **24/24** |
+| Invariants from the defects below, locked against regression | **6/6** |
+| rev-simple runtime dry-run on the real datasets | **25/25** |
+| **Reporting cells + config-aware reuse, executed** | **27/27** |
 | Original runtime dry-run (regression) | **18/18** |
 
 Item 80 is the reviewer's own scoring table and has nothing to check.
+
+### Why the reporting-cell test exists
+
+The figure, table, verdict and summary cells run **once**, at the end of a ~5 hour run. A `KeyError`
+there destroys the output after all the expensive work is done, and grepping cannot prove they are
+safe. So the suite builds a realistic `RAW` / `STATS` / `EXT_DF` from the notebook's own
+`all_metrics()`, writes the confusion matrices and training histories the figures read back, then
+**actually executes every reporting cell** and checks that:
+
+- all 14 figures render, each with png + pdf + svg + `_data.csv` + `_caption.txt`
+- **no figure's companion CSV is empty** — this is what caught defect 1
+- Figure 8 really replayed the logs (24 rows across 4 conditions)
+- `best_fp32` retains exactly 100% of itself (the retention ratio is not misaligned)
+- `table_retention_main.csv` contains exactly FP32 / PTQ / QAT
+- `run_summary.json` has all 17 keys, with both headlines and the RQ2 answer
+- the sentinel is written when blocking gates pass **and removed when one fails**
 
 Notable individual results:
 
@@ -331,10 +387,21 @@ Notable individual results:
 
 ### What has *not* been verified
 
-No end-to-end GPU run. Everything above is static analysis plus runtime execution of the data,
-model, loss, metric, checkpoint and prediction layers on CPU with the real datasets. The training
-loops themselves have been exercised only in `QUICK` shape. The ~4.9 h T4 estimate is derived from
-measured I/O timings and an estimated GPU cost — not a measured end-to-end figure.
+**No end-to-end GPU run.** Everything above is static analysis plus real execution of the data,
+model, loss, metric, checkpoint, prediction and *reporting* layers — on CPU, against the real
+datasets, with the reporting cells fed realistic synthetic results.
+
+What that leaves open:
+
+- The training loops themselves have only been exercised in `QUICK` shape, never for a full
+  40-epoch student run on a GPU.
+- The eager PTQ/QAT conversion path needs a quantization backend and has not been executed here.
+- ONNX export and the artifact-reload verification have not been executed.
+- The ≈4.9 h T4 figure is derived from measured I/O timings and an *estimated* GPU cost — not a
+  measured end-to-end wall clock.
+
+The `QUICK = True` rehearsal is what closes these: it runs every stage, including quantization,
+export and reload, in about 15 minutes. Do that once before committing to the full run.
 
 ---
 

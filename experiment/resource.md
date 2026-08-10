@@ -286,10 +286,16 @@ Written from scratch rather than trimmed, so it carries none of the multi-sessio
 | | Complex | Simple |
 |---|---:|---:|
 | Training jobs | 102 | **102** |
-| Maximum epoch-runs | 3,315 | **3,315** |
+| Maximum epoch-runs | 3,315 | 3,285 |
 | Seeds (core / tuning / ablation) | 5 / 3 / 3 | **5 / 3 / 3** |
 | Hyperparameter grids | 3 × 4 | **3 × 4** |
 | Figures | 14 | **14** |
+
+The 30-epoch difference is not a reduced experiment. The QAT learning-rate grid already trains the
+winning learning rate for each of the 3 tuning seeds; the complex notebook then retrains exactly
+that configuration — same base checkpoint, same seed, same learning rate, same config — for the
+final QAT models. The simple notebook caches it under a key that includes the learning rate, so
+those 3 jobs are reused rather than recomputed. Identical results, 30 fewer epochs.
 
 An independent parity audit checks **67/67 load-bearing science elements** — CORAL initialisation
 from empirical marginals, the fixed global CSD scale, two-stage selection, matched per-seed RQ2,
@@ -306,8 +312,8 @@ quantization scope, Set-C as the confirmatory partition. All present.
 | Local-disk staging (`USE_LOCAL_DATA_CACHE`) | superseded — the image cache reads each file once |
 | Legacy name aliases and duplicated smoke checks | dead weight |
 
-Source size: **93 → 69 cells**, **66 → 45 code cells**, **5,039 → 2,941 non-blank code lines
-(−42%)**.
+Source size: **93 → 69 cells**, **66 → 45 code cells**, **5,039 → 3,004 non-blank code lines
+(−41%)**.
 
 ### 11.3 Gates
 
@@ -339,8 +345,9 @@ student, and changes numerics.
 | All code cells compile | 45/45 |
 | Definition-before-use scan | clean (A/B/C) |
 | Science parity audit | **67/67** |
-| rev-simple static compliance (80 items) | **79/79** verifiable |
-| rev-simple runtime dry-run | **24/24** |
+| rev-simple static compliance (80 items) | **79/79** verifiable, + 6 regression invariants |
+| rev-simple runtime dry-run | **25/25** |
+| Reporting cells + config-aware reuse, executed | **27/27** |
 | Original runtime dry-run (regression) | **18/18** |
 
 Notable individual results from the dry-runs:

@@ -8,9 +8,9 @@ retinopathy grading.
 | | `full_pipeline_notebook_final.ipynb` | `full_pipeline_notebook_simple.ipynb` |
 |---|---|---|
 | Protocol | `DR_VERGE_FINAL_V3` | same science, less machinery |
-| Size | 93 cells / 5,039 code lines | 69 cells / 2,941 code lines |
+| Size | 93 cells / 5,039 code lines | 69 cells / 3,004 code lines |
 | Training jobs | 102 | **102** (identical) |
-| Max epoch-runs | 3,315 | **3,315** (identical) |
+| Max epoch-runs | 3,315 | 3,285 — 3 jobs reuse an identical grid result |
 | Gate results | 32 | **32** |
 | Figures / tables | 14 / 24 | **14 / 24** |
 | Runtime on a T4 | ~46 h over 5–6 sessions | **≈ 4.9 h**, one session |
