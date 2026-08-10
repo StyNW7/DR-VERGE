@@ -599,6 +599,36 @@ methodological error, increment `PROTOCOL_VERSION`, and use a new `RUN_TAG`. Aft
 opened, nothing may change because of performance. After Set-C is opened there is no fine-tuning, no
 threshold change, no field-order switch, no seed choice and no re-tuning — it is evaluation only.
 
+## 15f. The simple notebook (`full_pipeline_notebook_simple.ipynb`)
+
+A second notebook implements **this same protocol** with the multi-session scaffolding removed. It
+is not a reduced experiment: 102 training jobs, 3,315 maximum epoch-runs, 5/3/3 seeds, three 4-point
+grids, 14 figures and 24 tables — identical to the numbers in §12 and §15. A parity audit verifies
+**67/67** load-bearing science elements from this protocol are present.
+
+What differs is engineering:
+
+| This protocol | Simple notebook |
+|---|---|
+| `PROTOCOL_HASH` + hashed/unhashed config split | fresh `RUN_TAG` per run + a guard that refuses to write into an existing artifact directory |
+| `RESUME_EXACT` with optimizer-state resume | `RESUME` — reuses any checkpoint that loads and verifies it first |
+| `RUN_PT2E_SUPPLEMENTARY` path | dropped (it shipped `False`) |
+| `USE_LOCAL_DATA_CACHE` staging | superseded by an in-RAM resized-image cache (byte-identical, ~131× faster decode) |
+| ~46 h over 5–6 sessions | ≈ 4.9 h in one |
+
+It was revised against `revision/rev-simple.md` (80 items; **79/79** verifiable items audited,
+**24/24** runtime checks, **18/18** regression checks). Full detail in
+**`experiment/SIMPLE_NOTEBOOK.md`**; runtime and resources in `resource.md` §11.
+
+Two protocol-level differences worth noting when writing the paper:
+
+1. **RQ2 families.** The three-way FP32/PTQ/QAT comparison is the primary family; the FP32 fine-tune
+   controls form a separate supplementary family, with Holm applied within each. Under this
+   protocol all five sat in one family, which made the headline pay a multiplicity price for its own
+   controls (*p* = 0.01 adjusts to 0.030 rather than 0.060).
+2. **Rehearsal safety.** `QUICK` exercises the external pipeline on Set-B and does not construct
+   Set-C at all, so the confirmatory partition is untouched until the final run.
+
 ## 16. Reading order when writing the paper
 
 1. `tables/table_gate_report.csv` — did anything fail?

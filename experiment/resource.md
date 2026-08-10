@@ -300,23 +300,20 @@ quantization scope, Set-C as the confirmatory partition. All present.
 
 | Removed | Why it was safe |
 |---|---|
-| `RESUME_EXACT` / checkpoint-envelope machinery | a ~5 h run does not need cross-session resume |
-| `PROTOCOL_HASH` and the hashed/unhashed config split | that split existed only to make resume safe |
+| `PROTOCOL_HASH` and the hashed/unhashed config split | that split existed only to make exact resume safe; a fresh `RUN_TAG` per run plus the `RESUME` guard gives the same protection |
+| `RESUME_EXACT` + optimizer-state resume | replaced by something much smaller — see §11.7 |
 | PT2E supplementary quantization path | supplementary; `RUN_PT2E_SUPPLEMENTARY` shipped `False` anyway |
-| `torch.export` / `.pt2` artifact | optional export; ONNX + `state_dict` remain |
 | Local-disk staging (`USE_LOCAL_DATA_CACHE`) | superseded — the image cache reads each file once |
-| Dependency-pin audit gate | environment check, not a result |
 | Legacy name aliases and duplicated smoke checks | dead weight |
 
-Source size: **93 → 69 cells**, **66 → 45 code cells**, **5,039 → 2,649 non-blank code lines
-(−47%)**.
+Source size: **93 → 69 cells**, **66 → 45 code cells**, **5,039 → 2,941 non-blank code lines
+(−42%)**.
 
 ### 11.3 Gates
 
-Renamed to a linear `Gate1 … Gate12` scheme. **28 static names, 31 firings at runtime**
-(`Gate5_Grid_{tag}` fires once per grid). Nearly all map 1:1 to a complex-notebook gate; the only
-genuine drops are the four scaffolding gates in §11.2, and two were added
-(`Gate10_Statistics`, `Gate4b_SelectedCSD_Gradient`). **Gates were not cut to save time.**
+Renamed to a linear `Gate1 … Gate12` scheme. **29 named gates plus one parametric grid gate that
+fires once per hyperparameter grid — 32 results in a full run**, one more than the complex notebook.
+25 of the 29 are blocking. **Gates were not cut to save time.**
 
 The one dropped output is `table_02c_validation_viability` — the check survives as
 `Gate6b_ValidationViability`, it just no longer writes its own CSV.
@@ -342,10 +339,11 @@ student, and changes numerics.
 | All code cells compile | 45/45 |
 | Definition-before-use scan | clean (A/B/C) |
 | Science parity audit | **67/67** |
-| Cleanliness scan | 12/12 |
-| Runtime dry-run on the real datasets | **18/18** |
+| rev-simple static compliance (80 items) | **79/79** verifiable |
+| rev-simple runtime dry-run | **24/24** |
+| Original runtime dry-run (regression) | **18/18** |
 
-Notable individual results from the dry-run:
+Notable individual results from the dry-runs:
 
 - image cache **byte-identical** to `Resize(224)` on the original; 0.000 ms on a hit vs ~32 ms decoding
 - QWK vs `sklearn.cohen_kappa_score`: max difference **1.11e-16** over 105 cases
@@ -356,18 +354,41 @@ Notable individual results from the dry-run:
   non-degenerate predictions (5/5/5 distinct grades per head — an untrained model predicts one grade
   for every eye and makes the comparison vacuous)
 - DeepDRiD Set-C loads 100 patients / 200 eyes / 400 images, 0 exclusions
+- a corrupt checkpoint is deleted and retrained rather than crashing the run
+- Holm within the 3-comparison RQ2 family gives *p* = 0.030 where pooling the controls gave 0.060
 
 ### 11.6 Running it
 
 ```python
 DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"
-RUN_TAG    = "simple_v1"
-QUICK      = False      # True = 1 seed, few epochs, ~15 min rehearsal
+RUN_TAG    = "final_locked_simple_v1_20260809"   # change for every NEW final run
+QUICK      = False      # True = 1 seed, few epochs, Set-B external, ~15 min rehearsal
+RESUME     = True       # continue an interrupted run in the same RUN_TAG
 USE_AMP    = False
 ```
 
-Set `QUICK = True` once to prove the pipeline runs end to end, then `False` and Run All. No
-preflight/final duality, no resume flag, no protocol hash to keep aligned across sessions.
+Set `QUICK = True` once on a throwaway tag to prove the pipeline runs end to end, then `QUICK =
+False` with a fresh tag and Run All.
 
 RAM: ~3–4 GB base + **918 MB** for the image cache (measured: DRTiD 445 MB, +APTOS train 866 MB,
 +APTOS val 918 MB). Standard Colab runtime is fine.
+
+### 11.7 Resume: no stage is ever retrained from zero
+
+Every training stage writes a checkpoint when it finishes and reuses it on the next run — all 102
+jobs, including the 24 fine-tune jobs (QAT LR grid, QAT, FP32-FT control, plain FT) that previously
+retrained unconditionally on every restart. Reuse is *verified*: the file is read back and loaded
+into a freshly built model before it is accepted, so a checkpoint truncated by a Colab disconnect is
+deleted and retrained rather than crashing an hour later. Every reuse is listed in
+`run_summary.json`.
+
+`RESUME = False` makes the notebook **refuse** to write into an artifact directory that already
+exists — the one guarantee `PROTOCOL_HASH` was really providing.
+
+Practical effect: an interrupted session is recovered by reopening the notebook with the same
+`RUN_TAG` and running all cells again. Only the missing work is trained.
+
+`FINAL_RUN_COMPLETE.txt` is written **only** if execution reaches the last cell with every blocking
+gate passed, so "did this run actually finish?" is answerable by one `ls`.
+
+Full detail: **`experiment/SIMPLE_NOTEBOOK.md`**.
