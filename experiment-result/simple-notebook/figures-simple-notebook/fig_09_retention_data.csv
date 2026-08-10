@@ -1,0 +1,16 @@
+metric,condition,retention_pct
+QWK,best_fp32,100.0
+QWK,fp32_ft_control,99.5599681283717
+QWK,ptq_int8,98.33174331268039
+QWK,ft_ptq_int8,97.52726454272174
+QWK,qat_int8,94.72159670949328
+MacroF1,best_fp32,100.0
+MacroF1,fp32_ft_control,100.93770783100263
+MacroF1,ptq_int8,99.45157938008892
+MacroF1,ft_ptq_int8,98.99453341272596
+MacroF1,qat_int8,97.85110823893183
+Accuracy,best_fp32,100.0
+Accuracy,fp32_ft_control,100.50143266475644
+Accuracy,ptq_int8,97.42120343839541
+Accuracy,ft_ptq_int8,97.70773638968481
+Accuracy,qat_int8,99.64183381088826

@@ -1,0 +1,11 @@
+metric,condition,mean
+DualViewGain_G_aux,dual_no_distill,0.023324087828988628
+DualViewGain_G_aux,dual_logitkd,0.04901273945810958
+DualViewGain_G_aux,dual_featkd,0.02777481359534848
+DualViewGain_G_aux,dual_csd,0.03528684284862804
+DualViewGain_G_aux,best_fp32,0.04901273945810958
+DualViewGain_G_independent,dual_no_distill,0.047893977233399186
+DualViewGain_G_independent,dual_logitkd,0.09004637788008729
+DualViewGain_G_independent,dual_featkd,0.08388912990427884
+DualViewGain_G_independent,dual_csd,0.06502613210818627
+DualViewGain_G_independent,best_fp32,0.09004637788008729

@@ -1,0 +1,1 @@
+Internal (DRTiD) vs external (DeepDRiD) performance. A drop is a domain-shift finding to report, not something to tune away.

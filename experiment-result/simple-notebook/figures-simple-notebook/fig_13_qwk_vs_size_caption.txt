@@ -1,0 +1,1 @@
+QWK against serialized state_dict size. INT8 compresses the backbone only, so the large size story is teacher -> student; the INT8 story is latency.

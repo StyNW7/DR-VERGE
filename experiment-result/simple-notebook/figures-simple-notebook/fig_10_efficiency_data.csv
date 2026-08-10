@@ -1,0 +1,13 @@
+metric,condition,value
+CheckpointSize_MB,teacher,154.0890407562256
+CheckpointSize_MB,best_fp32,1.2934738159179688
+CheckpointSize_MB,fp32_ft_control,1.3805830001831054
+CheckpointSize_MB,ptq_int8,0.9507469177246094
+CheckpointSize_MB,ft_ptq_int8,0.9509395599365235
+CheckpointSize_MB,qat_int8,0.9507469177246094
+Latency_median_ms,teacher,268.82817200021236
+Latency_median_ms,best_fp32,14.970418799384788
+Latency_median_ms,fp32_ft_control,28.429634399799397
+Latency_median_ms,ptq_int8,6.071996599894192
+Latency_median_ms,ft_ptq_int8,6.059040499712864
+Latency_median_ms,qat_int8,6.07366420008475

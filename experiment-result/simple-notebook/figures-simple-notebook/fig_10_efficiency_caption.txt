@@ -1,0 +1,1 @@
+Serialized state_dict size and single-thread CPU latency (median of 5 blocks).

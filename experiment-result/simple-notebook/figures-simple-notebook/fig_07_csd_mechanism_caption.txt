@@ -1,0 +1,1 @@
+ShiftL1 lower = the student's decision-shift structure is closer to the teacher's; CosAgree higher = the shift points the same way; BenefitCorr higher = the student gains from dual-view on the same samples the teacher does.
