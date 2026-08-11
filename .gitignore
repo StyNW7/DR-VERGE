@@ -21,3 +21,5 @@ experiment/results/
 *.pt
 *.pth
 *.ckpt
+
+prompts/

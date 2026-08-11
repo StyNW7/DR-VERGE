@@ -1,5 +1,5 @@
 {
-  "name": "vite-template",
+  "name": "dr-verge-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify": "node scripts/verify-inference.mjs",
+    "check": "tsc -b --noEmit && npm run verify"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.13",
@@ -23,6 +25,7 @@
     "react-hot-toast": "^2.5.2",
     "react-router": "^7.6.0",
     "react-router-dom": "^7.6.0",
+    "recharts": "^3.10.1",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {

@@ -1,1 +1,239 @@
-# DR-VERGE Frontend
+# DR-VERGE — Research Showcase Website
+
+Frontend for **DR-VERGE** (View-Evidence Relational Grading Engine): dual-view diabetic
+retinopathy grading through Complementarity-Shift Distillation and lightweight INT8
+deployment. Built for **GEMASTIK XIX**, Karya Tulis Ilmiah TIK.
+
+React · Vite · TypeScript · TailwindCSS · React Router · Recharts · lucide-react ·
+Framer Motion. Frontend only — no backend, no database, no authentication.
+
+---
+
+## Quick start
+
+```bash
+npm install
+cp .env.example .env      # optional; the demo runs without it
+npm run dev               # http://localhost:5173
+```
+
+| Script | Does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Type-check then production build |
+| `npm run preview` | Serve the production build |
+| `npm run verify` | Inference-client contract tests (21 checks) |
+| `npm run check` | Type-check + verify |
+| `npm run lint` | ESLint |
+| `python scripts/audit-acceptance.py` | Acceptance audit against the spec (128 checks) |
+
+---
+
+## The model is not deployed yet
+
+`VITE_MODEL_API_URL` is empty, so the demo runs in **mock mode**, and it says so
+everywhere it possibly can:
+
+- a **Demo Mode** badge in the page header
+- a dashed, non-dismissible banner above the upload area
+- **the same banner again directly above the result numbers**
+- `variant: "FT-PTQ INT8 (simulated)"` and `version: "1.0-mock"` in the model panel
+- a disclaimer stating *"No DR-VERGE model was executed"*
+- a **"Simulated output — no model was executed"** stamp on the printed summary
+
+The mock output is *structurally* real — the cumulative vector is monotone
+non-increasing and the grade is the count of thresholds passed, exactly as a CORAL head
+behaves — so the interface is exercised against the shape of genuine output. **The
+numbers themselves mean nothing**, and are deterministic per file pair rather than
+random, so re-uploading the same images does not produce a suspiciously different
+"diagnosis".
+
+To go live: set `VITE_MODEL_API_URL` and `VITE_USE_MOCK_MODEL=false`. No code change.
+
+---
+
+## Environment variables
+
+Every `VITE_*` value is **inlined into the browser bundle** and is therefore public.
+Never put an API key or any other secret here. The inference endpoint must be public and
+protected server-side (rate limiting / gateway).
+
+| Variable | Purpose | Default when unset |
+|---|---|---|
+| `VITE_MODEL_API_URL` | Inference endpoint; `multipart/form-data` with `macula` and `optic_disc` | empty → mock mode on |
+| `VITE_USE_MOCK_MODEL` | Force mock on/off | on when no API URL |
+| `VITE_SAMPLE_DATASET_URL` | Sample dual-view pairs | button renders disabled |
+| `VITE_PAPER_URL` | Paper PDF | button renders disabled |
+| `VITE_GITHUB_URL` | Repository | link renders as "soon" |
+| `VITE_INSTITUTION` | Shown in footer/metadata | `BINUS University` |
+| `VITE_REQUEST_TIMEOUT_MS` | Inference timeout | `45000` |
+
+Unconfigured links render **visibly disabled** rather than as anchors that go nowhere.
+
+### Expected API response
+
+```json
+{
+  "success": true,
+  "prediction": { "grade": 2, "grade_name": "Moderate NPDR" },
+  "ordinal_scores": [0.91, 0.76, 0.32, 0.08],
+  "grade_scores": [0.09, 0.15, 0.44, 0.24, 0.08],
+  "uncalibrated_score": 0.44,
+  "model": { "name": "DR-VERGE", "version": "1.0", "variant": "FT-PTQ INT8", "quantization": "INT8" },
+  "runtime": { "latency_ms": 6.22 },
+  "disclaimer": "Research prototype; not a standalone clinical diagnosis."
+}
+```
+
+Only `prediction.grade` is required. Every other field is optional and degrades to an
+em dash or a hidden panel — verified by `npm run verify`, which asserts that a response
+containing nothing but a grade still renders, that non-finite scores are dropped, and
+that malformed bodies produce a readable message rather than a crash.
+
+---
+
+## Structure
+
+```
+src/
+├── components/
+│   ├── layout/      Navbar (sticky, compacts on scroll), Footer, PageContainer, Seo
+│   ├── common/      Button, Primitives (Badge/Callout/MetricCard/Reveal/ScoreBar/Skeleton),
+│   │                MonoChart, LazyChart, Diagrams, FundusIllustration, ResearchFigure
+│   ├── home/        Hero, Problem, TwoViews, Csd, Metrics, Rq1, Rq2, Sdg, Pipeline, Team, Cta
+│   ├── demo/        UploadDropzone, ResultPanel, DemoStates
+│   └── research/    ResearchSections
+├── pages/           HomePage, DemoPage, ResearchPage, Utility/NotFound404
+├── data/            researchMetrics · drGrades · team · researchContent
+├── services/        inferenceApi
+├── hooks/           useInference
+├── utils/           fileValidation · formatting
+└── config/          siteConfig
+```
+
+**Every research number lives in `src/data/`.** No component contains a hardcoded metric,
+so updating results when the paper finalises is a single-file edit. The audit enforces
+this — it fails if a value like `0.4605` appears outside `src/data/`.
+
+---
+
+## Design system
+
+Strictly monochrome. Every HSL token has **0% saturation**; the audit fails if any
+colourful Tailwind utility (`bg-red-500`, `text-blue-600`, …) appears anywhere in `src/`.
+
+| | Light | Dark |
+|---|---|---|
+| Background | `#FFFFFF` | `#000000` |
+| Surface | `#FAFAFA` / `#F5F5F5` | `#111111` / `#1A1A1A` |
+| Border | `#E5E5E5` | `#262626` |
+| Muted text | `#737373` | `#A3A3A3` |
+
+Light and dark are exact inversions, so a component written once reads correctly in both.
+Emphasis is carried by **fill and weight**, never by hue — charts distinguish the proposed
+method from baselines with fill opacity, and the "medical" callout uses a heavier left
+rule rather than a red box. Theme is applied before first paint by an inline script, so
+dark-mode visitors never see a white flash.
+
+**No emoji anywhere** — all icons are `lucide-react`, enforced by the audit.
+
+### Imagery
+
+- **Original SVG diagrams** — schematic fundus anatomy (macula-centered vs
+  optic-disc-centered, with the field-of-view ring on the structure each is centred on),
+  the dual-field overlap, the architecture, and the CSD shift. Drawn in `currentColor`, so
+  they invert with the theme and stay sharp at any size.
+- **15 real research figures** from the DR-VERGE evaluation run, converted to grayscale
+  and downscaled (≈1 MB total, lazy-loaded). They are inverted in dark mode — lossless for
+  a grayscale image, and it turns a glaring white matplotlib canvas into a native-looking
+  dark chart. A figure that fails to load shows a labelled placeholder, not a broken image.
+
+The fundus diagrams are **stylised anatomical illustrations**, not photographs and not any
+real patient's retina.
+
+---
+
+## Research-safety rules
+
+These are enforced by the acceptance audit, not just by convention:
+
+- Model outputs are **"Ordinal Threshold Scores"** and **"Relative Grade Scores"** — never
+  "probability distribution", "clinical confidence", or "93% chance you have DR".
+- **CSD "transfers a decision-shift pattern"** — it is never said to "understand anatomical
+  complementarity".
+- **RQ1's null result is given equal visual weight to its positive one.** The mechanism
+  finding and "did not translate into a statistically conclusive in-domain QWK
+  improvement" sit side by side, in matching cards, on both the home and research pages.
+- **INT8 reduces cost; it is never said to improve accuracy.**
+- Novelty is *"based on the literature reviewed in this study, we did not identify prior
+  work…"* — never "the first ever".
+- SDG 3 is a **"potential contribution"**, never "proven impact".
+- The abstract is flagged **Draft** until the real paper text replaces it.
+- The limitations section lists all eight limitations in full, including the ones that
+  weaken the headline result.
+- "Research prototype · not for clinical use" appears in the nav, the demo hero, beside the
+  results, in the printed summary, and in the footer.
+
+---
+
+## Verification
+
+| Check | Result |
+|---|---|
+| `tsc -b` type-check | clean |
+| `npm run build` | passes, no chunk over 600 kB |
+| `npm run verify` — inference contract | **21/21** |
+| `scripts/audit-acceptance.py` — spec section 20 | **128/128** |
+
+`npm run verify` is the one worth understanding: it bundles `inferenceApi.ts` and runs it
+in Node, asserting that partial and malformed API responses degrade gracefully, that error
+messages never leak internals, and that **every mock result is flagged as mock**. A demo
+that silently presents fabricated numbers as real inference would be the worst failure
+this site could have, so it is tested rather than assumed.
+
+### Bundle
+
+| Chunk | gzip |
+|---|---|
+| `react-vendor` | 58 kB |
+| `motion` | 39 kB |
+| `index` | 33 kB |
+| `charts` (recharts, deferred) | 108 kB |
+| `icons` | 6 kB |
+| CSS | 8 kB |
+
+Recharts is larger than the rest of the application combined and every chart sits below
+the fold, so it is lazy-loaded behind a correctly-sized skeleton — first paint does not
+wait for it.
+
+---
+
+## Deploy
+
+Vercel-ready. `vercel.json` already rewrites all paths to `/` for client-side routing.
+
+```
+Build command:      npm run build
+Output directory:   dist
+Install command:    npm install
+```
+
+Set the `VITE_*` variables in the deployment environment. They are public by nature —
+put no secrets in them.
+
+---
+
+## Accessibility
+
+Skip-to-content link · visible high-contrast focus rings · keyboard-operable dropzones
+(they are real `<button>`s, so drag-and-drop is an enhancement rather than the only way
+in) · `aria-live` result announcements including a spoken score summary · `role="alert"`
+errors · labelled SVG diagrams · `prefers-reduced-motion` honoured throughout · no
+horizontal overflow at any width from 375 px up (wide diagrams scroll inside their own
+container).
+
+---
+
+DR-VERGE is a research prototype and is not intended for standalone clinical diagnosis.
+Model outputs are research artifacts and must not replace evaluation by qualified
+healthcare professionals.

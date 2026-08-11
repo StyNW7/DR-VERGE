@@ -1,120 +1,57 @@
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion, useReducedMotion } from "framer-motion";
+import { Home, ScanEye, FileText } from "lucide-react";
+import { LinkButton } from "@/components/common/Button";
+import { PageContainer, Seo, Container } from "@/components/layout/PageContainer";
+import { FundusIllustration } from "@/components/common/FundusIllustration";
 
 export default function NotFoundPage() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
+  const reduce = useReducedMotion();
 
   return (
-    <div className="container flex flex-col items-center justify-center min-h-screen px-4 text-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="space-y-8 max-w-md"
-      >
+    <PageContainer>
+      <Seo title="Page Not Found" description="This page could not be found." />
+
+      <Container className="flex min-h-[70svh] flex-col items-center justify-center py-24 text-center">
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 260,
-            damping: 20,
-            delay: 0.2,
-          }}
-          className="relative mx-auto"
+          initial={reduce ? false : { opacity: 0, y: 16 }}
+          animate={reduce ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-center"
         >
-          <div className="text-[150px] font-bold leading-none tracking-tighter">
-            <span className="text-[#2dae67]">4</span>
-            <motion.span
-              animate={{
-                rotate: [0, 10, -10, 10, -10, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Number.POSITIVE_INFINITY,
-                repeatDelay: 3,
-              }}
-              className="inline-block"
-            >
-              0
-            </motion.span>
-            <span className="text-[#2dae67]">4</span>
+          {/* The illustration doubles as the zero in "404". */}
+          <div className="flex items-center justify-center gap-2">
+            <span className="display text-display-xl leading-none">4</span>
+            <span className="h-[clamp(3.5rem,14vw,10rem)] w-[clamp(3.5rem,14vw,10rem)] text-foreground opacity-30">
+              <FundusIllustration variant="macula" />
+            </span>
+            <span className="display text-display-xl leading-none">4</span>
           </div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="absolute -bottom-4 left-0 right-0 mx-auto w-3/4 h-1 bg-gradient-to-r from-transparent via-primary to-transparent blur-sm"
-          />
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-        >
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">Page Not Found</h1>
-          <p className="text-muted-foreground mb-8">
-            Oops! The page you're looking for seems to have wandered off into the digital wilderness.
+          <span className="eyebrow mt-8">Error 404</span>
+
+          <h1 className="display mt-5 text-display-sm">Page Not Found</h1>
+
+          <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
+            This page doesn't exist. It may have been moved, or the link that brought you
+            here may be out of date.
           </p>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.5 }}
-          className="relative"
-        >
-          <div className="absolute -inset-0.5 rounded-full opacity-75 blur-sm animate-pulse" />
-          <a href="/" className="relative block green">
-            <Button size="lg" className="rounded-full bg-green-600">
-              <Home className="mr-2 h-4 w-4" />
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            <LinkButton to="/" size="lg">
+              <Home className="h-4 w-4" aria-hidden="true" />
               Back to Home
-            </Button>
-          </a>
+            </LinkButton>
+            <LinkButton to="/demo" size="lg" variant="outline">
+              <ScanEye className="h-4 w-4" aria-hidden="true" />
+              Model Demo
+            </LinkButton>
+            <LinkButton to="/research" size="lg" variant="ghost">
+              <FileText className="h-4 w-4" aria-hidden="true" />
+              Research
+            </LinkButton>
+          </div>
         </motion.div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
-        className="absolute inset-0 -z-10 overflow-hidden"
-      >
-        {Array.from({ length: 20 }).map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: -20,
-              opacity: 0,
-            }}
-            animate={{
-              y: window.innerHeight + 20,
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: Math.random() * 5,
-            }}
-            className="absolute w-1 h-1 rounded-full bg-primary/30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 4 + 1}px`,
-              height: `${Math.random() * 4 + 1}px`,
-            }}
-          />
-        ))}
-      </motion.div>
-    </div>
-  )
+      </Container>
+    </PageContainer>
+  );
 }

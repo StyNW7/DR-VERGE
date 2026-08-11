@@ -2,12 +2,80 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/Images/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DR-VERGE</title>
+    <link rel="icon" type="image/png" href="/Images/logo.png" />
+
+    <title>DR-VERGE | Dual-View Diabetic Retinopathy Research</title>
+    <meta
+      name="description"
+      content="DR-VERGE is a lightweight dual-view AI research framework for ordinal diabetic retinopathy grading using Complementarity-Shift Distillation and INT8 quantization."
+    />
+    <meta name="author" content="DR-VERGE Research Team" />
+    <meta
+      name="keywords"
+      content="diabetic retinopathy, dual-view fundus, knowledge distillation, ordinal classification, CORAL, INT8 quantization, GEMASTIK, medical AI research"
+    />
+    <!-- The site paints its own background in both themes; this keeps the browser
+         UI from flashing the wrong one before CSS loads. -->
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DR-VERGE" />
+    <meta
+      property="og:title"
+      content="DR-VERGE | Dual-View Diabetic Retinopathy Research"
+    />
+    <meta
+      property="og:description"
+      content="A lightweight dual-view AI research framework for ordinal diabetic retinopathy grading using Complementarity-Shift Distillation and INT8 quantization."
+    />
+    <meta property="og:image" content="/Images/logo.png" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="DR-VERGE | Dual-View Diabetic Retinopathy Research"
+    />
+    <meta
+      name="twitter:description"
+      content="A lightweight dual-view AI research framework for ordinal diabetic retinopathy grading using Complementarity-Shift Distillation and INT8 quantization."
+    />
+    <meta name="twitter:image" content="/Images/logo.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <script>
+      // Apply the stored theme before first paint so a dark-mode visitor never
+      // sees a white flash on load.
+      (function () {
+        try {
+          var stored = localStorage.getItem("dr-verge-theme");
+          var dark =
+            stored === "dark" ||
+            ((!stored || stored === "system") &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {
+          /* localStorage unavailable — fall back to the CSS default */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      DR-VERGE is an interactive research showcase and requires JavaScript to run.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
