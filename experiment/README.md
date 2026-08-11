@@ -23,11 +23,32 @@ parity audit verifies **67/67** load-bearing science elements are present in the
 The difference is engineering scaffolding, not science. The simple notebook is the recommended one
 to run.
 
+## The Enhanced follow-up
+
+[`full_pipeline_notebook_enhanced.ipynb`](full_pipeline_notebook_enhanced.ipynb) — 77 cells / 3,421
+code lines / 33 gates — is a **pre-registered follow-up** to the simple notebook, built from
+`experiment-result/improvements.md`. It is not a replacement: the simple run's result stands, and if
+the two disagree, **both are reported**.
+
+It changes four things and nothing else. Sampling (`sqrt` class-balanced, train only), resolution
+(224 → 384 with effective batch held at 16), the CORAL decision threshold (`t*` per condition, on
+validation), and seed-matched external evaluation (five seeds per condition instead of one, with a
+paired patient bootstrap and the previously-untested CSD vs M\* comparison). The RQs, the CSD
+formula, the ladder, the splits, the seeds, the selection rule and all 29 gates are unchanged.
+
+The first three are chosen in **Stage A** — before the teacher exists, with no distillation term —
+and then frozen. That ordering is load-bearing: a teacher trained at one resolution distilling into
+students at another would not crash, it would just be wrong.
+
+See [`ENHANCED_NOTEBOOK.md`](ENHANCED_NOTEBOOK.md). Runtime ≈ 6.5 h if Stage A keeps 224, ≈ 12.5 h if
+it adopts 384; `RESUME = True` carries an unfinished run across sessions.
+
 ## Documentation
 
 | File | Covers |
 |---|---|
 | [`SIMPLE_NOTEBOOK.md`](SIMPLE_NOTEBOOK.md) | **the simple notebook**: configuration, resume, every artifact it saves, the rev-simple revision, gates, tables, verification |
+| [`ENHANCED_NOTEBOOK.md`](ENHANCED_NOTEBOOK.md) | **the enhanced follow-up**: the four changes, the decision order and why it is that order, the results self-audit, new outputs, runtime, verification, limitations |
 | [`FINAL_PROTOCOL.md`](FINAL_PROTOCOL.md) | the locked protocol and the response to each review round |
 | [`resource.md`](resource.md) | runtime and resource requirements per GPU; §11 covers the simple notebook |
 | [`documentation.md`](documentation.md) | method background |
