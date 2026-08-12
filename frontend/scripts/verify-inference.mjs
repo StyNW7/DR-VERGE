@@ -35,6 +35,10 @@ await build({
   define: {
     "import.meta.env.VITE_MODEL_API_URL": '""',
     "import.meta.env.VITE_USE_MOCK_MODEL": '"true"',
+    // Pinned off so these tests exercise the mock path by explicit configuration
+    // rather than by relying on mock winning the precedence order.
+    "import.meta.env.VITE_USE_LOCAL_MODEL": '"false"',
+    "import.meta.env.VITE_LOCAL_MODEL_URL": '""',
     "import.meta.env.VITE_SAMPLE_DATASET_URL": '""',
     "import.meta.env.VITE_PAPER_URL": '""',
     "import.meta.env.VITE_GITHUB_URL": '""',

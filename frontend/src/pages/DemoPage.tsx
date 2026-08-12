@@ -8,6 +8,7 @@ import {
   ScanEye,
   FileImage,
   ArrowRight,
+  Cpu,
 } from "lucide-react";
 import { PageContainer, Section, Seo, Container } from "@/components/layout/PageContainer";
 import { Button, ExternalButton, LinkButton } from "@/components/common/Button";
@@ -174,6 +175,11 @@ export default function DemoPage() {
               Research Prototype
             </Badge>
             {mock && <Badge tone="warn">Demo Mode</Badge>}
+            {!mock && siteConfig.useLocalModel && (
+              <Badge tone="outline" icon={Cpu}>
+                Runs on your device
+              </Badge>
+            )}
           </div>
 
           <h1 className="display mt-7 text-display-md">Test DR-VERGE</h1>
@@ -192,6 +198,21 @@ export default function DemoPage() {
           {mock && (
             <div className="mt-4 max-w-2xl">
               <DemoModeBanner />
+            </div>
+          )}
+
+          {/* Two things a visitor cannot infer and should not have to guess:
+              where their images go, and which artifact actually produced the
+              number they are about to read. */}
+          {!mock && siteConfig.useLocalModel && (
+            <div className="mt-4 max-w-2xl">
+              <Callout tone="note" title="Inference runs entirely in your browser">
+                Your images are never uploaded — the model is downloaded once and executed
+                on this device. The demo runs the {siteConfig.localModelVariant} student;
+                the deployment model reported in the paper is the{" "}
+                {siteConfig.paperDeploymentVariant} variant of the same method, which
+                cannot be executed in a browser.
+              </Callout>
             </div>
           )}
         </Container>
@@ -382,7 +403,11 @@ export default function DemoPage() {
               <div className="no-print flex flex-wrap items-center justify-between gap-4">
                 <SectionHeader eyebrow="Step 2" title="DR-VERGE Analysis" />
                 <Badge tone={result.isMock ? "warn" : "outline"}>
-                  {result.isMock ? "Simulated" : "Model output"}
+                  {result.isMock
+                    ? "Simulated"
+                    : result.source === "onnx-local"
+                      ? "Model output · on-device"
+                      : "Model output"}
                 </Badge>
               </div>
 

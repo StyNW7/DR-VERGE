@@ -26,18 +26,31 @@ function readBool(value: string | undefined, fallback: boolean): boolean {
 const modelApiUrl = readEnv(env.VITE_MODEL_API_URL);
 
 /**
+ * In-browser model.
+ *
+ * When enabled, the exported ONNX network runs on the visitor's own device and
+ * no image is transmitted anywhere. This is the preferred path: it is the only
+ * configuration in which the privacy claim on the demo page is literally true.
+ */
+const localModelUrl = readEnv(env.VITE_LOCAL_MODEL_URL, "/models/best_student_fp32");
+const useLocalModel = readBool(env.VITE_USE_LOCAL_MODEL, true);
+
+/**
  * Mock mode.
  *
- * The model is not deployed yet, so mock mode defaults to ON when no API URL is
- * configured — otherwise the demo page would be a dead end for every visitor.
- * An explicit `VITE_USE_MOCK_MODEL` always wins over that inference.
+ * Defaults to ON only when there is no real inference path at all — otherwise
+ * the demo page would be a dead end for every visitor. An explicit
+ * `VITE_USE_MOCK_MODEL` always wins over that inference.
  *
  * Whenever this is true the UI must say so, prominently and every time. A
  * fabricated result presented as a real one would be the single worst thing this
  * site could do, so `isMock` is carried on the result object itself rather than
  * being tracked separately in component state where it could drift.
  */
-const useMockModel = readBool(env.VITE_USE_MOCK_MODEL, modelApiUrl === "");
+const useMockModel = readBool(
+  env.VITE_USE_MOCK_MODEL,
+  modelApiUrl === "" && !useLocalModel,
+);
 
 export const siteConfig = {
   projectName: "DR-VERGE",
@@ -57,7 +70,20 @@ export const siteConfig = {
   modelApiUrl,
 
   // Inference behaviour.
+  useLocalModel,
+  localModelUrl,
   useMockModel,
+
+  /**
+   * The demo runs `best_student_fp32` (seed 3407). The paper's deployment model
+   * is `qat_int8` (seed 42) — the same method (dual_csd), a different artifact
+   * and a different seed. INT8 exports cannot be run in a browser at all, since
+   * `torch.export` does not support eager-mode quantized modules. The UI states
+   * this rather than letting a visitor assume the paper's numbers came from the
+   * model they just ran.
+   */
+  localModelVariant: "FP32 (seed 3407)",
+  paperDeploymentVariant: "QAT INT8 (seed 42)",
   requestTimeoutMs: Number(readEnv(env.VITE_REQUEST_TIMEOUT_MS, "45000")),
   maxUploadBytes: 12 * 1024 * 1024, // 12 MB per image
   acceptedMimeTypes: ["image/jpeg", "image/jpg", "image/png"] as const,

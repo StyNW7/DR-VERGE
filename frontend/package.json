@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "verify": "node scripts/verify-inference.mjs",
-    "check": "tsc -b --noEmit && npm run verify"
+    "verify:model": "node scripts/verify-model.mjs",
+    "check": "tsc -b --noEmit && npm run verify && npm run verify:model"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.13",
@@ -19,6 +20,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.11.0",
     "lucide-react": "^0.510.0",
+    "onnxruntime-web": "^1.27.0",
     "react": "^18.3.1",
     "react-animated-cursor": "^2.11.2",
     "react-dom": "^18.3.1",

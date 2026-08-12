@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/siteConfig";
 import { getGrade } from "@/data/drGrades";
+import { ModelLoadError, runLocalInference } from "@/services/onnxModel";
 
 /**
  * DR-VERGE inference client.
@@ -32,7 +33,8 @@ export interface ModelInfo {
 export interface InferenceResult {
   /** True when this came from the local mock generator, not a real model. */
   isMock: boolean;
-  source: "model-api" | "mock";
+  /** `onnx-local` means the real network ran in this browser, on this device. */
+  source: "onnx-local" | "model-api" | "mock";
   grade: number;
   gradeName: string;
   /** Four cumulative ordinal threshold scores, P(Y>0..3). May be empty. */
@@ -104,7 +106,7 @@ function toTrimmedString(v: unknown): string | null {
 export function normalizeResponse(
   raw: unknown,
   clientElapsedMs: number,
-  source: "model-api" | "mock",
+  source: "onnx-local" | "model-api" | "mock",
 ): InferenceResult {
   if (typeof raw !== "object" || raw === null) {
     throw new InferenceError(
@@ -264,7 +266,59 @@ export async function runDRVergeInference(
     );
   }
 
-  /* ---- real path ---- */
+  /* ---- in-browser model ---- */
+  if (siteConfig.useLocalModel) {
+    let pred;
+    try {
+      pred = await runLocalInference(
+        siteConfig.localModelUrl,
+        req.maculaFile,
+        req.opticDiscFile,
+      );
+    } catch (err) {
+      if (err instanceof ModelLoadError) {
+        // Surfaced as a normal inference failure so the demo shows its existing
+        // error state. It must NOT silently fall back to mock output: a visitor
+        // would have no way to tell that the numbers stopped being real.
+        throw new InferenceError("server", err.message, err.detail);
+      }
+      throw new InferenceError(
+        "unknown",
+        "The analysis could not be completed in this browser.",
+        err instanceof Error ? err.message : undefined,
+      );
+    }
+    if (options.signal?.aborted) {
+      throw new InferenceError("unknown", "Analysis was cancelled.");
+    }
+
+    return normalizeResponse(
+      {
+        success: true,
+        prediction: {
+          grade: pred.grade,
+          grade_name: getGrade(pred.grade)?.name ?? `Grade ${pred.grade}`,
+        },
+        ordinal_scores: pred.ordinalScores,
+        grade_scores: pred.gradeScores,
+        uncalibrated_score: pred.uncalibratedScore,
+        model: {
+          name: "DR-VERGE",
+          version: pred.modelName,
+          variant: siteConfig.localModelVariant,
+          quantization: "FP32",
+        },
+        runtime: { latency_ms: pred.latencyMs },
+        disclaimer:
+          "Research prototype for the DR-VERGE study. Not a medical device and not a " +
+          "standalone clinical diagnosis; outputs must be reviewed by a clinician.",
+      },
+      performance.now() - startedAt,
+      "onnx-local",
+    );
+  }
+
+  /* ---- remote API ---- */
   if (!siteConfig.modelApiUrl) {
     throw new InferenceError(
       "not-configured",

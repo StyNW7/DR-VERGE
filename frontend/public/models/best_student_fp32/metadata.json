@@ -1,0 +1,48 @@
+{
+  "model_name": "best_student_fp32",
+  "architecture": "Student",
+  "dataset": "DRTiD",
+  "grade_mapping": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "input_size": [
+    384,
+    384
+  ],
+  "sampling": "standard",
+  "decision_threshold_note": "per-condition t* selected on validation",
+  "normalization_mean": [
+    0.372487,
+    0.217266,
+    0.119367
+  ],
+  "normalization_std": [
+    0.281526,
+    0.179457,
+    0.109162
+  ],
+  "horizontal_flip": false,
+  "views": [
+    "macula",
+    "optic_disc"
+  ],
+  "decision_threshold": 0.5,
+  "torch_version": "2.11.0+cu128",
+  "artifacts": {
+    "state_dict": true,
+    "pt2": true,
+    "onnx": true,
+    "onnx_max_abs_diff": 7.152557373046875e-07,
+    "onnx_same_grades": true,
+    "error": null,
+    "onnx_all_finite": true,
+    "onnx_n_samples": 8
+  },
+  "role": "deployment_candidate",
+  "condition": "dual_csd",
+  "seed": 3407
+}
