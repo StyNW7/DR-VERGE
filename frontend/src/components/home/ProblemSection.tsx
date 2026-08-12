@@ -1,11 +1,14 @@
-import { Eye, Cpu, ArrowUpDown } from "lucide-react";
+import { Eye, Cpu, ArrowUpDown, Circle, type LucideIcon } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
 import { SectionHeader, Reveal, Callout } from "@/components/common/Primitives";
 import { OrdinalScale } from "@/components/common/Diagrams";
 import { challenges } from "@/data/researchContent";
 import { drGrades } from "@/data/drGrades";
 
-const icons = [Eye, Cpu, ArrowUpDown];
+/** Positional, so it must stay as long as `challenges`. Falls back rather
+ *  than rendering `undefined`, which React reports only as error #130. */
+const icons: LucideIcon[] = [Eye, Cpu, ArrowUpDown];
+const iconFor = (i: number): LucideIcon => icons[i] ?? Circle;
 
 export default function ProblemSection() {
   return (
@@ -25,7 +28,7 @@ export default function ProblemSection() {
       {/* Three challenges */}
       <div className="mt-16 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
         {challenges.map((c, i) => {
-          const Icon = icons[i];
+          const Icon = iconFor(i);
           return (
             <Reveal key={c.number} delay={i * 0.08}>
               <div className="flex h-full flex-col gap-5 bg-card p-7 transition-colors duration-300 hover:bg-muted sm:p-8">
