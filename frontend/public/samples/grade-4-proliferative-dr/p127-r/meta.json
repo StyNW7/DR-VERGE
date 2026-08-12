@@ -48,6 +48,6 @@
       ]
     }
   },
-  "model_expected_recall_for_this_grade": 0.58,
-  "license": "CC BY-SA 4.0"
+  "license": "CC BY-SA 4.0",
+  "recall_deepdrid_setc": 0.6
 }

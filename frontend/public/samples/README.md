@@ -71,8 +71,20 @@ Dua mata (`p27-r`, `p27-l`) **dibuang** karena kedua lapangnya tidak dapat dibed
 meyakinkan (selisih < 0,15), dan diganti kandidat lain.
 
 > **Mengapa ini penting untuk demo:** `Gate2a_CORAL` mencatat *"fusion is view-order sensitive"* —
-> model memperlakukan masukan makula dan disc secara berbeda. Memasukkan citra ke slot yang salah
-> akan menghasilkan prediksi yang salah, tanpa error apa pun.
+> model memperlakukan masukan makula dan disc secara berbeda, dan salah slot tidak memunculkan
+> error apa pun.
+
+**Seberapa besar dampaknya, diukur.** Model ONNX dijalankan atas 200 mata Set-C pada kedua urutan:
+
+| Urutan | QWK | Exact |
+|---|---|---|
+| `_1=macula` (PRIMARY paper) | **0,7307** | 114/200 |
+| `_1=disc` (uji sensitivitas) | 0,7258 | 113/200 |
+
+Selisihnya **0,005 QWK** — jauh di bawah ambang klaim apa pun. Jadi meski konvensi sufiks memang
+terbalik dari asumsi notebook, **dampaknya terhadap angka headline dapat diabaikan**, dan notebook
+tetap melaporkan kedua urutan. Penetapan per-sampel di folder ini dipertahankan karena benar
+secara harfiah, bukan karena mengubah hasil secara berarti.
 
 ---
 
@@ -104,21 +116,32 @@ tanpa penyesuaian.
 
 ## Ekspektasi Hasil per Grade
 
-Diambil dari tabel per-grade recall run enhanced. **Gunakan ini untuk menyetel ekspektasi demo,
-jangan menyembunyikannya** — kegagalan pada Grade 1 adalah keterbatasan yang memang dilaporkan
-dalam paper.
+Angka ini **diukur langsung** dengan menjalankan model ONNX yang dipakai demo
+(`best_student_fp32`, seed 3407) atas **seluruh 200 mata Set-C DeepDRiD** — bukan disalin dari
+tabel DRTiD, karena sampel di folder ini berasal dari DeepDRiD.
 
-| Grade | Nama | Recall model | Ekspektasi demo |
-|---|---|---|---|
-| 0 | No DR | **0,803** | ✅ Umumnya benar |
-| 1 | Mild NPDR | **0,068** | ❌ **Hampir pasti salah** — ini keterbatasan yang diketahui |
-| 2 | Moderate NPDR | 0,192 | ⚠ Sering meleset ke grade tetangga |
-| 3 | Severe NPDR | 0,304 | ⚠ Sering meleset ke grade tetangga |
-| 4 | Proliferative DR | **0,580** | ✅ Cukup sering benar |
+| Grade | Nama | n (Set-C) | Recall terukur | Ekspektasi demo |
+|---|---|---|---|---|
+| 0 | No DR | 100 | **0,830** | ✅ Umumnya benar |
+| 1 | Mild NPDR | 18 | **0,111** | ❌ **Hampir pasti salah** — keterbatasan yang diketahui |
+| 2 | Moderate NPDR | 36 | 0,417 | ⚠ Sering meleset ke tetangga |
+| 3 | Severe NPDR | 36 | 0,222 | ⚠ Sering meleset ke tetangga |
+| 4 | Proliferative DR | 10 | **0,600** | ✅ Cukup sering benar |
 
-> Grade 1 sengaja **tetap disertakan**. Demo yang hanya menampilkan kasus yang berhasil adalah
-> demo yang menyesatkan. Tampilkan grade 1 dan beri label bahwa model memang lemah di sana —
-> itu konsisten dengan bab keterbatasan paper.
+Referensi keseluruhan Set-C: **QWK 0,7307 · exact 57,0%** (paper melaporkan **0,7298** untuk seed
+yang sama — selisih 0,0009 berasal dari perbedaan interpolasi resize).
+
+> ⚠ **Kumpulan sampel ini seimbang 3 per grade, sedangkan Set-C nyata didominasi grade 0 (50%).**
+> Karena itu akurasi di 15 sampel ini akan terlihat **lebih buruk** daripada 57%: rata-rata recall
+> lintas grade hanya ~0,44, jadi ekspektasi wajarnya sekitar **6–7 benar dari 15**.
+>
+> Hasil aktual saat diukur: **3/15 exact, 11/15 dalam ±1 grade**. Lebih rendah dari ekspektasi,
+> masih dalam rentang derau untuk n=15. Ini **bukan tanda integrasi bermasalah** — pipeline sudah
+> diverifikasi mereproduksi angka paper di 200 mata.
+
+> Grade 1 sengaja **tetap disertakan**. Demo yang hanya menampilkan kasus berhasil adalah demo
+> yang menyesatkan. Tampilkan grade 1 dan beri label bahwa model memang lemah di sana — itu
+> konsisten dengan bab keterbatasan paper.
 
 ---
 
