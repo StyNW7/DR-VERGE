@@ -1,0 +1,68 @@
+DR-VERGE — Demo Sample Images
+Attribution and licence notice
+
+================================================================================
+SOURCE
+================================================================================
+
+These images are derived from the DeepDRiD dataset:
+
+  Deep Diabetic Retinopathy Image Dataset (DeepDRiD)
+  https://github.com/deepdrdoc/DeepDRiD
+  Partition used: regular_fundus_images / regular-fundus-training
+
+Citation:
+
+  Liu R, Wang X, Wu Q, Dai L, Fang X, Yan T, Son J, Tang S, Li J, Gao Z,
+  Galdran A, Poorneshwaran JM, Liu H, Wang J, Chen Y, Porwal P, Tan GSW,
+  Yang X, Dai C, Song H, Chen M, Li H, Jia W, Shen D, Sheng B, Zhang P.
+  "DeepDRiD: Diabetic Retinopathy - Grading and Image Quality Estimation
+  Challenge." Patterns, 2022, 100512.
+  https://doi.org/10.1016/j.patter.2022.100512
+
+================================================================================
+LICENCE
+================================================================================
+
+DeepDRiD is released under the Creative Commons
+Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0).
+
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+You are free to share and adapt this material, including commercially,
+provided that you:
+
+  BY  - give appropriate credit, link to the licence, and indicate if
+        changes were made;
+  SA  - distribute any derivative work under the same licence.
+
+These sample images ARE a derivative work and therefore remain under
+CC BY-SA 4.0. Redistributing them, or the DR-VERGE demo that embeds them,
+requires keeping this notice intact.
+
+================================================================================
+CHANGES MADE TO THE ORIGINAL IMAGES
+================================================================================
+
+Required disclosure under the "indicate if changes were made" clause:
+
+  1. Downscaled so the longest side is at most 1024 px (aspect ratio preserved,
+     Lanczos resampling). Originals are 1592x1728 to 2232x1727.
+  2. Re-encoded as progressive JPEG at quality 85.
+  3. EXIF and ICC metadata stripped.
+  4. Renamed and reorganised into grade / eye folders.
+  5. Fields re-labelled as "macula" and "disc" based on measured optic-disc
+     position (see README.md). No pixel content was altered by this step.
+
+No cropping, colour correction, enhancement, annotation or retouching was
+applied. The retinal content is unmodified.
+
+================================================================================
+NOT A MEDICAL DEVICE
+================================================================================
+
+These images are used solely to demonstrate a research prototype. DR-VERGE is
+not a medical device, its outputs are not a clinical diagnosis, and nothing in
+this demo may be used for patient care.
+
+DRTiD, the dataset DR-VERGE was trained on, is NOT redistributed here.
