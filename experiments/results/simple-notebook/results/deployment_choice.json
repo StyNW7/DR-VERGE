@@ -1,0 +1,22 @@
+{
+  "chosen": "ft_ptq_int8",
+  "seed": 2026,
+  "quantization": "FT_PTQ_INT8",
+  "reason": "validation QWK retention 99.7% (engineering criterion), severe error not credibly worse, lowest CPU latency 6.22 ms",
+  "rule": {
+    "min_qwk_retention_pct": 95.0,
+    "note": "engineering retention criterion, not a clinical margin",
+    "severe_error_must_not_credibly_worsen": true,
+    "tiebreak": "lowest median CPU latency",
+    "fallback": "best_fp32"
+  },
+  "decided_on": "DRTiD validation",
+  "representative_seeds": {
+    "best_fp32": 8888,
+    "fp32_ft_control": 2026,
+    "fp32_ft_plain": 42,
+    "ptq_int8": 42,
+    "ft_ptq_int8": 2026,
+    "qat_int8": 2026
+  }
+}

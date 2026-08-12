@@ -1,0 +1,15 @@
+condition,seed,quantization,warnings
+macula_only,42,FP32,grade 4 NEVER predicted
+dual_no_distill,42,FP32,grade 4 NEVER predicted
+dual_logitkd,42,FP32,grade 4 NEVER predicted
+dual_featkd,42,FP32,grade 4 NEVER predicted
+dual_csd,42,FP32,grade 4 NEVER predicted
+abl_csd_raw_smoothl1,42,FP32,grade 4 NEVER predicted
+abl_csd_kl_softmax,42,FP32,grade 4 NEVER predicted
+abl_csd_counterfactual,42,FP32,grade 3 NEVER predicted; grade 4 NEVER predicted
+best_fp32,42,FP32,grade 4 NEVER predicted
+fp32_ft_control,42,FP32,grade 4 NEVER predicted
+fp32_ft_plain,42,FP32,grade 4 NEVER predicted
+ptq_int8,42,PTQ_INT8,grade 4 NEVER predicted
+ft_ptq_int8,42,FT_PTQ_INT8,grade 4 NEVER predicted
+qat_int8,42,QAT_INT8,grade 4 NEVER predicted

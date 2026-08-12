@@ -1,0 +1,4 @@
+split,eyes,images,grade_0,grade_1,grade_2,grade_3,grade_4
+train,800,1600,386,72,208,104,30
+val,200,400,96,18,52,26,8
+test,550,1100,265,50,146,69,20

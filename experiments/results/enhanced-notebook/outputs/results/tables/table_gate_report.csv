@@ -1,0 +1,37 @@
+gate,passed,blocking,detail
+Gate0_Environment,True,True,"GPU=NVIDIA A100-SXM4-80GB, quant engine=x86"
+Gate1_DRTiD,True,True,"800/200/550 eyes; schema, uniqueness, image existence and split disjointness verified"
+Gate1b_APTOS,True,True,train=2930 val=366; ids unique and disjoint; all images resolve
+Gate2a_CORAL,True,False,"monotone, matches marginals, spread=3.32 logits; fusion is view-order sensitive"
+Gate2b_QWK_Reference,True,True,"max |fast_qwk - sklearn| = 1.11e-16 over 105 cases (random, perfect, reversed, single-class, missing-grade, tiny)"
+Gate2c_Smoke,True,False,"student=328,588 teacher=40,313,932; forward/backward/fuse OK; CSD/task gradient ratio at beta=1 is 0.036"
+Gate4c_StageA_RecipeSelected,True,True,4/4 recipes scored on 3 tuning seeds; selected 384/standard -- beats 224/standard by >0.01 val QWK
+Gate3_TeacherDualView,True,True,QWK_dual=0.8133 vs max(aux)=0.7664 -> G_aux=+0.0469
+Gate4a_CSD_Signal,True,True,"mean_L1=0.4282, median_L1=0.3755, frac_gt_0.02=0.9850 | numerical sanity only"
+Gate5_Grid_logitkd,True,True,4/4 candidates completed all 3 tuning seeds
+Gate5_Grid_featkd,True,True,4/4 candidates completed all 3 tuning seeds
+Gate5_Grid_csd,True,True,4/4 candidates completed all 3 tuning seeds
+Gate4b_SelectedCSD_Gradient,True,True,"selected beta=0.1: CSD/task shared-backbone gradient ratio = 0.5335 (sanity band [0.01, 10])"
+Gate6e_ThresholdCalibrated,True,True,"t* chosen on validation for 4/4 conditions from grid [0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65]"
+Gate6a_CoreSeedCompleteness,True,True,all core conditions have 5/5 seeds
+Gate6b_ValidationViability,True,True,20 core runs finite and predicting >2 distinct grades
+Gate6c_OrdinalMonotonicity,True,True,max ordinal violation rate = 0.00e+00
+Gate6d_RQ2BaseCompleteness,True,True,5/5 base checkpoints for dual_csd
+Gate5_Grid_qat_lr,True,True,3/3 learning rates completed all tuning seeds
+Gate7a_RQ2Completeness,True,True,"per-variant seed counts {'best_fp32': 5, 'ptq_int8': 5, 'qat_int8': 5, 'fp32_ft_control': 5, 'ft_ptq_int8': 5} (required 5 each)"
+Gate7b_QuantScopeMatched,True,True,operator sets identical across PTQ/QAT/FT-PTQ for all 5 seeds
+Gate7c_PTQ_Integrity,True,True,5/5 seeds; scope=eager_backbone_only; 15/13 backbone ops
+Gate7d_QAT_Integrity,True,True,5/5 seeds; lr=3e-05; fake quantization active during training
+Gate8_RQ_Completeness,True,True,"missing conditions={'RQ1': [], 'RQ2': []} | RQ1 columns=none | RQ2 columns=none"
+Gate9_TestDiagnostics,True,False,"0 condition(s) flagged for rare-grade misses or collapse -- reported as findings, non-blocking by design"
+Gate10_Statistics,True,True,"45 comparisons (30 in the primary families; bootstrap B=10000, permutations=10000, Holm within family)"
+Gate11a_SetC_Completeness,True,True,Set-C: 100 patients / 200 eyes / 400 images (expected 100 / 200 / 400); exclusions audited in deepdrid_exclusion_audit.csv
+Gate11b_PartitionsDisjoint,True,False,"patients {'setC': 100, 'setB': 100, 'setA': 299} -> overlaps {'setA&setB': 0, 'setA&setC': 0, 'setB&setC': 0}"
+Gate11_External,True,True,7 models x 3 partitions x 2 field orders; PRIMARY = setC/_1=macula
+Gate11c_ExternalCIs,True,False,"155 patient-clustered intervals, 25 paired comparisons"
+Gate12a_Artifacts,True,True,"5 models, every state_dict written"
+Gate12b_FP32_ONNX,True,True,"FP32 models ['teacher_fp32', 'best_student_fp32'] over 8 samples; ONNX Runtime max|diff| {'teacher_fp32': 1.6987323760986328e-06, 'best_student_fp32': 7.152557373046875e-07} (tolerance 0.0001); all finite; identical grades"
+Gate12c_ArtifactReload,True,True,best_student_fp32=verified; best_student_ptq_int8=verified; best_student_ft_ptq_int8=verified; best_student_qat_int8=verified
+Gate12d_SelectedDeploymentPublished,True,True,"best_student_qat_int8 verified=True, 2 file(s) published to selected_deployment/"
+Gate12b_ResultsConsistent,True,True,265 headline values recomputed from per-sample predictions; 0 mismatch(es)
+Gate12c_CIPermutationAgreement,True,False,"1 of 45 comparisons disagree between the bootstrap CI and the permutation test (reported, not suppressed; disagreement weakens a claim but is not a fault)"

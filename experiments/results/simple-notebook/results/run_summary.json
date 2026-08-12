@@ -1,0 +1,867 @@
+{
+  "run_tag": "final_locked_simple_last_20260810",
+  "quick": false,
+  "resume": true,
+  "completed_at": "2026-08-10T16:56:59",
+  "config": {
+    "run_tag": "final_locked_simple_last_20260810",
+    "quick": false,
+    "resume": true,
+    "seeds_core": [
+      42,
+      123,
+      2026,
+      3407,
+      8888
+    ],
+    "seeds_tuning": [
+      42,
+      123,
+      2026
+    ],
+    "seeds_ablation": [
+      42,
+      123,
+      2026
+    ],
+    "split_seed": 42,
+    "val_fraction": 0.2,
+    "img_size": 224,
+    "num_classes": 5,
+    "pos_weight_mode": "sqrt",
+    "student_channels": [
+      32,
+      64,
+      96,
+      128,
+      160,
+      192,
+      224
+    ],
+    "early_stop_min_delta": 0.0001,
+    "use_amp": false,
+    "aptos_r50": {
+      "epochs": 20,
+      "lr": 0.0001,
+      "batch_size": 32,
+      "patience": 5
+    },
+    "aptos_light": {
+      "epochs": 30,
+      "lr": 0.001,
+      "batch_size": 32,
+      "patience": 6
+    },
+    "teacher": {
+      "freeze_epochs": 5,
+      "finetune_epochs": 20,
+      "freeze_lr": 0.0003,
+      "finetune_lr": 1e-05,
+      "batch_size": 16,
+      "patience": 8,
+      "lambda_aux": 0.3
+    },
+    "student": {
+      "epochs": 40,
+      "lr": 0.001,
+      "batch_size": 16,
+      "patience": 8,
+      "lambda_aux": 0.5
+    },
+    "qat": {
+      "epochs": 10,
+      "patience": 4,
+      "batch_size": 16,
+      "lr_grid": [
+        1e-05,
+        3e-05,
+        0.0001
+      ]
+    },
+    "grid_logitkd": [
+      {
+        "alpha": 0.25,
+        "tau_kd": 2.0
+      },
+      {
+        "alpha": 0.5,
+        "tau_kd": 2.0
+      },
+      {
+        "alpha": 0.5,
+        "tau_kd": 4.0
+      },
+      {
+        "alpha": 1.0,
+        "tau_kd": 2.0
+      }
+    ],
+    "grid_featkd": [
+      {
+        "gamma_feat": 0.1
+      },
+      {
+        "gamma_feat": 0.5
+      },
+      {
+        "gamma_feat": 1.0
+      },
+      {
+        "gamma_feat": 2.0
+      }
+    ],
+    "grid_csd": [
+      {
+        "csd_variant": "smoothl1_norm",
+        "beta": 0.1
+      },
+      {
+        "csd_variant": "smoothl1_norm",
+        "beta": 0.2
+      },
+      {
+        "csd_variant": "smoothl1_norm",
+        "beta": 0.5
+      },
+      {
+        "csd_variant": "magnitude_weighted_direction",
+        "beta": 0.2
+      }
+    ],
+    "bootstrap_B": 10000,
+    "permutation_P": 10000,
+    "quant_engine": "x86",
+    "quant_scope": "eager_backbone_only",
+    "deploy_rule": {
+      "min_qwk_retention_pct": 95.0,
+      "note": "engineering retention criterion, not a clinical margin",
+      "severe_error_must_not_credibly_worsen": true,
+      "tiebreak": "lowest median CPU latency",
+      "fallback": "best_fp32"
+    },
+    "deepdrid_primary": "setC",
+    "deepdrid_order": "_1=macula"
+  },
+  "environment": {
+    "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "numpy": "2.0.2",
+    "pandas": "2.2.2",
+    "sklearn": "1.6.1",
+    "albumentations": "1.4.21",
+    "onnxruntime": "1.28.0",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "NVIDIA L4",
+    "quantization_engine": "x86",
+    "quantization_scope": "eager_backbone_only",
+    "supported_quant_engines": [
+      "qnnpack",
+      "onednn",
+      "x86",
+      "fbgemm"
+    ],
+    "run_tag": "final_locked_simple_last_20260810",
+    "started_at": "2026-08-10T12:03:25",
+    "pip_check_clean": false
+  },
+  "selection": {
+    "method": "dual_logitkd",
+    "seed": 8888,
+    "selected_on": "DRTiD validation only",
+    "deployment": "ft_ptq_int8",
+    "deployment_seed": 2026,
+    "deployment_quantization": "FT_PTQ_INT8",
+    "deployment_reason": "validation QWK retention 99.7% (engineering criterion), severe error not credibly worse, lowest CPU latency 6.22 ms",
+    "deployment_verified": true
+  },
+  "headlines": [
+    "Teacher -> student: 123x fewer parameters, 119.1x smaller artifact, 18.0x faster on CPU, 84.7% of teacher QWK retained",
+    "FP32 -> PTQ INT8: 98.3% QWK retained, 2.47x CPU speed-up, 1.36x smaller",
+    "FP32 -> FP32 fine-tune -> PTQ INT8: 97.5% QWK retained, 2.47x CPU speed-up, 1.36x smaller",
+    "FP32 -> QAT INT8: 94.7% QWK retained, 2.46x CPU speed-up, 1.36x smaller"
+  ],
+  "rq1_verdict": {
+    "dual_no_distill": {
+      "csd_qwk": 0.5295694301251348,
+      "baseline_qwk": 0.5124372752503477,
+      "diff": 0.017132154874787142,
+      "ci_95": "[-0.0276, +0.0648]",
+      "credible": false
+    },
+    "dual_logitkd": {
+      "csd_qwk": 0.5295694301251348,
+      "baseline_qwk": 0.5545896758970358,
+      "diff": -0.025020245771900984,
+      "ci_95": "[-0.0781, +0.0254]",
+      "credible": false
+    },
+    "dual_featkd": {
+      "csd_qwk": 0.5295694301251348,
+      "baseline_qwk": 0.5484324279212272,
+      "diff": -0.01886299779609235,
+      "ci_95": "[-0.0639, +0.0263]",
+      "credible": false
+    }
+  },
+  "rq2_summary": {
+    "ptq_int8_vs_best_fp32": {
+      "role": "primary",
+      "observed_diff": -0.0093,
+      "ci_95": [
+        -0.03,
+        0.0107
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.2089
+    },
+    "qat_int8_vs_best_fp32": {
+      "role": "primary",
+      "observed_diff": -0.0293,
+      "ci_95": [
+        -0.0683,
+        0.0042
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.003
+    },
+    "qat_int8_vs_ptq_int8": {
+      "role": "primary",
+      "observed_diff": -0.02,
+      "ci_95": [
+        -0.0567,
+        0.011
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.1298
+    },
+    "qat_int8_vs_fp32_ft_control": {
+      "role": "supplementary",
+      "observed_diff": -0.0268,
+      "ci_95": [
+        -0.0604,
+        0.0026
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.0072
+    },
+    "qat_int8_vs_ft_ptq_int8": {
+      "role": "supplementary",
+      "observed_diff": -0.0156,
+      "ci_95": [
+        -0.0466,
+        0.0131
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.2598
+    },
+    "fp32_ft_control_vs_best_fp32": {
+      "role": "supplementary",
+      "observed_diff": -0.0024,
+      "ci_95": [
+        -0.0232,
+        0.0176
+      ],
+      "excludes_zero": false,
+      "p_holm": 0.7005
+    }
+  },
+  "drtid_test_headline": {
+    "teacher": {
+      "QWK": 0.6544,
+      "MacroF1": 0.3579,
+      "Accuracy": 0.5436,
+      "MAE": 0.7091,
+      "SevereErrorRate": 0.2218
+    },
+    "dual_no_distill": {
+      "QWK": 0.5124,
+      "MacroF1": 0.3384,
+      "Accuracy": 0.4825,
+      "MAE": 0.8342,
+      "SevereErrorRate": 0.2745
+    },
+    "dual_logitkd": {
+      "QWK": 0.5546,
+      "MacroF1": 0.3465,
+      "Accuracy": 0.5076,
+      "MAE": 0.7953,
+      "SevereErrorRate": 0.2596
+    },
+    "dual_featkd": {
+      "QWK": 0.5484,
+      "MacroF1": 0.3493,
+      "Accuracy": 0.5022,
+      "MAE": 0.8076,
+      "SevereErrorRate": 0.2669
+    },
+    "dual_csd": {
+      "QWK": 0.5296,
+      "MacroF1": 0.3406,
+      "Accuracy": 0.4804,
+      "MAE": 0.8425,
+      "SevereErrorRate": 0.2702
+    },
+    "best_fp32": {
+      "QWK": 0.5546,
+      "MacroF1": 0.3465,
+      "Accuracy": 0.5076,
+      "MAE": 0.7953,
+      "SevereErrorRate": 0.2596
+    },
+    "ptq_int8": {
+      "QWK": 0.5453,
+      "MacroF1": 0.3446,
+      "Accuracy": 0.4945,
+      "MAE": 0.8109,
+      "SevereErrorRate": 0.2578
+    },
+    "qat_int8": {
+      "QWK": 0.5253,
+      "MacroF1": 0.3391,
+      "Accuracy": 0.5058,
+      "MAE": 0.8116,
+      "SevereErrorRate": 0.2676
+    }
+  },
+  "deepdrid_headline": {
+    "teacher": {
+      "QWK": 0.7788,
+      "MacroF1": 0.4021,
+      "Accuracy": 0.565,
+      "MAE": 0.595,
+      "SevereErrorRate": 0.125
+    },
+    "best_fp32": {
+      "QWK": 0.6442,
+      "MacroF1": 0.3498,
+      "Accuracy": 0.5,
+      "MAE": 0.77,
+      "SevereErrorRate": 0.205
+    },
+    "ptq_int8": {
+      "QWK": 0.6607,
+      "MacroF1": 0.3543,
+      "Accuracy": 0.56,
+      "MAE": 0.705,
+      "SevereErrorRate": 0.2
+    },
+    "qat_int8": {
+      "QWK": 0.7179,
+      "MacroF1": 0.3891,
+      "Accuracy": 0.565,
+      "MAE": 0.62,
+      "SevereErrorRate": 0.14
+    }
+  },
+  "deepdrid_primary": {
+    "subset": "setC",
+    "field_order": "_1=macula",
+    "status": "completed"
+  },
+  "gates": {
+    "total": 32,
+    "passed": 32,
+    "blocking": 27,
+    "failed": [],
+    "detail": {
+      "Gate0_Environment": {
+        "passed": true,
+        "blocking": true,
+        "detail": "GPU=NVIDIA L4, quant engine=x86"
+      },
+      "Gate1_DRTiD": {
+        "passed": true,
+        "blocking": true,
+        "detail": "800/200/550 eyes; schema, uniqueness, image existence and split disjointness verified"
+      },
+      "Gate1b_APTOS": {
+        "passed": true,
+        "blocking": true,
+        "detail": "train=2930 val=366; ids unique and disjoint; all images resolve"
+      },
+      "Gate2a_CORAL": {
+        "passed": true,
+        "blocking": false,
+        "detail": "monotone, matches marginals, spread=3.32 logits; fusion is view-order sensitive"
+      },
+      "Gate2b_QWK_Reference": {
+        "passed": true,
+        "blocking": true,
+        "detail": "max |fast_qwk - sklearn| = 1.11e-16 over 105 cases (random, perfect, reversed, single-class, missing-grade, tiny)"
+      },
+      "Gate2c_Smoke": {
+        "passed": true,
+        "blocking": false,
+        "detail": "student=328,588 teacher=40,313,932; forward/backward/fuse OK; CSD/task gradient ratio at beta=1 is 0.041"
+      },
+      "Gate3_TeacherDualView": {
+        "passed": true,
+        "blocking": true,
+        "detail": "QWK_dual=0.6433 vs max(aux)=0.5290 -> G_aux=+0.1143"
+      },
+      "Gate4a_CSD_Signal": {
+        "passed": true,
+        "blocking": true,
+        "detail": "mean_L1=0.4893, median_L1=0.3659, frac_gt_0.02=0.9950 | numerical sanity only"
+      },
+      "Gate5_Grid_logitkd": {
+        "passed": true,
+        "blocking": true,
+        "detail": "4/4 candidates completed all 3 tuning seeds"
+      },
+      "Gate5_Grid_featkd": {
+        "passed": true,
+        "blocking": true,
+        "detail": "4/4 candidates completed all 3 tuning seeds"
+      },
+      "Gate5_Grid_csd": {
+        "passed": true,
+        "blocking": true,
+        "detail": "4/4 candidates completed all 3 tuning seeds"
+      },
+      "Gate4b_SelectedCSD_Gradient": {
+        "passed": true,
+        "blocking": true,
+        "detail": "selected beta=0.2: CSD/task shared-backbone gradient ratio = 0.2997 (sanity band [0.01, 10])"
+      },
+      "Gate6a_CoreSeedCompleteness": {
+        "passed": true,
+        "blocking": true,
+        "detail": "all core conditions have 5/5 seeds"
+      },
+      "Gate6b_ValidationViability": {
+        "passed": true,
+        "blocking": true,
+        "detail": "20 core runs finite and predicting >2 distinct grades"
+      },
+      "Gate6c_OrdinalMonotonicity": {
+        "passed": true,
+        "blocking": true,
+        "detail": "max ordinal violation rate = 0.00e+00"
+      },
+      "Gate6d_RQ2BaseCompleteness": {
+        "passed": true,
+        "blocking": true,
+        "detail": "5/5 base checkpoints for dual_logitkd"
+      },
+      "Gate5_Grid_qat_lr": {
+        "passed": true,
+        "blocking": true,
+        "detail": "3/3 learning rates completed all tuning seeds"
+      },
+      "Gate7a_RQ2Completeness": {
+        "passed": true,
+        "blocking": true,
+        "detail": "per-variant seed counts {'best_fp32': 5, 'ptq_int8': 5, 'qat_int8': 5, 'fp32_ft_control': 5, 'ft_ptq_int8': 5} (required 5 each)"
+      },
+      "Gate7b_QuantScopeMatched": {
+        "passed": true,
+        "blocking": true,
+        "detail": "operator sets identical across PTQ/QAT/FT-PTQ for all 5 seeds"
+      },
+      "Gate7c_PTQ_Integrity": {
+        "passed": true,
+        "blocking": true,
+        "detail": "5/5 seeds; scope=eager_backbone_only; 15/13 backbone ops"
+      },
+      "Gate7d_QAT_Integrity": {
+        "passed": true,
+        "blocking": true,
+        "detail": "5/5 seeds; lr=1e-05; fake quantization active during training"
+      },
+      "Gate8_RQ_Completeness": {
+        "passed": true,
+        "blocking": true,
+        "detail": "missing conditions={'RQ1': [], 'RQ2': []} | RQ1 columns=none | RQ2 columns=none"
+      },
+      "Gate9_TestDiagnostics": {
+        "passed": true,
+        "blocking": false,
+        "detail": "0 condition(s) flagged for rare-grade misses or collapse -- reported as findings, non-blocking by design"
+      },
+      "Gate10_Statistics": {
+        "passed": true,
+        "blocking": true,
+        "detail": "45 comparisons (30 in the primary families; bootstrap B=10000, permutations=10000, Holm within family)"
+      },
+      "Gate11a_SetC_Completeness": {
+        "passed": true,
+        "blocking": true,
+        "detail": "Set-C: 100 patients / 200 eyes / 400 images (expected 100 / 200 / 400); exclusions audited in deepdrid_exclusion_audit.csv"
+      },
+      "Gate11b_PartitionsDisjoint": {
+        "passed": true,
+        "blocking": false,
+        "detail": "patients {'setC': 100, 'setB': 100, 'setA': 299} -> overlaps {'setA&setB': 0, 'setA&setC': 0, 'setB&setC': 0}"
+      },
+      "Gate11_External": {
+        "passed": true,
+        "blocking": true,
+        "detail": "6 models x 3 partitions x 2 field orders; PRIMARY = setC/_1=macula"
+      },
+      "Gate11c_ExternalCIs": {
+        "passed": true,
+        "blocking": false,
+        "detail": "30 patient-clustered intervals, 20 paired comparisons"
+      },
+      "Gate12a_Artifacts": {
+        "passed": true,
+        "blocking": true,
+        "detail": "6 models, every state_dict written"
+      },
+      "Gate12b_FP32_ONNX": {
+        "passed": true,
+        "blocking": true,
+        "detail": "FP32 models ['teacher_fp32', 'best_student_fp32', 'best_csd_fp32'] over 16 samples; ONNX Runtime max|diff| {'teacher_fp32': 2.562999725341797e-06, 'best_student_fp32': 5.662441253662109e-07, 'best_csd_fp32': 5.960464477539062e-07} (tolerance 0.0001); all finite; identical grades"
+      },
+      "Gate12c_ArtifactReload": {
+        "passed": true,
+        "blocking": true,
+        "detail": "best_student_fp32=verified; best_student_ptq_int8=verified; best_student_ft_ptq_int8=verified; best_student_qat_int8=verified"
+      },
+      "Gate12d_SelectedDeploymentPublished": {
+        "passed": true,
+        "blocking": true,
+        "detail": "best_student_ft_ptq_int8 verified=True, 2 file(s) published to selected_deployment/"
+      }
+    }
+  },
+  "n_evaluated_runs": 70,
+  "checkpoints_reused_from_disk": [
+    {
+      "path": "checkpoints/backbone_resnet50.pt",
+      "condition": "aptos_pretrain_resnet50",
+      "best_val_qwk": 0.88531009712011
+    },
+    {
+      "path": "checkpoints/backbone_lightweight.pt",
+      "condition": "aptos_pretrain_lightweight",
+      "best_val_qwk": 0.8207066162797673
+    },
+    {
+      "path": "checkpoints/teacher.pt",
+      "condition": "teacher",
+      "best_val_qwk": 0.6399746795379015
+    },
+    {
+      "path": "checkpoints/student/macula_only/seed42.pt",
+      "condition": "macula_only",
+      "best_val_qwk": 0.5027507405840035
+    },
+    {
+      "path": "checkpoints/student/disc_only/seed42.pt",
+      "condition": "disc_only",
+      "best_val_qwk": 0.47217476202099096
+    },
+    {
+      "path": "checkpoints/student/macula_only/seed123.pt",
+      "condition": "macula_only",
+      "best_val_qwk": 0.49120727129025876
+    },
+    {
+      "path": "checkpoints/student/disc_only/seed123.pt",
+      "condition": "disc_only",
+      "best_val_qwk": 0.41694578836372653
+    },
+    {
+      "path": "checkpoints/student/macula_only/seed2026.pt",
+      "condition": "macula_only",
+      "best_val_qwk": 0.5462878093492208
+    },
+    {
+      "path": "checkpoints/student/disc_only/seed2026.pt",
+      "condition": "disc_only",
+      "best_val_qwk": 0.4202691096478671
+    },
+    {
+      "path": "checkpoints/student/macula_only/seed3407.pt",
+      "condition": "macula_only",
+      "best_val_qwk": 0.484771110705818
+    },
+    {
+      "path": "checkpoints/student/disc_only/seed3407.pt",
+      "condition": "disc_only",
+      "best_val_qwk": 0.45597982286351113
+    },
+    {
+      "path": "checkpoints/student/macula_only/seed8888.pt",
+      "condition": "macula_only",
+      "best_val_qwk": 0.5296036126442549
+    },
+    {
+      "path": "checkpoints/student/disc_only/seed8888.pt",
+      "condition": "disc_only",
+      "best_val_qwk": 0.440199823684984
+    },
+    {
+      "path": "checkpoints/student/dual_no_distill/seed42.pt",
+      "condition": "dual_no_distill",
+      "best_val_qwk": 0.5787316406694751
+    },
+    {
+      "path": "checkpoints/student/dual_no_distill/seed123.pt",
+      "condition": "dual_no_distill",
+      "best_val_qwk": 0.5234943745863667
+    },
+    {
+      "path": "checkpoints/student/dual_no_distill/seed2026.pt",
+      "condition": "dual_no_distill",
+      "best_val_qwk": 0.5355447459415108
+    },
+    {
+      "path": "checkpoints/student/dual_no_distill/seed3407.pt",
+      "condition": "dual_no_distill",
+      "best_val_qwk": 0.5656685443225615
+    },
+    {
+      "path": "checkpoints/student/dual_no_distill/seed8888.pt",
+      "condition": "dual_no_distill",
+      "best_val_qwk": 0.5540464417600299
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.25_tau_kd2.0/seed42.pt",
+      "condition": "logitkd_alpha0.25_tau_kd2.0",
+      "best_val_qwk": 0.5695970695970696
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.25_tau_kd2.0/seed123.pt",
+      "condition": "logitkd_alpha0.25_tau_kd2.0",
+      "best_val_qwk": 0.5358320319278155
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.25_tau_kd2.0/seed2026.pt",
+      "condition": "logitkd_alpha0.25_tau_kd2.0",
+      "best_val_qwk": 0.5868263473053892
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd2.0/seed42.pt",
+      "condition": "logitkd_alpha0.5_tau_kd2.0",
+      "best_val_qwk": 0.5910548339764143
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd2.0/seed123.pt",
+      "condition": "logitkd_alpha0.5_tau_kd2.0",
+      "best_val_qwk": 0.6027109137648983
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd2.0/seed2026.pt",
+      "condition": "logitkd_alpha0.5_tau_kd2.0",
+      "best_val_qwk": 0.6105919003115264
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd4.0/seed42.pt",
+      "condition": "logitkd_alpha0.5_tau_kd4.0",
+      "best_val_qwk": 0.5332010736375306
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd4.0/seed123.pt",
+      "condition": "logitkd_alpha0.5_tau_kd4.0",
+      "best_val_qwk": 0.5292158643657281
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha0.5_tau_kd4.0/seed2026.pt",
+      "condition": "logitkd_alpha0.5_tau_kd4.0",
+      "best_val_qwk": 0.5446945721621782
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha1.0_tau_kd2.0/seed42.pt",
+      "condition": "logitkd_alpha1.0_tau_kd2.0",
+      "best_val_qwk": 0.5792383292383292
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha1.0_tau_kd2.0/seed123.pt",
+      "condition": "logitkd_alpha1.0_tau_kd2.0",
+      "best_val_qwk": 0.5823789038493771
+    },
+    {
+      "path": "checkpoints/student/logitkd_alpha1.0_tau_kd2.0/seed2026.pt",
+      "condition": "logitkd_alpha1.0_tau_kd2.0",
+      "best_val_qwk": 0.5554272517321016
+    },
+    {
+      "path": "checkpoints/student/dual_logitkd/seed42.pt",
+      "condition": "dual_logitkd",
+      "best_val_qwk": 0.5692035789241136
+    },
+    {
+      "path": "checkpoints/student/dual_logitkd/seed123.pt",
+      "condition": "dual_logitkd",
+      "best_val_qwk": 0.5535714285714286
+    },
+    {
+      "path": "checkpoints/student/dual_logitkd/seed2026.pt",
+      "condition": "dual_logitkd",
+      "best_val_qwk": 0.5494021771459163
+    },
+    {
+      "path": "checkpoints/student/dual_logitkd/seed3407.pt",
+      "condition": "dual_logitkd",
+      "best_val_qwk": 0.5813702673553953
+    },
+    {
+      "path": "checkpoints/student/dual_logitkd/seed8888.pt",
+      "condition": "dual_logitkd",
+      "best_val_qwk": 0.5836011922155337
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.1/seed42.pt",
+      "condition": "featkd_gamma_feat0.1",
+      "best_val_qwk": 0.5837251756375504
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.1/seed123.pt",
+      "condition": "featkd_gamma_feat0.1",
+      "best_val_qwk": 0.5066699452880065
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.1/seed2026.pt",
+      "condition": "featkd_gamma_feat0.1",
+      "best_val_qwk": 0.5606275064873791
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.5/seed42.pt",
+      "condition": "featkd_gamma_feat0.5",
+      "best_val_qwk": 0.5277467192373331
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.5/seed123.pt",
+      "condition": "featkd_gamma_feat0.5",
+      "best_val_qwk": 0.5560130277146194
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat0.5/seed2026.pt",
+      "condition": "featkd_gamma_feat0.5",
+      "best_val_qwk": 0.5663550302816487
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat1.0/seed42.pt",
+      "condition": "featkd_gamma_feat1.0",
+      "best_val_qwk": 0.5788930904090752
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat1.0/seed123.pt",
+      "condition": "featkd_gamma_feat1.0",
+      "best_val_qwk": 0.5286411507834575
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat1.0/seed2026.pt",
+      "condition": "featkd_gamma_feat1.0",
+      "best_val_qwk": 0.5412490362374711
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat2.0/seed42.pt",
+      "condition": "featkd_gamma_feat2.0",
+      "best_val_qwk": 0.5931584191298571
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat2.0/seed123.pt",
+      "condition": "featkd_gamma_feat2.0",
+      "best_val_qwk": 0.5595613113989033
+    },
+    {
+      "path": "checkpoints/student/featkd_gamma_feat2.0/seed2026.pt",
+      "condition": "featkd_gamma_feat2.0",
+      "best_val_qwk": 0.5665936926809064
+    },
+    {
+      "path": "checkpoints/student/dual_featkd/seed42.pt",
+      "condition": "dual_featkd",
+      "best_val_qwk": 0.5753973068057746
+    },
+    {
+      "path": "checkpoints/student/dual_featkd/seed123.pt",
+      "condition": "dual_featkd",
+      "best_val_qwk": 0.5422764709367779
+    },
+    {
+      "path": "checkpoints/student/dual_featkd/seed2026.pt",
+      "condition": "dual_featkd",
+      "best_val_qwk": 0.5768374164810691
+    },
+    {
+      "path": "checkpoints/student/dual_featkd/seed3407.pt",
+      "condition": "dual_featkd",
+      "best_val_qwk": 0.5570273524858076
+    },
+    {
+      "path": "checkpoints/student/dual_featkd/seed8888.pt",
+      "condition": "dual_featkd",
+      "best_val_qwk": 0.5457110609480813
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.1_csd_variantsmoothl1_norm/seed42.pt",
+      "condition": "csd_beta0.1_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5107385184769808
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.1_csd_variantsmoothl1_norm/seed123.pt",
+      "condition": "csd_beta0.1_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5570130019560464
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.1_csd_variantsmoothl1_norm/seed2026.pt",
+      "condition": "csd_beta0.1_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.550964800088973
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.2_csd_variantsmoothl1_norm/seed42.pt",
+      "condition": "csd_beta0.2_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5555359971835945
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.2_csd_variantsmoothl1_norm/seed123.pt",
+      "condition": "csd_beta0.2_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.4947473736868434
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.2_csd_variantsmoothl1_norm/seed2026.pt",
+      "condition": "csd_beta0.2_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.572480181200453
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.5_csd_variantsmoothl1_norm/seed42.pt",
+      "condition": "csd_beta0.5_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5568181818181819
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.5_csd_variantsmoothl1_norm/seed123.pt",
+      "condition": "csd_beta0.5_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5298811450253891
+    },
+    {
+      "path": "checkpoints/student/csd_beta0.5_csd_variantsmoothl1_norm/seed2026.pt",
+      "condition": "csd_beta0.5_csd_variantsmoothl1_norm",
+      "best_val_qwk": 0.5730270906949352
+    },
+    {
+      "path": "checkpoints/finetune/QAT_s42_lr1e-05.pt",
+      "condition": "qat_int8",
+      "best_val_qwk": 0.5741947050738062
+    },
+    {
+      "path": "checkpoints/finetune/QAT_s123_lr1e-05.pt",
+      "condition": "qat_int8",
+      "best_val_qwk": 0.5307713728766361
+    },
+    {
+      "path": "checkpoints/finetune/QAT_s2026_lr1e-05.pt",
+      "condition": "qat_int8",
+      "best_val_qwk": 0.587183308494784
+    }
+  ],
+  "artifacts": {
+    "root": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810",
+    "checkpoints": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/checkpoints",
+    "models": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/models",
+    "selected_deployment": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/models/selected_deployment",
+    "figures": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/results/figures",
+    "tables": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/results/tables",
+    "metrics": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/results/metrics",
+    "predictions": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/results/predictions",
+    "logs": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/results/logs",
+    "configs": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/configs",
+    "splits": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/splits"
+  }
+}

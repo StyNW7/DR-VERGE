@@ -1,0 +1,139 @@
+{
+  "run_tag": "final_locked_simple_last_20260810",
+  "quick": false,
+  "resume": true,
+  "seeds_core": [
+    42,
+    123,
+    2026,
+    3407,
+    8888
+  ],
+  "seeds_tuning": [
+    42,
+    123,
+    2026
+  ],
+  "seeds_ablation": [
+    42,
+    123,
+    2026
+  ],
+  "split_seed": 42,
+  "val_fraction": 0.2,
+  "img_size": 224,
+  "num_classes": 5,
+  "pos_weight_mode": "sqrt",
+  "student_channels": [
+    32,
+    64,
+    96,
+    128,
+    160,
+    192,
+    224
+  ],
+  "early_stop_min_delta": 0.0001,
+  "use_amp": false,
+  "aptos_r50": {
+    "epochs": 20,
+    "lr": 0.0001,
+    "batch_size": 32,
+    "patience": 5
+  },
+  "aptos_light": {
+    "epochs": 30,
+    "lr": 0.001,
+    "batch_size": 32,
+    "patience": 6
+  },
+  "teacher": {
+    "freeze_epochs": 5,
+    "finetune_epochs": 20,
+    "freeze_lr": 0.0003,
+    "finetune_lr": 1e-05,
+    "batch_size": 16,
+    "patience": 8,
+    "lambda_aux": 0.3
+  },
+  "student": {
+    "epochs": 40,
+    "lr": 0.001,
+    "batch_size": 16,
+    "patience": 8,
+    "lambda_aux": 0.5
+  },
+  "qat": {
+    "epochs": 10,
+    "patience": 4,
+    "batch_size": 16,
+    "lr_grid": [
+      1e-05,
+      3e-05,
+      0.0001
+    ]
+  },
+  "grid_logitkd": [
+    {
+      "alpha": 0.25,
+      "tau_kd": 2.0
+    },
+    {
+      "alpha": 0.5,
+      "tau_kd": 2.0
+    },
+    {
+      "alpha": 0.5,
+      "tau_kd": 4.0
+    },
+    {
+      "alpha": 1.0,
+      "tau_kd": 2.0
+    }
+  ],
+  "grid_featkd": [
+    {
+      "gamma_feat": 0.1
+    },
+    {
+      "gamma_feat": 0.5
+    },
+    {
+      "gamma_feat": 1.0
+    },
+    {
+      "gamma_feat": 2.0
+    }
+  ],
+  "grid_csd": [
+    {
+      "csd_variant": "smoothl1_norm",
+      "beta": 0.1
+    },
+    {
+      "csd_variant": "smoothl1_norm",
+      "beta": 0.2
+    },
+    {
+      "csd_variant": "smoothl1_norm",
+      "beta": 0.5
+    },
+    {
+      "csd_variant": "magnitude_weighted_direction",
+      "beta": 0.2
+    }
+  ],
+  "bootstrap_B": 10000,
+  "permutation_P": 10000,
+  "quant_engine": "x86",
+  "quant_scope": "eager_backbone_only",
+  "deploy_rule": {
+    "min_qwk_retention_pct": 95.0,
+    "note": "engineering retention criterion, not a clinical margin",
+    "severe_error_must_not_credibly_worsen": true,
+    "tiebreak": "lowest median CPU latency",
+    "fallback": "best_fp32"
+  },
+  "deepdrid_primary": "setC",
+  "deepdrid_order": "_1=macula"
+}

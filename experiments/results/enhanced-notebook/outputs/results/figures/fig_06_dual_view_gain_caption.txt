@@ -1,0 +1,1 @@
+G_aux compares the dual head against the model's own auxiliary heads; G_independent against independently trained single-view students on the same seed.

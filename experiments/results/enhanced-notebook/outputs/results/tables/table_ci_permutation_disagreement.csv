@@ -1,0 +1,2 @@
+RQ,role,comparison,metric,cluster_level,observed_diff,bootstrap_mean,ci_low,ci_high,excludes_zero,n_seed_pairs,p_perm,n_permutations,p_holm,significant_holm,ci_says_effect,perm_says_effect
+RQ2,primary,ptq_int8_vs_best_fp32,QWK,record_eye(DRTiD),-0.01640369694171062,-0.01627630588219018,-0.03601524125047689,0.002276990048815999,False,5,0.008099190080991902,10000.0,0.024297570242975707,True,False,True

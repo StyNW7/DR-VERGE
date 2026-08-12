@@ -1,0 +1,4 @@
+model,QWK_retention_pct,MacroF1_retention_pct,Accuracy_retention_pct,delta_MAE,delta_SevereErrorRate,role
+best_fp32,100.0,100.0,100.0,0.0,0.0,main
+ptq_int8,97.27,105.43,101.59,-0.0047,-0.0011,main
+qat_int8,98.96,101.45,101.45,-0.0069,-0.0091,main

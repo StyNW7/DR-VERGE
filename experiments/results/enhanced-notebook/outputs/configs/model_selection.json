@@ -1,0 +1,10 @@
+{
+  "method": "dual_csd",
+  "seed": 3407,
+  "checkpoint": "/content/drive/MyDrive/DR-VERGE/artifacts_enhanced_v1_20260811/checkpoints/student/dual_csd/seed3407.pt",
+  "method_mean_val_qwk": 0.6489746580197203,
+  "best_val_qwk": 0.679947025714601,
+  "best_csd_seed": 3407,
+  "rule": "stage 1 mean validation QWK (method); stage 2 validation QWK (checkpoint)",
+  "data": "DRTiD validation only -- the test set is not consulted"
+}

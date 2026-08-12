@@ -1,0 +1,4 @@
+subset,patient_id,eye,reason,n_views,image_ids,grade,partition
+regular-fundus-training,77,l,MISSING_GRADE,2,"77_l3,77_l4",,setA
+regular-fundus-training,77,r,MISSING_GRADE,2,"77_r4,77_r3",,setA
+regular-fundus-training,164,l,MISSING_VIEW,1,164_l3,,setA

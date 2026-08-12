@@ -1,0 +1,24 @@
+{
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "torch": "2.11.0+cu128",
+  "torchvision": "0.26.0+cu128",
+  "numpy": "2.0.2",
+  "pandas": "2.2.2",
+  "sklearn": "1.6.1",
+  "albumentations": "1.4.21",
+  "onnxruntime": "1.28.0",
+  "cuda": "12.8",
+  "cudnn": 91900,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "quantization_engine": "x86",
+  "quantization_scope": "eager_backbone_only",
+  "supported_quant_engines": [
+    "qnnpack",
+    "onednn",
+    "x86",
+    "fbgemm"
+  ],
+  "run_tag": "enhanced_v1_20260811",
+  "started_at": "2026-08-12T01:32:15",
+  "pip_check_clean": false
+}

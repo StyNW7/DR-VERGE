@@ -1,0 +1,14 @@
+{
+  "train": {
+    "file": "drtid_train.csv",
+    "sha256": "4384272e5455d75ef1e5e49dc6ba8a700de4ce97efd0c8809622ed649e87c5fa"
+  },
+  "val": {
+    "file": "drtid_val.csv",
+    "sha256": "66609c6786621311a56e1207b11176c59dc7108e0f52b9a6c2361fb35bca3529"
+  },
+  "test": {
+    "file": "drtid_test.csv",
+    "sha256": "6191ea9808fac2133e0efc9052dfa62309ceabf5293cd079a3a20e2cbcd12124"
+  }
+}

@@ -1,0 +1,5 @@
+headline
+"Teacher -> student: 123x fewer parameters, 119.1x smaller artifact, 18.0x faster on CPU, 84.7% of teacher QWK retained"
+"FP32 -> PTQ INT8: 98.3% QWK retained, 2.47x CPU speed-up, 1.36x smaller"
+"FP32 -> FP32 fine-tune -> PTQ INT8: 97.5% QWK retained, 2.47x CPU speed-up, 1.36x smaller"
+"FP32 -> QAT INT8: 94.7% QWK retained, 2.46x CPU speed-up, 1.36x smaller"

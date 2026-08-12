@@ -1,0 +1,18 @@
+{
+  "threshold_grid": [
+    0.35,
+    0.4,
+    0.45,
+    0.5,
+    0.55,
+    0.6,
+    0.65
+  ],
+  "selected_per_condition": {
+    "dual_no_distill": 0.4,
+    "dual_logitkd": 0.5,
+    "dual_featkd": 0.5,
+    "dual_csd": 0.5
+  },
+  "rule": "global t per condition, median over core seeds; primary val QWK, tie-break MacroF1 then severe error; validation only"
+}

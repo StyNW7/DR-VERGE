@@ -1,0 +1,16 @@
+split,grade,n
+train,0,386
+val,0,96
+test,0,265
+train,1,72
+val,1,18
+test,1,50
+train,2,208
+val,2,52
+test,2,146
+train,3,104
+val,3,26
+test,3,69
+train,4,30
+val,4,8
+test,4,20

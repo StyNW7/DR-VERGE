@@ -1,0 +1,12 @@
+{
+  "logitkd": {
+    "alpha": 0.5,
+    "tau_kd": 2.0
+  },
+  "featkd": {
+    "gamma_feat": 2.0
+  },
+  "csd_variant": "magnitude_weighted_direction",
+  "csd_beta": 0.2,
+  "alpha_source": "inherited from the logit-KD winner"
+}

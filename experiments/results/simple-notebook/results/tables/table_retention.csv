@@ -1,0 +1,17 @@
+model,QWK_retention_pct,MacroF1_retention_pct,Accuracy_retention_pct,delta_MAE,delta_SevereErrorRate,role
+teacher,117.99,103.3,107.09,-0.0862,-0.0378,reference
+macula_only,78.37,92.58,86.96,0.1415,0.0484,reference
+disc_only,83.76,92.8,89.4,0.0811,0.0185,reference
+dual_no_distill,92.4,97.66,95.06,0.0389,0.0149,reference
+dual_logitkd,100.0,100.0,100.0,0.0,0.0,reference
+dual_featkd,98.89,100.8,98.93,0.0124,0.0073,reference
+dual_csd,95.49,98.31,94.63,0.0473,0.0105,reference
+abl_csd_raw_smoothl1,94.2,92.11,91.09,0.0823,0.0185,reference
+abl_csd_kl_softmax,96.75,100.21,97.9,0.0187,0.0028,reference
+abl_csd_counterfactual,98.45,103.12,100.05,0.0059,-0.0015,reference
+best_fp32,100.0,100.0,100.0,0.0,0.0,main
+fp32_ft_control,99.56,100.94,100.5,-0.0011,0.0004,control
+fp32_ft_plain,99.17,101.67,100.64,-0.0025,-0.0029,control
+ptq_int8,98.33,99.45,97.42,0.0156,-0.0018,main
+ft_ptq_int8,97.53,98.99,97.71,0.0156,0.0018,control
+qat_int8,94.72,97.85,99.64,0.0164,0.008,main

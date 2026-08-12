@@ -1,0 +1,13 @@
+csd_variant,beta,run_name,seed,val_QWK,val_MacroF1
+smoothl1_norm,0.1,csd_beta0.1_csd_variantsmoothl1_norm,42,0.6599093091491064,0.3234761565390369
+smoothl1_norm,0.1,csd_beta0.1_csd_variantsmoothl1_norm,123,0.646383003290803,0.28600697313443035
+smoothl1_norm,0.1,csd_beta0.1_csd_variantsmoothl1_norm,2026,0.6342990494621208,0.3308010043005941
+smoothl1_norm,0.2,csd_beta0.2_csd_variantsmoothl1_norm,42,0.6383213694091663,0.3112047827657135
+smoothl1_norm,0.2,csd_beta0.2_csd_variantsmoothl1_norm,123,0.6429374718848402,0.3277063722884156
+smoothl1_norm,0.2,csd_beta0.2_csd_variantsmoothl1_norm,2026,0.627867252318204,0.30475954742710937
+smoothl1_norm,0.5,csd_beta0.5_csd_variantsmoothl1_norm,42,0.6221553071978689,0.32789418559415867
+smoothl1_norm,0.5,csd_beta0.5_csd_variantsmoothl1_norm,123,0.6297068947533118,0.3295142751205043
+smoothl1_norm,0.5,csd_beta0.5_csd_variantsmoothl1_norm,2026,0.6153846153846154,0.2759620415296276
+magnitude_weighted_direction,0.2,csd_beta0.2_csd_variantmagnitude_weighted_direction,42,0.6467861730049701,0.3279326599326599
+magnitude_weighted_direction,0.2,csd_beta0.2_csd_variantmagnitude_weighted_direction,123,0.63190924450881,0.3192626596918259
+magnitude_weighted_direction,0.2,csd_beta0.2_csd_variantmagnitude_weighted_direction,2026,0.6251717340660654,0.3326874851659716

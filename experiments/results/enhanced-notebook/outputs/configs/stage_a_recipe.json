@@ -1,0 +1,48 @@
+{
+  "selected_resolution": 384,
+  "selected_sampling": "standard",
+  "stage_a_rows": [
+    {
+      "resolution": 224,
+      "sampling": "standard",
+      "n_seeds": 3,
+      "val_QWK": 0.5549132291211661,
+      "val_MacroF1": 0.2635873797546339,
+      "val_Recall_Grade1": 0.0,
+      "val_SER": 0.265,
+      "val_AdjacentAccuracy": 0.735
+    },
+    {
+      "resolution": 384,
+      "sampling": "standard",
+      "n_seeds": 3,
+      "val_QWK": 0.64914857422091,
+      "val_MacroF1": 0.3105852810070516,
+      "val_Recall_Grade1": 0.05555555555555555,
+      "val_SER": 0.2183333333333333,
+      "val_AdjacentAccuracy": 0.7816666666666667
+    },
+    {
+      "resolution": 224,
+      "sampling": "balanced",
+      "n_seeds": 3,
+      "val_QWK": 0.5521950727434203,
+      "val_MacroF1": 0.27284289513691046,
+      "val_Recall_Grade1": 0.0925925925925926,
+      "val_SER": 0.25666666666666665,
+      "val_AdjacentAccuracy": 0.7433333333333333
+    },
+    {
+      "resolution": 384,
+      "sampling": "balanced",
+      "n_seeds": 3,
+      "val_QWK": 0.5797529990343026,
+      "val_MacroF1": 0.29637414503791404,
+      "val_Recall_Grade1": 0.037037037037037035,
+      "val_SER": 0.25166666666666665,
+      "val_AdjacentAccuracy": 0.7483333333333334
+    }
+  ],
+  "min_gain": 0.01,
+  "rule": "adopt only if >0.01 val QWK over 224/standard; tie-break MacroF1, Grade-1 recall, SER, then cheaper recipe"
+}

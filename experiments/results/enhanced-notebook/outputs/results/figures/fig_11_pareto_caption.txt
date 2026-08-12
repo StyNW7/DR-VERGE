@@ -1,0 +1,1 @@
+QWK against CPU latency. Points closer to the top-left indicate a more favourable performance-efficiency trade-off.

@@ -1,0 +1,8 @@
+DR-VERGE final run completed successfully.
+run_tag        : final_locked_simple_last_20260810
+completed_at   : 2026-08-10T16:56:59
+mode           : FULL RUN
+gates          : 32/32 passed (27 blocking, all passed)
+method M*      : dual_logitkd (seed 8888)
+deployment     : ft_ptq_int8 (seed 2026, FT_PTQ_INT8), verified=True
+evaluated runs : 70

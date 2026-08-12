@@ -1,0 +1,10 @@
+{
+  "stage": "aptos_pretrain_lightweight",
+  "best_val_qwk": 0.8207066162797673,
+  "best_epoch": 17,
+  "epochs_run": 24,
+  "epochs": 30,
+  "lr": 0.001,
+  "batch_size": 32,
+  "patience": 6
+}

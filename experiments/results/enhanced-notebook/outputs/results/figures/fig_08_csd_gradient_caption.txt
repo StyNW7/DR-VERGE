@@ -1,0 +1,1 @@
+Shared-backbone gradient ratio. A term can be numerically present and still contribute no gradient; this shows whether CSD actually influences learning.

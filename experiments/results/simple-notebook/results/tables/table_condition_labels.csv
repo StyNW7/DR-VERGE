@@ -1,0 +1,18 @@
+condition,paper_label
+teacher,Teacher (ResNet-50 dual-view)
+macula_only,"Student, macula only"
+disc_only,"Student, optic-disc only"
+dual_no_distill,"Dual-view, no distillation"
+dual_logitkd,Logit-KD
+dual_featkd,Logit-KD + Feature-KD
+dual_csd,Logit-KD + CSD (proposed)
+abl_csd_raw_smoothl1,CSD ablation: unscaled Huber
+abl_csd_kl_softmax,CSD ablation: KL-softmax (negative control)
+abl_csd_counterfactual,CSD ablation: same-head counterfactual
+best_fp32,M* (FP32)
+fp32_ft_control,FP32 fine-tune control (matched graph)
+fp32_ft_plain,FP32 fine-tune (plain)
+ptq_int8,PTQ INT8
+ft_ptq_int8,FP32 fine-tune -> PTQ INT8
+qat_int8,QAT INT8
+best_csd_fp32,Best CSD (FP32)

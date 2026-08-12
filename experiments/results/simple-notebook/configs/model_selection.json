@@ -1,0 +1,10 @@
+{
+  "method": "dual_logitkd",
+  "seed": 8888,
+  "checkpoint": "/content/drive/MyDrive/DR-VERGE/artifacts_final_locked_simple_last_20260810/checkpoints/student/dual_logitkd/seed8888.pt",
+  "method_mean_val_qwk": 0.5669620442699728,
+  "best_val_qwk": 0.5836011922155337,
+  "best_csd_seed": 8888,
+  "rule": "stage 1 mean validation QWK (method); stage 2 validation QWK (checkpoint)",
+  "data": "DRTiD validation only -- the test set is not consulted"
+}

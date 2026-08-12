@@ -1,0 +1,139 @@
+{
+  "scope": "eager_backbone_only",
+  "engine": "x86",
+  "qat_lr": 3e-05,
+  "rq2_seeds": [
+    42,
+    123,
+    2026,
+    3407,
+    8888
+  ],
+  "rq2_base_condition": "dual_csd",
+  "design": "per-seed matched: FP32_s -> {PTQ_s, QAT_s, FP32FT_s, FT-PTQ_s}",
+  "calibration": {
+    "eyes": 800,
+    "shuffle": false,
+    "sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af"
+  },
+  "artifact": "INT8 backbone with FP32 fusion and ordinal heads (mixed precision)",
+  "ptq": {
+    "42": {
+      "path": "eager_static_ptq",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "calib_batches": 100,
+      "calib_eyes": 800,
+      "calib_sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af",
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "123": {
+      "path": "eager_static_ptq",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "calib_batches": 100,
+      "calib_eyes": 800,
+      "calib_sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af",
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "2026": {
+      "path": "eager_static_ptq",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "calib_batches": 100,
+      "calib_eyes": 800,
+      "calib_sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af",
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "3407": {
+      "path": "eager_static_ptq",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "calib_batches": 100,
+      "calib_eyes": 800,
+      "calib_sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af",
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "8888": {
+      "path": "eager_static_ptq",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "calib_batches": 100,
+      "calib_eyes": 800,
+      "calib_sha256": "50a65066150436fe99f56595fab0e3b9f46c0e58dca1b318580ae2e4e2a1a7af",
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    }
+  },
+  "qat": {
+    "42": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "lr": 3e-05,
+      "seed": 42,
+      "best_val_qwk": 0.6567214782166468,
+      "epochs_run": 5,
+      "selected_on": "converted_int8_validation_qwk",
+      "fake_quant_during_training": 27,
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "123": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "lr": 3e-05,
+      "seed": 123,
+      "best_val_qwk": 0.6397694524495678,
+      "epochs_run": 7,
+      "selected_on": "converted_int8_validation_qwk",
+      "fake_quant_during_training": 27,
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "2026": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "lr": 3e-05,
+      "seed": 2026,
+      "best_val_qwk": 0.6421674429171873,
+      "epochs_run": 7,
+      "selected_on": "converted_int8_validation_qwk",
+      "fake_quant_during_training": 27,
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "3407": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "lr": 3e-05,
+      "seed": 3407,
+      "best_val_qwk": 0.6539406117436928,
+      "epochs_run": 9,
+      "selected_on": "converted_int8_validation_qwk",
+      "fake_quant_during_training": 27,
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    },
+    "8888": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "x86",
+      "lr": 3e-05,
+      "seed": 8888,
+      "best_val_qwk": 0.6211708274283222,
+      "epochs_run": 10,
+      "selected_on": "converted_int8_validation_qwk",
+      "fake_quant_during_training": 27,
+      "quantized_ops": 15,
+      "eligible_ops": 13
+    }
+  }
+}

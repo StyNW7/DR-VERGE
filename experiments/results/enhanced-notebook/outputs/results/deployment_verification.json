@@ -1,0 +1,38 @@
+{
+  "best_student_fp32": {
+    "checkpoint_exists": true,
+    "reloaded_from_disk": true,
+    "grade_in_range": true,
+    "max_abs_diff": 0.0,
+    "parity_ok": true,
+    "stable_over_runs": true,
+    "deployment_verified": true
+  },
+  "best_student_ptq_int8": {
+    "checkpoint_exists": true,
+    "reloaded_from_disk": true,
+    "grade_in_range": true,
+    "max_abs_diff": 0.0,
+    "parity_ok": true,
+    "stable_over_runs": true,
+    "deployment_verified": true
+  },
+  "best_student_ft_ptq_int8": {
+    "checkpoint_exists": true,
+    "reloaded_from_disk": true,
+    "grade_in_range": true,
+    "max_abs_diff": 0.0,
+    "parity_ok": true,
+    "stable_over_runs": true,
+    "deployment_verified": true
+  },
+  "best_student_qat_int8": {
+    "checkpoint_exists": true,
+    "reloaded_from_disk": true,
+    "grade_in_range": true,
+    "max_abs_diff": 0.0,
+    "parity_ok": true,
+    "stable_over_runs": true,
+    "deployment_verified": true
+  }
+}

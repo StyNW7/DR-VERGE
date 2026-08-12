@@ -1,0 +1,7 @@
+condition,metric,n_seeds,direction,mean_diff,ci_low,ci_high,credibly_worse
+ptq_int8,SevereErrorRate,5,lower_is_better,0.0079475,-0.022999999999999965,0.037,False
+ptq_int8,QWK,5,higher_is_better,-0.01697598811580876,-0.053815993253542874,0.02014789830736103,False
+ft_ptq_int8,SevereErrorRate,5,lower_is_better,-0.003989100000000001,-0.046,0.034,False
+ft_ptq_int8,QWK,5,higher_is_better,-0.0014726055342620967,-0.05113175502408673,0.053078995373282055,False
+qat_int8,SevereErrorRate,5,lower_is_better,-0.0019760000000000003,-0.03199999999999997,0.030999999999999982,False
+qat_int8,QWK,5,higher_is_better,-0.014694401337726705,-0.06100048723695266,0.029919404257441284,False
