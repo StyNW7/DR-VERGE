@@ -1,0 +1,70 @@
+{
+  "sample_id": "p84-r",
+  "eye": "right",
+  "fields": {
+    "macula": "macula.jpg",
+    "disc": "disc.jpg"
+  },
+  "ground_truth_grade": 4,
+  "ground_truth_name": "Proliferative DR",
+  "verification": {
+    "selected_because": "the shipped model grades this eye correctly and robustly",
+    "verified_on": "the delivered 1024px JPEG, not the original photograph",
+    "verified_kernels": [
+      "bilinear",
+      "bicubic",
+      "lanczos"
+    ],
+    "cumulative_scores": [
+      0.9927,
+      0.9897,
+      0.9644,
+      0.8515
+    ],
+    "decision_margin": 0.3515,
+    "warning": "This set is CURATED: accuracy here is NOT representative. See recall_deepdrid_setc for real per-grade performance."
+  },
+  "recall_deepdrid_setc": 0.6,
+  "field_assignment": {
+    "method": "optic-disc centroid offset (verified per sample)",
+    "macula_from_image_id": "84_r1",
+    "disc_from_image_id": "84_r2",
+    "macula_disc_offset": 0.425,
+    "disc_disc_offset": 0.273,
+    "note": "DeepDRiD's _1/_2 suffix does NOT reliably indicate the field."
+  },
+  "source": {
+    "dataset": "DeepDRiD",
+    "partition": "regular-fundus-training",
+    "patient_id": 84,
+    "image_ids": [
+      "84_r1",
+      "84_r2"
+    ],
+    "overall_quality": 1,
+    "clarity": 8
+  },
+  "image_sizes": {
+    "macula": {
+      "original": [
+        1976,
+        1984
+      ],
+      "delivered": [
+        1020,
+        1024
+      ]
+    },
+    "disc": {
+      "original": [
+        1976,
+        1984
+      ],
+      "delivered": [
+        1020,
+        1024
+      ]
+    }
+  },
+  "license": "CC BY-SA 4.0"
+}

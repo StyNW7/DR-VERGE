@@ -1,0 +1,70 @@
+{
+  "sample_id": "p188-l",
+  "eye": "left",
+  "fields": {
+    "macula": "macula.jpg",
+    "disc": "disc.jpg"
+  },
+  "ground_truth_grade": 0,
+  "ground_truth_name": "No DR",
+  "verification": {
+    "selected_because": "the shipped model grades this eye correctly and robustly",
+    "verified_on": "the delivered 1024px JPEG, not the original photograph",
+    "verified_kernels": [
+      "bilinear",
+      "bicubic",
+      "lanczos"
+    ],
+    "cumulative_scores": [
+      0.0617,
+      0.0443,
+      0.0129,
+      0.0028
+    ],
+    "decision_margin": 0.4383,
+    "warning": "This set is CURATED: accuracy here is NOT representative. See recall_deepdrid_setc for real per-grade performance."
+  },
+  "recall_deepdrid_setc": 0.83,
+  "field_assignment": {
+    "method": "optic-disc centroid offset (verified per sample)",
+    "macula_from_image_id": "188_l1",
+    "disc_from_image_id": "188_l2",
+    "macula_disc_offset": 0.892,
+    "disc_disc_offset": 0.043,
+    "note": "DeepDRiD's _1/_2 suffix does NOT reliably indicate the field."
+  },
+  "source": {
+    "dataset": "DeepDRiD",
+    "partition": "regular-fundus-training",
+    "patient_id": 188,
+    "image_ids": [
+      "188_l1",
+      "188_l2"
+    ],
+    "overall_quality": 1,
+    "clarity": 6
+  },
+  "image_sizes": {
+    "macula": {
+      "original": [
+        1736,
+        1824
+      ],
+      "delivered": [
+        975,
+        1024
+      ]
+    },
+    "disc": {
+      "original": [
+        1736,
+        1824
+      ],
+      "delivered": [
+        975,
+        1024
+      ]
+    }
+  },
+  "license": "CC BY-SA 4.0"
+}

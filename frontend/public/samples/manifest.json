@@ -1,40 +1,73 @@
 {
   "name": "DR-VERGE demo samples",
+  "layout": "flat \u2014 one folder per eye, no grade in the path",
+  "layout_reason": "A grade in the folder name reveals the answer before the model runs. Flat naming keeps the test blind; the true grade lives in meta.json for auditing, not in the path.",
   "unit_of_prediction": "eye (two fields: macula-centred + optic-disc-centred)",
-  "count_eyes": 15,
-  "count_images": 30,
-  "grades": {
+  "count_eyes": 12,
+  "count_images": 24,
+  "grades_present": [
+    0,
+    2,
+    3,
+    4
+  ],
+  "curated": true,
+  "curation_notice": "CURATED SET \u2014 NOT A BENCHMARK. These eyes were selected BECAUSE the shipped model grades them correctly and robustly. Getting them all right says nothing about accuracy. Measured on the unfiltered DeepDRiD Set-C partition the same model scores QWK 0.7307 with 57.0% exact agreement, and only 0.111 recall on Mild NPDR \u2014 which is why no robust Mild NPDR example exists in this set.",
+  "verification": {
+    "verified_on": "the delivered 1024px JPEG, not the original photograph",
+    "kernels": [
+      "bilinear",
+      "bicubic",
+      "lanczos"
+    ],
+    "rule": "kept only if every kernel produced the true grade AND margin >= 0.02",
+    "pool_scanned": 796,
+    "pool_passing": 214,
+    "note": "The browser resizes with canvas drawImage, which is none of these three. Agreement across all three makes a browser mismatch unlikely, not impossible."
+  },
+  "grade_reference": {
     "0": {
       "name": "No DR",
-      "slug": "grade-0-no-dr",
-      "recall_deepdrid_setc": 0.83
+      "recall_deepdrid_setc": 0.83,
+      "in_this_set": true
     },
     "1": {
       "name": "Mild NPDR",
-      "slug": "grade-1-mild-npdr",
-      "recall_deepdrid_setc": 0.111
+      "recall_deepdrid_setc": 0.111,
+      "in_this_set": false
     },
     "2": {
       "name": "Moderate NPDR",
-      "slug": "grade-2-moderate-npdr",
-      "recall_deepdrid_setc": 0.417
+      "recall_deepdrid_setc": 0.417,
+      "in_this_set": true
     },
     "3": {
       "name": "Severe NPDR",
-      "slug": "grade-3-severe-npdr",
-      "recall_deepdrid_setc": 0.222
+      "recall_deepdrid_setc": 0.222,
+      "in_this_set": true
     },
     "4": {
       "name": "Proliferative DR",
-      "slug": "grade-4-proliferative-dr",
-      "recall_deepdrid_setc": 0.6
+      "recall_deepdrid_setc": 0.6,
+      "in_this_set": true
     }
+  },
+  "measured_reference": {
+    "note": "Measured by running THIS ONNX model over all 200 Set-C eyes, unfiltered.",
+    "model": "best_student_fp32 (seed 3407)",
+    "partition": "DeepDRiD Online-Challenge1&2-Evaluation",
+    "eyes": 200,
+    "QWK": 0.7307,
+    "exact_accuracy": 0.57,
+    "paper_reported_qwk_same_seed": 0.7298
   },
   "field_assignment": {
     "method": "optic-disc centroid offset, verified per sample",
     "deepdrid_suffix_is_unreliable": true,
-    "observed_convention": "_1 is usually the DISC-centred field (Set-A 15/15, Set-B 34/40, Set-C 31/40 sampled)",
-    "notebook_primary_order": "_1=macula"
+    "measured_impact_on_setc_qwk": {
+      "_1=macula": 0.7307,
+      "_1=disc": 0.7258
+    }
   },
   "delivery": {
     "max_side_px": 1024,
@@ -44,7 +77,10 @@
   },
   "source": {
     "dataset": "DeepDRiD",
-    "partition": "regular-fundus-training",
+    "partitions": [
+      "regular-fundus-training",
+      "regular-fundus-validation"
+    ],
     "license": "CC BY-SA 4.0",
     "url": "https://github.com/deepdrdoc/DeepDRiD",
     "citation": "Liu R, et al. DeepDRiD: Diabetic Retinopathy Grading and Image Quality Estimation Challenge. Patterns. 2022;100512."
@@ -52,163 +88,124 @@
   "disclaimer": "Research prototype. Not a medical device and not a clinical diagnosis.",
   "samples": [
     {
-      "sample_id": "p20-l",
+      "sample_id": "p188-l",
+      "eye": "left",
+      "path": "/samples/p188-l",
+      "macula": "/samples/p188-l/macula.jpg",
+      "disc": "/samples/p188-l/disc.jpg",
       "ground_truth_grade": 0,
       "ground_truth_name": "No DR",
-      "eye": "left",
-      "path": "/samples/grade-0-no-dr/p20-l",
-      "macula": "/samples/grade-0-no-dr/p20-l/macula.jpg",
-      "disc": "/samples/grade-0-no-dr/p20-l/disc.jpg",
-      "recall_deepdrid_setc": 0.83
+      "decision_margin": 0.4383
     },
     {
-      "sample_id": "p26-r",
+      "sample_id": "p198-l",
+      "eye": "left",
+      "path": "/samples/p198-l",
+      "macula": "/samples/p198-l/macula.jpg",
+      "disc": "/samples/p198-l/disc.jpg",
+      "ground_truth_grade": 3,
+      "ground_truth_name": "Severe NPDR",
+      "decision_margin": 0.1448
+    },
+    {
+      "sample_id": "p24-r",
+      "eye": "right",
+      "path": "/samples/p24-r",
+      "macula": "/samples/p24-r/macula.jpg",
+      "disc": "/samples/p24-r/disc.jpg",
+      "ground_truth_grade": 3,
+      "ground_truth_name": "Severe NPDR",
+      "decision_margin": 0.1351
+    },
+    {
+      "sample_id": "p267-l",
+      "eye": "left",
+      "path": "/samples/p267-l",
+      "macula": "/samples/p267-l/macula.jpg",
+      "disc": "/samples/p267-l/disc.jpg",
+      "ground_truth_grade": 4,
+      "ground_truth_name": "Proliferative DR",
+      "decision_margin": 0.3259
+    },
+    {
+      "sample_id": "p296-l",
+      "eye": "left",
+      "path": "/samples/p296-l",
+      "macula": "/samples/p296-l/macula.jpg",
+      "disc": "/samples/p296-l/disc.jpg",
+      "ground_truth_grade": 2,
+      "ground_truth_name": "Moderate NPDR",
+      "decision_margin": 0.0938
+    },
+    {
+      "sample_id": "p362-r",
+      "eye": "right",
+      "path": "/samples/p362-r",
+      "macula": "/samples/p362-r/macula.jpg",
+      "disc": "/samples/p362-r/disc.jpg",
+      "ground_truth_grade": 3,
+      "ground_truth_name": "Severe NPDR",
+      "decision_margin": 0.0987
+    },
+    {
+      "sample_id": "p39-r",
+      "eye": "right",
+      "path": "/samples/p39-r",
+      "macula": "/samples/p39-r/macula.jpg",
+      "disc": "/samples/p39-r/disc.jpg",
+      "ground_truth_grade": 2,
+      "ground_truth_name": "Moderate NPDR",
+      "decision_margin": 0.1058
+    },
+    {
+      "sample_id": "p392-r",
+      "eye": "right",
+      "path": "/samples/p392-r",
+      "macula": "/samples/p392-r/macula.jpg",
+      "disc": "/samples/p392-r/disc.jpg",
       "ground_truth_grade": 0,
       "ground_truth_name": "No DR",
-      "eye": "right",
-      "path": "/samples/grade-0-no-dr/p26-r",
-      "macula": "/samples/grade-0-no-dr/p26-r/macula.jpg",
-      "disc": "/samples/grade-0-no-dr/p26-r/disc.jpg",
-      "recall_deepdrid_setc": 0.83
+      "decision_margin": 0.433
     },
     {
-      "sample_id": "p47-r",
+      "sample_id": "p394-l",
+      "eye": "left",
+      "path": "/samples/p394-l",
+      "macula": "/samples/p394-l/macula.jpg",
+      "disc": "/samples/p394-l/disc.jpg",
+      "ground_truth_grade": 2,
+      "ground_truth_name": "Moderate NPDR",
+      "decision_margin": 0.0928
+    },
+    {
+      "sample_id": "p65-r",
+      "eye": "right",
+      "path": "/samples/p65-r",
+      "macula": "/samples/p65-r/macula.jpg",
+      "disc": "/samples/p65-r/disc.jpg",
       "ground_truth_grade": 0,
       "ground_truth_name": "No DR",
+      "decision_margin": 0.4413
+    },
+    {
+      "sample_id": "p84-r",
       "eye": "right",
-      "path": "/samples/grade-0-no-dr/p47-r",
-      "macula": "/samples/grade-0-no-dr/p47-r/macula.jpg",
-      "disc": "/samples/grade-0-no-dr/p47-r/disc.jpg",
-      "recall_deepdrid_setc": 0.83
-    },
-    {
-      "sample_id": "p20-r",
-      "ground_truth_grade": 1,
-      "ground_truth_name": "Mild NPDR",
-      "eye": "right",
-      "path": "/samples/grade-1-mild-npdr/p20-r",
-      "macula": "/samples/grade-1-mild-npdr/p20-r/macula.jpg",
-      "disc": "/samples/grade-1-mild-npdr/p20-r/disc.jpg",
-      "recall_deepdrid_setc": 0.111
-    },
-    {
-      "sample_id": "p28-r",
-      "ground_truth_grade": 1,
-      "ground_truth_name": "Mild NPDR",
-      "eye": "right",
-      "path": "/samples/grade-1-mild-npdr/p28-r",
-      "macula": "/samples/grade-1-mild-npdr/p28-r/macula.jpg",
-      "disc": "/samples/grade-1-mild-npdr/p28-r/disc.jpg",
-      "recall_deepdrid_setc": 0.111
-    },
-    {
-      "sample_id": "p54-l",
-      "ground_truth_grade": 1,
-      "ground_truth_name": "Mild NPDR",
-      "eye": "left",
-      "path": "/samples/grade-1-mild-npdr/p54-l",
-      "macula": "/samples/grade-1-mild-npdr/p54-l/macula.jpg",
-      "disc": "/samples/grade-1-mild-npdr/p54-l/disc.jpg",
-      "recall_deepdrid_setc": 0.111
-    },
-    {
-      "sample_id": "p15-l",
-      "ground_truth_grade": 2,
-      "ground_truth_name": "Moderate NPDR",
-      "eye": "left",
-      "path": "/samples/grade-2-moderate-npdr/p15-l",
-      "macula": "/samples/grade-2-moderate-npdr/p15-l/macula.jpg",
-      "disc": "/samples/grade-2-moderate-npdr/p15-l/disc.jpg",
-      "recall_deepdrid_setc": 0.417
-    },
-    {
-      "sample_id": "p29-l",
-      "ground_truth_grade": 2,
-      "ground_truth_name": "Moderate NPDR",
-      "eye": "left",
-      "path": "/samples/grade-2-moderate-npdr/p29-l",
-      "macula": "/samples/grade-2-moderate-npdr/p29-l/macula.jpg",
-      "disc": "/samples/grade-2-moderate-npdr/p29-l/disc.jpg",
-      "recall_deepdrid_setc": 0.417
-    },
-    {
-      "sample_id": "p29-r",
-      "ground_truth_grade": 2,
-      "ground_truth_name": "Moderate NPDR",
-      "eye": "right",
-      "path": "/samples/grade-2-moderate-npdr/p29-r",
-      "macula": "/samples/grade-2-moderate-npdr/p29-r/macula.jpg",
-      "disc": "/samples/grade-2-moderate-npdr/p29-r/disc.jpg",
-      "recall_deepdrid_setc": 0.417
-    },
-    {
-      "sample_id": "p12-r",
-      "ground_truth_grade": 3,
-      "ground_truth_name": "Severe NPDR",
-      "eye": "right",
-      "path": "/samples/grade-3-severe-npdr/p12-r",
-      "macula": "/samples/grade-3-severe-npdr/p12-r/macula.jpg",
-      "disc": "/samples/grade-3-severe-npdr/p12-r/disc.jpg",
-      "recall_deepdrid_setc": 0.222
-    },
-    {
-      "sample_id": "p24-l",
-      "ground_truth_grade": 3,
-      "ground_truth_name": "Severe NPDR",
-      "eye": "left",
-      "path": "/samples/grade-3-severe-npdr/p24-l",
-      "macula": "/samples/grade-3-severe-npdr/p24-l/macula.jpg",
-      "disc": "/samples/grade-3-severe-npdr/p24-l/disc.jpg",
-      "recall_deepdrid_setc": 0.222
-    },
-    {
-      "sample_id": "p35-l",
-      "ground_truth_grade": 3,
-      "ground_truth_name": "Severe NPDR",
-      "eye": "left",
-      "path": "/samples/grade-3-severe-npdr/p35-l",
-      "macula": "/samples/grade-3-severe-npdr/p35-l/macula.jpg",
-      "disc": "/samples/grade-3-severe-npdr/p35-l/disc.jpg",
-      "recall_deepdrid_setc": 0.222
-    },
-    {
-      "sample_id": "p69-l",
+      "path": "/samples/p84-r",
+      "macula": "/samples/p84-r/macula.jpg",
+      "disc": "/samples/p84-r/disc.jpg",
       "ground_truth_grade": 4,
       "ground_truth_name": "Proliferative DR",
+      "decision_margin": 0.3515
+    },
+    {
+      "sample_id": "p89-l",
       "eye": "left",
-      "path": "/samples/grade-4-proliferative-dr/p69-l",
-      "macula": "/samples/grade-4-proliferative-dr/p69-l/macula.jpg",
-      "disc": "/samples/grade-4-proliferative-dr/p69-l/disc.jpg",
-      "recall_deepdrid_setc": 0.6
-    },
-    {
-      "sample_id": "p78-r",
+      "path": "/samples/p89-l",
+      "macula": "/samples/p89-l/macula.jpg",
+      "disc": "/samples/p89-l/disc.jpg",
       "ground_truth_grade": 4,
       "ground_truth_name": "Proliferative DR",
-      "eye": "right",
-      "path": "/samples/grade-4-proliferative-dr/p78-r",
-      "macula": "/samples/grade-4-proliferative-dr/p78-r/macula.jpg",
-      "disc": "/samples/grade-4-proliferative-dr/p78-r/disc.jpg",
-      "recall_deepdrid_setc": 0.6
-    },
-    {
-      "sample_id": "p127-r",
-      "ground_truth_grade": 4,
-      "ground_truth_name": "Proliferative DR",
-      "eye": "right",
-      "path": "/samples/grade-4-proliferative-dr/p127-r",
-      "macula": "/samples/grade-4-proliferative-dr/p127-r/macula.jpg",
-      "disc": "/samples/grade-4-proliferative-dr/p127-r/disc.jpg",
-      "recall_deepdrid_setc": 0.6
+      "decision_margin": 0.339
     }
-  ],
-  "measured_reference": {
-    "note": "Recall measured by running THIS ONNX model over all 200 Set-C eyes.",
-    "model": "best_student_fp32 (seed 3407)",
-    "partition": "DeepDRiD Online-Challenge1&2-Evaluation",
-    "eyes": 200,
-    "QWK": 0.7307,
-    "exact_accuracy": 0.57,
-    "paper_reported_qwk_same_seed": 0.7298
-  }
+  ]
 }

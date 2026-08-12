@@ -1,147 +1,161 @@
 # Sample Images — Demo DR-VERGE
 
-15 mata · 30 citra · 5 grade · 2,2 MB
+12 mata · 24 citra · 1,6 MB
 Sumber: **DeepDRiD** (CC BY-SA 4.0) — lihat [`ATTRIBUTION.txt`](ATTRIBUTION.txt)
 
 ---
 
-## Struktur
+## Struktur — Datar dan Buta
 
 ```
 samples/
-├── manifest.json                    ← indeks mesin-terbaca untuk demo
-├── ATTRIBUTION.txt                  ← lisensi + daftar perubahan (wajib ikut)
+├── manifest.json      indeks mesin-terbaca untuk demo
+├── ATTRIBUTION.txt    lisensi + daftar perubahan (wajib ikut)
 ├── README.md
 │
-├── grade-0-no-dr/
-│   ├── p20-l/
-│   │   ├── macula.jpg               ← lapang berpusat makula
-│   │   ├── disc.jpg                 ← lapang berpusat optic disc
-│   │   └── meta.json                ← ground truth + provenance
-│   ├── p26-r/
-│   └── p47-r/
-├── grade-1-mild-npdr/     (p20-r · p28-r · p54-l)
-├── grade-2-moderate-npdr/ (p15-l · p29-l · p29-r)
-├── grade-3-severe-npdr/   (p12-r · p24-l · p35-l)
-└── grade-4-proliferative-dr/ (p69-l · p78-r · p127-r)
+├── p24-r/             ← satu folder = satu MATA
+│   ├── macula.jpg         lapang berpusat makula
+│   ├── disc.jpg           lapang berpusat optic disc
+│   └── meta.json          provenance + ground truth (untuk audit)
+├── p39-r/   p65-r/   p84-r/   p89-l/
+├── p188-l/  p198-l/  p267-l/  p296-l/
+└── p362-r/  p392-r/  p394-l/
 ```
 
-Penamaan folder mata: `p<patient_id>-<l|r>` — dapat dilacak balik ke DeepDRiD.
+**Tidak ada folder grade.** Nama seperti `grade-4-proliferative-dr/p84-r` membocorkan jawaban
+sebelum model dijalankan, sehingga demo mustahil dinilai secara jujur. `samples/p84-r` tidak.
+
+Penguji memilih pasien, menjalankan model, lalu **baru** melihat hasilnya — persis seperti alur
+klinis sebenarnya. Ground truth tetap tersimpan di `meta.json` supaya kumpulan ini dapat diaudit,
+tetapi tidak muncul di jalur berkas.
+
+> **Catatan untuk UI demo:** jangan tampilkan `ground_truth_grade` sebelum inferensi selesai.
+> Menampilkannya lebih dulu mengembalikan masalah yang justru dihilangkan struktur datar ini.
+
+Urutan dalam `manifest.json` diurutkan menurut `sample_id`, **bukan** menurut grade — supaya urutan
+daftar pun tidak membocorkan pola.
 
 ---
 
-## Mengapa struktur ini, bukan struktur Pink-MVAN
+## ⚠ Kumpulan Ini Dikurasi
 
-Pink-MVAN memakai `patient/ → 2 gambar`. DR-VERGE memakai
-**`grade/ → mata/ → 2 gambar`**, karena tiga alasan:
+**Sampel di sini dipilih karena model menebaknya dengan benar dan stabil.** Ini alat peraga untuk
+mendemonstrasikan sistem yang berfungsi — **bukan tolok ukur.**
+
+> **Model menjawab 12 dari 12 sampel ini dengan benar. Angka itu tidak berarti apa-apa soal
+> akurasi.** Diukur pada partisi DeepDRiD Set-C tanpa penyaringan, model yang sama memperoleh
+> **QWK 0,7307** dengan **exact 57,0%**.
+
+Kalau ada yang menguji 12 sampel ini lalu menyimpulkan "modelnya hampir sempurna", kesimpulan itu
+salah. Angka sebenarnya ada di tabel [Performa Sebenarnya](#performa-sebenarnya) di bawah.
+
+---
+
+## Cara Sampel Ini Diverifikasi
+
+Prosedurnya dibentuk oleh dua kegagalan yang ditemukan saat penyiapan:
+
+**1. Verifikasi pada citra ASLI tidak membuktikan apa pun.** Percobaan pertama memilih sampel dari
+citra full-resolution — semuanya benar. Setelah dikecilkan ke 1024 px dan di-encode ulang JPEG,
+sebagian berbalik. Verifikasi sekarang dijalankan pada **berkas JPEG yang benar-benar dikirim**.
+
+**2. Satu kernel resize tidak cukup.** Browser mengubah ukuran dengan canvas `drawImage`, yang
+bukan bilinear PIL maupun bicubic. Sampel hanya dipakai bila grade-nya bertahan di **seluruh
+kernel** yang diuji.
+
+Prosedur akhir — **796 mata** dipindai dari Set-A + Set-B:
+
+| Tahap | Sisa |
+|---|---|
+| Punya dua lapang dan dapat dibedakan | 796 dipindai |
+| Benar **dan** stabil di bilinear + bicubic + lanczos | 214 |
+| Margin keputusan ≥ 0,02 (tahan terhadap resampler lain) | 12 terpilih |
+| **Uji akhir di 6 resampler** (+ hamming, nearest, box) | **12/12 stabil** ✅ |
+
+Setiap `meta.json` menyimpan skor kumulatif dan **margin keputusan** — jarak skor penentu dari
+ambang 0,5. Margin di sini berkisar **0,093 – 0,441**; makin besar, makin tidak rapuh.
+
+---
+
+## Isi Kumpulan
+
+| Folder | Mata | Margin |
+|---|---|---|
+| `p65-r` · `p188-l` · `p392-r` | kanan · kiri · kanan | 0,441 · 0,438 · 0,433 |
+| `p39-r` · `p394-l` · `p296-l` | kanan · kiri · kiri | 0,106 · 0,111 · 0,094 |
+| `p198-l` · `p24-r` · `p362-r` | kiri · kanan · kanan | 0,145 · 0,140 · 0,099 |
+| `p84-r` · `p89-l` · `p267-l` | kanan · kiri · kiri | 0,351 · 0,339 · 0,336 |
+
+*Grade sengaja tidak dicantumkan di tabel ini — ada di `meta.json` masing-masing.*
+
+**Empat dari lima grade terwakili.** **Mild NPDR (grade 1) tidak ada** dalam kumpulan ini: dari
+796 mata yang dipindai, **tidak satu pun** memenuhi syarat benar sekaligus kokoh. Recall model
+untuk Mild NPDR adalah **0,111** — ini keterbatasan yang memang dilaporkan paper, bukan masalah
+penyiapan sampel. Contoh yang andal tidak dimasukkan secara paksa.
+
+---
+
+## Performa Sebenarnya
+
+Diukur langsung dengan menjalankan model ONNX yang dipakai demo (`best_student_fp32`, seed 3407)
+atas **seluruh 200 mata Set-C DeepDRiD tanpa penyaringan**. **Inilah performa sesungguhnya** —
+bukan 12/12 di folder ini.
+
+| Grade | Nama | n (Set-C) | Recall sebenarnya | Ada di kumpulan ini? |
+|---|---|---|---|---|
+| 0 | No DR | 100 | **0,830** | ✅ 3 mata |
+| 1 | Mild NPDR | 18 | **0,111** | ❌ tidak ada yang kokoh |
+| 2 | Moderate NPDR | 36 | 0,417 | ✅ 3 mata |
+| 3 | Severe NPDR | 36 | 0,222 | ✅ 3 mata |
+| 4 | Proliferative DR | 10 | **0,600** | ✅ 3 mata |
+
+Keseluruhan Set-C: **QWK 0,7307 · exact 57,0%**
+
+Paper melaporkan **0,7298** untuk seed yang sama — selisih **0,0009** dari perbedaan interpolasi
+resize. Kesesuaian inilah yang membuktikan integrasi frontend setia pada penelitian.
+
+---
+
+## Mengapa Satu Folder = Satu Mata
+
+DR-VERGE memprediksi **per mata**, bukan per pasien maupun per citra:
 
 | Alasan | Penjelasan |
 |---|---|
-| **Unit prediksi DR-VERGE adalah MATA, bukan pasien** | Satu pasien punya dua mata dengan grade yang bisa berbeda. `p20-l` grade 0 sementara `p20-r` grade 1 — pasien yang sama. Memakai folder pasien akan menggabungkan dua kasus berbeda |
-| **Grade di level teratas = testing sistematis** | Penguji bisa langsung menjawab "bagaimana model pada grade 4?" tanpa membuka metadata |
-| **Dua lapang tetap berpasangan di dalam folder mata** | Ini menjaga premis dual-view tetap terlihat — model butuh keduanya sekaligus, bukan satu-satu |
-
-Jadi struktur ini **mempertahankan ide Pink-MVAN** (folder berisi pasangan gambar) sambil
-menyesuaikannya ke unit prediksi DR-VERGE yang sebenarnya.
+| **Unit prediksi adalah MATA** | Satu pasien punya dua mata yang bisa berbeda grade. Folder per-pasien akan menggabungkan dua kasus berbeda |
+| **Dua lapang harus berpasangan** | Model memerlukan makula **dan** disc sekaligus — premis dual-view penelitian ini |
+| **Nama `p<id>-<l\|r>` dapat dilacak** | Kembali ke DeepDRiD untuk verifikasi independen |
 
 ---
 
-## ⚠ Penetapan Lapang: Jangan Percaya Sufiks `_1` / `_2`
+## ⚠ Penetapan Lapang: Sufiks `_1`/`_2` Tidak Bisa Dipercaya
 
-Ini temuan penting saat menyiapkan sampel ini.
+DeepDRiD menamai berkasnya `<pasien>_<mata><1|2>.jpg`, dan notebook memakai asumsi
+`DEEPDRID_PRIMARY_ORDER = "_1=macula"`. **Pemeriksaan citra menunjukkan sebaliknya:**
 
-DeepDRiD menamai berkasnya `<pasien>_<mata><1|2>.jpg`, dan notebook DR-VERGE memakai asumsi
-pra-registrasi `DEEPDRID_PRIMARY_ORDER = "_1=macula"`. **Pemeriksaan citra menunjukkan sebaliknya:**
+| Partisi | `_1` ternyata berpusat DISC |
+|---|---|
+| Set-A | 15 / 15 |
+| Set-B | 34 / 40 |
+| Set-C | 31 / 40 |
 
-| Partisi | `_1` ternyata berpusat DISC | Sampel diperiksa |
-|---|---|---|
-| Set-A (`regular-fundus-training`) | **15 / 15** | 15 |
-| Set-B (`regular-fundus-validation`) | 34 / 40 | 40 |
-| Set-C (`Online-Challenge1&2-Evaluation`) | 31 / 40 | 40 |
+Karena itu berkas di sini **tidak** dinamai menurut sufiks — posisi optic disc diukur per sampel,
+lalu lapang ditetapkan dari citranya sendiri. `meta.json` mencatat citra sumber mana menjadi lapang
+mana.
 
-Konvensinya dominan **`_1 = disc`**, dan **tidak universal** (~20% menyimpang di Set-C).
-
-**Karena itu, berkas di folder ini TIDAK dinamai menurut sufiks.** Setiap mata diperiksa satu per
-satu: posisi optic disc diukur (disc adalah struktur paling terang di foto fundus), lalu lapang
-dengan disc di tengah diberi nama `disc.jpg` dan yang disc-nya terdorong ke tepi diberi nama
-`macula.jpg`. Hasilnya **15/15 benar**, dan `meta.json` mencatat citra sumber mana yang menjadi
-lapang mana.
-
-Dua mata (`p27-r`, `p27-l`) **dibuang** karena kedua lapangnya tidak dapat dibedakan secara
-meyakinkan (selisih < 0,15), dan diganti kandidat lain.
-
-> **Mengapa ini penting untuk demo:** `Gate2a_CORAL` mencatat *"fusion is view-order sensitive"* —
-> model memperlakukan masukan makula dan disc secara berbeda, dan salah slot tidak memunculkan
-> error apa pun.
-
-**Seberapa besar dampaknya, diukur.** Model ONNX dijalankan atas 200 mata Set-C pada kedua urutan:
+**Dampaknya diukur** atas 200 mata Set-C:
 
 | Urutan | QWK | Exact |
 |---|---|---|
 | `_1=macula` (PRIMARY paper) | **0,7307** | 114/200 |
-| `_1=disc` (uji sensitivitas) | 0,7258 | 113/200 |
+| `_1=disc` | 0,7258 | 113/200 |
 
-Selisihnya **0,005 QWK** — jauh di bawah ambang klaim apa pun. Jadi meski konvensi sufiks memang
-terbalik dari asumsi notebook, **dampaknya terhadap angka headline dapat diabaikan**, dan notebook
-tetap melaporkan kedua urutan. Penetapan per-sampel di folder ini dipertahankan karena benar
-secara harfiah, bukan karena mengubah hasil secara berarti.
+Selisih **0,005 QWK** — jauh di bawah ambang klaim apa pun. Konvensi sufiksnya memang terbalik dari
+asumsi notebook, tetapi **dampaknya terhadap angka headline dapat diabaikan**, dan notebook tetap
+melaporkan kedua urutan.
 
----
-
-## Isi `manifest.json`
-
-```json
-{
-  "unit_of_prediction": "eye (two fields: macula-centred + optic-disc-centred)",
-  "count_eyes": 15,
-  "count_images": 30,
-  "samples": [
-    {
-      "sample_id": "p20-l",
-      "ground_truth_grade": 0,
-      "ground_truth_name": "No DR",
-      "eye": "left",
-      "macula": "/samples/grade-0-no-dr/p20-l/macula.jpg",
-      "disc":   "/samples/grade-0-no-dr/p20-l/disc.jpg",
-      "expected_recall": 0.803
-    }
-  ]
-}
-```
-
-Path sudah absolut dari root web (`/samples/...`), jadi bisa langsung dipakai di komponen React
-tanpa penyesuaian.
-
----
-
-## Ekspektasi Hasil per Grade
-
-Angka ini **diukur langsung** dengan menjalankan model ONNX yang dipakai demo
-(`best_student_fp32`, seed 3407) atas **seluruh 200 mata Set-C DeepDRiD** — bukan disalin dari
-tabel DRTiD, karena sampel di folder ini berasal dari DeepDRiD.
-
-| Grade | Nama | n (Set-C) | Recall terukur | Ekspektasi demo |
-|---|---|---|---|---|
-| 0 | No DR | 100 | **0,830** | ✅ Umumnya benar |
-| 1 | Mild NPDR | 18 | **0,111** | ❌ **Hampir pasti salah** — keterbatasan yang diketahui |
-| 2 | Moderate NPDR | 36 | 0,417 | ⚠ Sering meleset ke tetangga |
-| 3 | Severe NPDR | 36 | 0,222 | ⚠ Sering meleset ke tetangga |
-| 4 | Proliferative DR | 10 | **0,600** | ✅ Cukup sering benar |
-
-Referensi keseluruhan Set-C: **QWK 0,7307 · exact 57,0%** (paper melaporkan **0,7298** untuk seed
-yang sama — selisih 0,0009 berasal dari perbedaan interpolasi resize).
-
-> ⚠ **Kumpulan sampel ini seimbang 3 per grade, sedangkan Set-C nyata didominasi grade 0 (50%).**
-> Karena itu akurasi di 15 sampel ini akan terlihat **lebih buruk** daripada 57%: rata-rata recall
-> lintas grade hanya ~0,44, jadi ekspektasi wajarnya sekitar **6–7 benar dari 15**.
->
-> Hasil aktual saat diukur: **3/15 exact, 11/15 dalam ±1 grade**. Lebih rendah dari ekspektasi,
-> masih dalam rentang derau untuk n=15. Ini **bukan tanda integrasi bermasalah** — pipeline sudah
-> diverifikasi mereproduksi angka paper di 200 mata.
-
-> Grade 1 sengaja **tetap disertakan**. Demo yang hanya menampilkan kasus berhasil adalah demo
-> yang menyesatkan. Tampilkan grade 1 dan beri label bahwa model memang lemah di sana — itu
-> konsisten dengan bab keterbatasan paper.
+> `Gate2a_CORAL` mencatat *"fusion is view-order sensitive"* — salah slot tidak memunculkan error
+> apa pun, hanya angka yang berbeda.
 
 ---
 
@@ -151,39 +165,18 @@ yang sama — selisih 0,0009 berasal dari perbedaan interpolasi resize).
 |---|---|
 | Format | JPEG progresif, kualitas 85 |
 | Ukuran maksimum | sisi terpanjang 1024 px, **aspect ratio dipertahankan** |
-| Ukuran asli | 1592×1728 hingga 2232×1727 |
 | Metadata | EXIF dan ICC dihapus |
-| Rata-rata per berkas | ~75 KB |
-| Total | 2,2 MB |
+| Rata-rata | ~68 KB per citra · total 1,6 MB |
 
-**Sengaja bukan 224×224 atau 384×384.** Ukuran itu adalah target resize internal model
-(`A.Resize(384, 384)`, tidak mempertahankan aspect ratio). Demo harus menampilkan foto seperti
-yang diunggah klinisi; model yang mengurus resize di belakang layar.
-
----
-
-## Kriteria Pemilihan
-
-Deterministik dan dapat direproduksi:
-
-1. Kedua lapang ada dan berkasnya dapat dibuka
-2. `Overall quality == 1` (kualitas baik)
-3. Diurutkan `Clarity` menurun, lalu `patient_id` menaik
-4. Kedua lapang dapat dibedakan meyakinkan (selisih offset disc ≥ 0,15)
-5. Diambil 3 mata pertama per grade
-
-Sumbernya **Set-A (`regular-fundus-training`)** — kolam terbesar (596 mata), dan membiarkan
-**Set-C tetap murni** sebagai partisi konfirmatori pra-registrasi.
-
-Catatan: DeepDRiD **tidak pernah dipakai melatih** DR-VERGE (hanya validasi eksternal), jadi tidak
-ada kebocoran data dari penggunaan citra ini di demo.
+**Sengaja bukan 384×384.** Itu target resize internal model (`A.Resize(384, 384)`, tidak menjaga
+aspect ratio). Demo menampilkan foto seperti yang diunggah klinisi; model yang mengurus resize.
 
 ---
 
 ## Lisensi
 
-CC BY-SA 4.0. **Wajib menyertakan [`ATTRIBUTION.txt`](ATTRIBUTION.txt)** bila folder ini
-didistribusikan ulang, dan karya turunan harus memakai lisensi yang sama.
+CC BY-SA 4.0. **Wajib menyertakan [`ATTRIBUTION.txt`](ATTRIBUTION.txt)** bila didistribusikan
+ulang, dan karya turunan harus memakai lisensi yang sama.
 
 DRTiD — dataset yang dipakai melatih DR-VERGE — **tidak** diredistribusikan di sini karena
 lisensinya tidak mengizinkan.

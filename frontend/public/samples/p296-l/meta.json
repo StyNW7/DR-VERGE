@@ -1,0 +1,70 @@
+{
+  "sample_id": "p296-l",
+  "eye": "left",
+  "fields": {
+    "macula": "macula.jpg",
+    "disc": "disc.jpg"
+  },
+  "ground_truth_grade": 2,
+  "ground_truth_name": "Moderate NPDR",
+  "verification": {
+    "selected_because": "the shipped model grades this eye correctly and robustly",
+    "verified_on": "the delivered 1024px JPEG, not the original photograph",
+    "verified_kernels": [
+      "bilinear",
+      "bicubic",
+      "lanczos"
+    ],
+    "cumulative_scores": [
+      0.7745,
+      0.7075,
+      0.4062,
+      0.1265
+    ],
+    "decision_margin": 0.0938,
+    "warning": "This set is CURATED: accuracy here is NOT representative. See recall_deepdrid_setc for real per-grade performance."
+  },
+  "recall_deepdrid_setc": 0.417,
+  "field_assignment": {
+    "method": "optic-disc centroid offset (verified per sample)",
+    "macula_from_image_id": "296_l2",
+    "disc_from_image_id": "296_l1",
+    "macula_disc_offset": 0.784,
+    "disc_disc_offset": 0.14,
+    "note": "DeepDRiD's _1/_2 suffix does NOT reliably indicate the field."
+  },
+  "source": {
+    "dataset": "DeepDRiD",
+    "partition": "regular-fundus-validation",
+    "patient_id": 296,
+    "image_ids": [
+      "296_l1",
+      "296_l2"
+    ],
+    "overall_quality": 1,
+    "clarity": 8
+  },
+  "image_sizes": {
+    "macula": {
+      "original": [
+        1976,
+        1984
+      ],
+      "delivered": [
+        1020,
+        1024
+      ]
+    },
+    "disc": {
+      "original": [
+        1976,
+        1984
+      ],
+      "delivered": [
+        1020,
+        1024
+      ]
+    }
+  },
+  "license": "CC BY-SA 4.0"
+}
