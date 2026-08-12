@@ -1,5 +1,0 @@
-component,detail
-teacher,ResNet-50 dual-view + CORAL
-student,"depthwise-separable (32, 64, 96, 128, 160, 192, 224)"
-distillation,task + aux + logit-KD + CSD
-deployment,FP32 / PTQ INT8 / QAT INT8

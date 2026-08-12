@@ -1,0 +1,6 @@
+{
+  "min_qwk_retention_pct": 95.0,
+  "severe_error_must_not_credibly_worsen": true,
+  "tiebreak": "lowest median CPU latency",
+  "fallback": "best_fp32"
+}

@@ -1,0 +1,19 @@
+{
+  "torch": "2.11.0+cu128",
+  "torchvision": "0.26.0+cu128",
+  "torchao": "0.10.0",
+  "numpy": "2.0.2",
+  "sklearn": "1.5.2",
+  "python": "3.12.13",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "cuda": "12.8",
+  "gpu": "NVIDIA L4",
+  "quantized_engines": [
+    "qnnpack",
+    "onednn",
+    "x86",
+    "fbgemm"
+  ],
+  "git_commit": "unavailable (not a git checkout in this runtime)",
+  "timestamp": "2026-08-10T05:44:31.388824"
+}

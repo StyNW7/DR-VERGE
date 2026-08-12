@@ -1,1 +1,0 @@
-Reliability diagram. Deviation from the diagonal indicates miscalibration; companion CSV carries ECE and Brier per condition.

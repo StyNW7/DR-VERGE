@@ -1,0 +1,8 @@
+{
+  "best_condition": "dual_featkd",
+  "best_seed": 123,
+  "best_ckpt": "/content/drive/MyDrive/DR-VERGE/artifacts_final_efficient_20260810/checkpoints/student/dual_featkd/best_seed123.pt",
+  "best_val_qwk": 0.5632798573975044,
+  "best_csd_seed": 2026,
+  "selection_rule": "argmax QWK_val, tie<0.005 -> ['MacroF1', '-SevereErrorRate', '-MAE']"
+}

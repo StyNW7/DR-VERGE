@@ -1,1 +1,0 @@
-Mechanism fidelity. ShiftMAE lower = student shift closer to teacher; CosAgree higher = same shift direction; BenefitCorr higher = student gains from dual-view on the same samples as the teacher.

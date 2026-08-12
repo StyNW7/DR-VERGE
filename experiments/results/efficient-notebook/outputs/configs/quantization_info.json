@@ -1,0 +1,92 @@
+{
+  "locked_scope": "eager_backbone_only",
+  "rq2_pair": "eager_static_ptq vs eager_qat (identical backbone-only scope)",
+  "coverage_caveat": "quantization_coverage_pct is an INTEGRITY CHECK, not a headline metric: for PT2E it counts quantization graph NODES, which do not map one-to-one onto conv/linear operators. Gates require quantized_ops > 0 only.",
+  "scope_match_verified": true,
+  "ptq": {
+    "path": "eager_static_ptq",
+    "scope": "eager_backbone_only",
+    "engine": "fbgemm",
+    "calib_batches": 64,
+    "is_graph_module": false,
+    "used_in_RQ2": true,
+    "eligible_ops": 17,
+    "quantized_ops": 15,
+    "quantization_coverage_pct": 88.23529411764706,
+    "quantized_op_count_raw": 15
+  },
+  "ptq_pt2e_supplementary": {
+    "path": "pt2e_static_ptq",
+    "pt2e_available": false,
+    "error": "RuntimeError('PT2E unavailable: ModuleNotFoundError(\"No module named \\'torch.ao.quantization.quantize_pt2e\\'\")')",
+    "used_in_RQ2": false
+  },
+  "qat": {
+    "42": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "fbgemm",
+      "best_val_qwk": 0.5311629634214272,
+      "epochs_run": 5,
+      "lr": 3e-05,
+      "qat_training_seed": 42,
+      "fake_quant_modules_during_training": 27,
+      "used_in_RQ2": true,
+      "resumed_from_checkpoint": false,
+      "eligible_ops": 17,
+      "quantized_ops": 15,
+      "quantization_coverage_pct": 88.23529411764706,
+      "quantized_op_count_raw": 15
+    },
+    "123": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "fbgemm",
+      "best_val_qwk": 0.5473845609482809,
+      "epochs_run": 10,
+      "lr": 3e-05,
+      "qat_training_seed": 123,
+      "fake_quant_modules_during_training": 27,
+      "used_in_RQ2": true,
+      "resumed_from_checkpoint": false,
+      "eligible_ops": 17,
+      "quantized_ops": 15,
+      "quantization_coverage_pct": 88.23529411764706,
+      "quantized_op_count_raw": 15
+    },
+    "2026": {
+      "path": "eager_qat",
+      "scope": "eager_backbone_only",
+      "engine": "fbgemm",
+      "best_val_qwk": 0.5648026708000476,
+      "epochs_run": 6,
+      "lr": 3e-05,
+      "qat_training_seed": 2026,
+      "fake_quant_modules_during_training": 27,
+      "used_in_RQ2": true,
+      "resumed_from_checkpoint": false,
+      "eligible_ops": 17,
+      "quantized_ops": 15,
+      "quantization_coverage_pct": 88.23529411764706,
+      "quantized_op_count_raw": 15
+    }
+  },
+  "qat_deploy_seed": 2026,
+  "qat_deploy_seed_selected_on": "DRTiD validation QWK",
+  "fp32_ft_control": {
+    "kind": "qat_prepared_graph_with_fake_quant_disabled",
+    "val_qwk": {
+      "42": 0.5438493231312536,
+      "123": 0.5419647530971907,
+      "2026": 0.5429346543996225
+    }
+  },
+  "fp32_ft_plain_control": {
+    "kind": "ordinary_fp32_finetune",
+    "seed": 42
+  },
+  "engine": "fbgemm",
+  "pt2e_available": false,
+  "pt2e_import_error": "ModuleNotFoundError(\"No module named 'torch.ao.quantization.quantize_pt2e'\")",
+  "artifact": "INT8-quantized backbone with FP32 fusion and ordinal heads (mixed precision)"
+}

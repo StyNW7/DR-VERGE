@@ -1,0 +1,61 @@
+{
+  "logitkd": [
+    {
+      "alpha": 0.25,
+      "tau_kd": 2.0
+    },
+    {
+      "alpha": 0.5,
+      "tau_kd": 2.0
+    },
+    {
+      "alpha": 0.5,
+      "tau_kd": 4.0
+    },
+    {
+      "alpha": 1.0,
+      "tau_kd": 2.0
+    }
+  ],
+  "featkd": [
+    {
+      "gamma_feat": 0.1
+    },
+    {
+      "gamma_feat": 0.5
+    },
+    {
+      "gamma_feat": 1.0
+    },
+    {
+      "gamma_feat": 2.0
+    }
+  ],
+  "csd": [
+    {
+      "csd_variant": "smoothl1_norm",
+      "alpha": 0.5,
+      "beta": 0.1
+    },
+    {
+      "csd_variant": "smoothl1_norm",
+      "alpha": 0.5,
+      "beta": 0.2
+    },
+    {
+      "csd_variant": "smoothl1_norm",
+      "alpha": 0.5,
+      "beta": 0.5
+    },
+    {
+      "csd_variant": "smoothl1_norm",
+      "alpha": 0.25,
+      "beta": 0.2
+    },
+    {
+      "csd_variant": "magnitude_weighted_direction",
+      "alpha": 0.5,
+      "beta": 0.2
+    }
+  ]
+}

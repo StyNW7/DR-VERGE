@@ -1,0 +1,20 @@
+{
+  "run_name": "disc_only",
+  "seed": 123,
+  "view_mode": "disc_only",
+  "alpha": 0.0,
+  "beta": 0.0,
+  "lambda_aux": 0.5,
+  "csd_variant": "smoothl1_norm",
+  "tau_kd": 2.0,
+  "tau_csd": 0.5,
+  "use_counterfactual_csd": false,
+  "epochs": 40,
+  "patience": 8,
+  "lr": 0.001,
+  "batch_size": 16,
+  "gamma_feat": 0.0,
+  "huber_beta": 1.0,
+  "weight_decay": 0.0001,
+  "pos_weight_mode": "sqrt"
+}

@@ -1,1 +1,0 @@
-Gradient norms per loss component. The ratio panel shows whether CSD is a real training signal or numerical decoration.

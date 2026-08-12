@@ -1,1 +1,0 @@
-Diagnostic performance retained after INT8 quantization.

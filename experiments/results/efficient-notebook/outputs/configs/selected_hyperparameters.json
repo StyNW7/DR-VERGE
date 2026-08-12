@@ -1,0 +1,12 @@
+{
+  "csd_variant": "smoothl1_norm",
+  "alpha": 0.25,
+  "beta": 0.2,
+  "logitkd": {
+    "alpha": 1.0,
+    "tau_kd": 2.0
+  },
+  "featkd": {
+    "gamma_feat": 1.0
+  }
+}

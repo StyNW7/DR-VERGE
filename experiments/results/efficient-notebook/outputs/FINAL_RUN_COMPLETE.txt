@@ -1,0 +1,8 @@
+DR-VERGE final run completed successfully.
+run_tag        : final_efficient_20260810
+completed_at   : 2026-08-10T13:40:14
+mode           : FULL RUN
+gates          : 16/17 passed, 0 blocking failures
+M*             : dual_featkd (seed 123)
+epochs run     : 1045 of a 1975 ceiling (early stopping)
+evaluated runs : 43

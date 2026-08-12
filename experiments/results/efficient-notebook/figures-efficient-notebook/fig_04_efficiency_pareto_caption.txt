@@ -1,1 +1,0 @@
-Efficiency-performance frontier: QWK against CPU latency and serialized state_dict size (log x-axis).

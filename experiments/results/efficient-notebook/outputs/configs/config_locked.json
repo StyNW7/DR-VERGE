@@ -1,0 +1,41 @@
+{
+  "seeds_core": [
+    42,
+    123,
+    2026,
+    3407,
+    8888
+  ],
+  "seeds_baseline": [
+    42,
+    123,
+    2026
+  ],
+  "img_size": 224,
+  "num_classes": 5,
+  "pos_weight_mode": "sqrt",
+  "student_channels": [
+    32,
+    64,
+    96,
+    128,
+    160,
+    192,
+    224
+  ],
+  "fusion_type": "interaction_mlp",
+  "selection_metric": "QWK",
+  "selection_tie_eps": 0.005,
+  "selection_tiebreak": [
+    "MacroF1",
+    "-SevereErrorRate",
+    "-MAE"
+  ],
+  "bootstrap_B": 10000,
+  "bench": {
+    "batch_size": 1,
+    "warmup": 50,
+    "runs": 500,
+    "threads": 1
+  }
+}
