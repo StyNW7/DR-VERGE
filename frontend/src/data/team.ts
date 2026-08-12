@@ -23,7 +23,7 @@ export const team: TeamMember[] = [
   {
     id: "member-1",
     name: "Stanley Nathanael Wijaya",
-    role: "Research Lead · AI & Model Development",
+    role: "Team Leader · AI & Model Development",
     institution: "BINUS University",
     image: "/Images/stanley.png",
     linkedin: "https://www.linkedin.com/in/stanley-nathanael-wijaya/",
@@ -31,36 +31,33 @@ export const team: TeamMember[] = [
   },
   {
     id: "member-2",
-    name: "Team Member",
+    name: "Seline Loewel",
     role: "Research & Experimentation",
     institution: "BINUS University",
     image: null,
     linkedin: null,
     github: null,
-    placeholder: true,
   },
   {
     id: "member-3",
-    name: "Team Member",
+    name: "Ahmad Hamra",
     role: "Research & Documentation",
     institution: "BINUS University",
     image: null,
     linkedin: null,
     github: null,
-    placeholder: true,
   },
 ];
 
 export const advisors: TeamMember[] = [
   {
     id: "advisor-1",
-    name: "Faculty Advisor",
+    name: "Nikita Ananda Putri Masaling",
     role: "Research Advisor",
     institution: "BINUS University",
     image: null,
     linkedin: null,
     github: null,
-    placeholder: true,
   },
 ];
 

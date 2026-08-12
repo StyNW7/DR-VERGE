@@ -146,10 +146,10 @@ export default function Rq2Section() {
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <div className="mono text-2xl font-bold">
-                  {modelStats.ptqQwkRetentionPct}%
+                  {modelStats.selectedQwkRetentionPct}%
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
-                  PTQ QWK retention
+                  INT8 QWK retention
                 </div>
               </div>
             </div>

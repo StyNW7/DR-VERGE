@@ -49,8 +49,8 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
 
       {/* Inputs */}
       {[
-        { y: 56, label: "MACULA VIEW", sub: "224 x 224" },
-        { y: 164, label: "OPTIC DISC VIEW", sub: "224 x 224" },
+        { y: 56, label: "MACULA VIEW", sub: "384 x 384" },
+        { y: 164, label: "OPTIC DISC VIEW", sub: "384 x 384" },
       ].map((b) => (
         <g key={b.label}>
           <rect

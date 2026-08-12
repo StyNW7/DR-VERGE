@@ -143,7 +143,7 @@ check("grades not presented as self-diagnosis", "Not a self-diagnosis tool" in B
 check("research metrics centralized",
       "researchMetrics" in BLOB and
       # the literal values must not be re-typed inside components
-      not re.search(r"0\.4605", "\n".join(t for p, t in ALL if "data" not in p)))
+      not re.search(r"0\.3759", "\n".join(t for p, t in ALL if "data" not in p)))
 check("team data centralized",
       not re.search(r"linkedin\.com", "\n".join(t for p, t in ALL if "data" not in p)))
 check("site config centralized", "siteConfig" in BLOB)
@@ -214,7 +214,7 @@ if os.path.isdir(dist):
     check("no chunk over 600 kB", not big, str(big))
     check("research figures bundled", os.path.isdir(os.path.join(dist, "research", "figures")))
     n = len(os.listdir(os.path.join(dist, "research", "figures"))) if os.path.isdir(os.path.join(dist, "research", "figures")) else 0
-    check("all 15 figures present", n == 15, f"{n} found")
+    check("all 16 figures present", n == 16, f"{n} found")
 
 print("=" * 84)
 print("DR-VERGE FRONTEND — acceptance audit (prompts/dr-verge-fe.md section 20)")

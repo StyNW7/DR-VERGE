@@ -511,9 +511,9 @@ export function Rq2ResultsSection() {
         <Reveal delay={0.08} className="lg:col-span-5">
           <div className="grid h-full gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <StatBlock
-              value={`${modelStats.ptqQwkRetentionPct}%`}
-              label="PTQ QWK retention"
-              detail="Relative to the FP32 student"
+              value={`${modelStats.selectedQwkRetentionPct}%`}
+              label="INT8 QWK retention"
+              detail="Selected artifact, relative to the FP32 student"
             />
             <StatBlock
               value={`${modelStats.studentFp32LatencyMs.toFixed(2)} → ${modelStats.selectedDeploymentLatencyMs.toFixed(2)} ms`}

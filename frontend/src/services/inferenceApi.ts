@@ -223,10 +223,10 @@ function buildMockResponse(req: InferenceRequest): unknown {
     model: {
       name: "DR-VERGE",
       version: "1.0-mock",
-      variant: "FT-PTQ INT8 (simulated)",
+      variant: "QAT INT8 (simulated)",
       quantization: "INT8",
     },
-    runtime: { latency_ms: 6.22 },
+    runtime: { latency_ms: 11.35 },
     disclaimer:
       "Simulated output. No DR-VERGE model was executed; these numbers are generated locally for interface demonstration only.",
   };

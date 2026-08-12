@@ -27,7 +27,7 @@ export const abstract = {
     "Diabetic retinopathy screening increasingly relies on automated analysis of retinal fundus photographs, yet most systems reason over a single retinal field. A macula-centered image and an optic-disc-centered image capture different regions of the retina, and combining them changes what a model predicts. DR-VERGE studies that change directly.",
     "We define the complementarity shift as the difference between a model's dual-view cumulative ordinal prediction and the average of its two single-view predictions. Complementarity-Shift Distillation (CSD) trains a lightweight student to reproduce the teacher's shift, rather than only the teacher's final logits or intermediate features.",
     "Across a locked evaluation protocol on DRTiD with external evaluation on DeepDRiD, CSD transferred the teacher's decision-shift structure more faithfully than logit or feature distillation on all three mechanism metrics. That mechanism improvement did not, however, produce a statistically conclusive improvement in in-domain grading agreement — a distinction this work reports rather than obscures.",
-    "The selected lightweight student uses approximately 328K parameters and, after INT8 quantization, runs in 6.22 ms on a single CPU thread while retaining 98.3% of its FP32 ordinal agreement.",
+    "The selected lightweight student uses approximately 328K parameters and, after INT8 quantization, runs in 11.35 ms on a single CPU thread while retaining 99.0% of its FP32 ordinal agreement.",
   ],
 } as const;
 
@@ -170,7 +170,7 @@ export const sdgContent = {
     },
     {
       title: "Accessibility of AI-assisted analysis",
-      body: "A ~328K-parameter model that runs on a CPU in single-digit milliseconds does not require specialised hardware.",
+      body: "A ~328K-parameter model that grades an eye on a CPU in about eleven milliseconds does not require specialised hardware.",
     },
     {
       title: "Resource-constrained environments",

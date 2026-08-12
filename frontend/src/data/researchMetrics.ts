@@ -1,13 +1,31 @@
 /**
  * Every research number shown anywhere on this site.
  *
- * Values come from the locked DR-VERGE Simple-run evaluation protocol. Nothing
- * here may be duplicated inside a component: when the paper's final numbers
- * land, this file is the only edit.
+ * Source of truth: the ENHANCED run, `artifacts_enhanced_v1_20260811` — the
+ * primary result of the study (36/36 integrity gates, self-audit recomputed 265
+ * headline values from per-sample predictions with zero mismatches). Values are
+ * transcribed from `outputs/results/tables/*.csv`, not from prose.
+ *
+ * Nothing here may be duplicated inside a component: when the paper's numbers
+ * move, this file is the only edit.
  *
  * Wording rule that applies to all of it — these are EXPERIMENTAL results, not
  * clinical performance guarantees, and the site says so wherever they appear.
  */
+
+/** Provenance shown wherever the site cites its own numbers. */
+export const runProvenance = {
+  runId: "artifacts_enhanced_v1_20260811",
+  label: "Enhanced run",
+  gatesPassed: 36,
+  gatesTotal: 36,
+  auditedValues: 265,
+  auditMismatches: 0,
+  hardware: "NVIDIA A100-SXM4-80GB",
+  seedsPerCondition: 5,
+  bootstrapResamples: 10_000,
+  permutations: 10_000,
+} as const;
 
 export const DISCLAIMER_METRICS =
   "Reported values are experimental results from the locked DR-VERGE evaluation protocol and should not be interpreted as clinical performance guarantees.";
@@ -25,15 +43,27 @@ export const DISCLAIMER_CLINICAL =
 export const modelStats = {
   teacherParams: 40_313_932,
   studentParams: 328_588,
-  /** Teacher ÷ student, rounded for display. */
+  /** Teacher ÷ student parameters, rounded for display. */
   compressionFactor: 123,
-  teacherDualViewGain: 0.1143,
-  studentFp32LatencyMs: 15.06,
-  selectedDeploymentLatencyMs: 6.22,
-  ptqQwkRetentionPct: 98.3,
+  /** Serialized artifact ratio, teacher ÷ student FP32. */
+  artifactCompressionFactor: 119,
+  /** Teacher dual head vs its own best auxiliary head, on validation. */
+  teacherDualViewGain: 0.0469,
+  /** Student dual head vs independently trained single-view students. */
+  studentDualViewGain: 0.0516,
+  teacherQwk: 0.7364,
+  studentQwk: 0.6018,
+  /** Student QWK as a share of the teacher's. */
+  teacherQwkRetainedPct: 81.7,
+  teacherLatencyMs: 627.61,
+  studentFp32LatencyMs: 32.55,
+  selectedDeploymentLatencyMs: 11.35,
+  /** Selected deployment artifact is QAT INT8, seed 42. */
+  selectedQwkRetentionPct: 99.0,
+  cpuSpeedupVsTeacher: 19.3,
   ordinalGrades: 5,
   fundusViews: 2,
-  inputResolution: 224,
+  inputResolution: 384,
 } as const;
 
 /** The hero metric grid on the home page. */
@@ -49,14 +79,14 @@ export const headlineMetrics = [
     detail: "Compared with the ResNet-50 teacher",
   },
   {
-    value: "6.22 ms",
+    value: "11.35 ms",
     label: "CPU Inference Latency",
     detail: "Selected INT8 deployment, single thread",
   },
   {
-    value: "98.3%",
-    label: "PTQ QWK Retention",
-    detail: "Relative to the FP32 student",
+    value: "99.0%",
+    label: "QWK Retention at INT8",
+    detail: "Selected artifact, relative to the FP32 student",
   },
   {
     value: "5",
@@ -90,36 +120,48 @@ export const mechanismResults: MechanismRow[] = [
   {
     method: "No Distillation",
     shortMethod: "No KD",
-    shiftL1: 0.4605,
-    cosAgree: 0.318,
-    benefitCorr: 0.185,
+    shiftL1: 0.3759,
+    cosAgree: 0.3509,
+    benefitCorr: 0.2193,
     isProposed: false,
   },
   {
     method: "Logit KD",
     shortMethod: "Logit KD",
-    shiftL1: 0.4524,
-    cosAgree: 0.3468,
-    benefitCorr: 0.2161,
+    shiftL1: 0.384,
+    cosAgree: 0.2858,
+    benefitCorr: 0.1795,
     isProposed: false,
   },
   {
     method: "Feature KD",
     shortMethod: "Feature KD",
-    shiftL1: 0.4489,
-    cosAgree: 0.3721,
-    benefitCorr: 0.233,
+    shiftL1: 0.3718,
+    cosAgree: 0.3815,
+    benefitCorr: 0.1943,
     isProposed: false,
   },
   {
     method: "CSD (proposed)",
     shortMethod: "CSD",
-    shiftL1: 0.432,
-    cosAgree: 0.4257,
-    benefitCorr: 0.2902,
+    shiftL1: 0.3509,
+    cosAgree: 0.4361,
+    benefitCorr: 0.3075,
     isProposed: true,
   },
 ];
+
+/**
+ * The mechanism ordering held in all three independent runs — 9 of 9
+ * measurements, across different resolutions, hardware and selection regimes.
+ * This replication is the strongest evidence in the study.
+ */
+export const mechanismReplication = {
+  runs: 3,
+  measurements: 9,
+  wins: 9,
+  note: "CSD ranked best on all three mechanism metrics in every independent run, at 224 and 384 pixels, under different hyperparameter-selection regimes.",
+} as const;
 
 export const mechanismMetricMeta: Record<
   MechanismMetricKey,
@@ -163,15 +205,19 @@ export const mechanismMetricMeta: Record<
  */
 export const rq1Verdict = {
   mechanism:
-    "CSD consistently transferred the teacher's dual-view decision-shift structure more faithfully than no distillation, logit KD, or feature KD.",
+    "CSD transferred the teacher's dual-view decision-shift structure more faithfully than no distillation, logit KD, or feature KD — ranking best on all three mechanism metrics, in all three independent runs.",
   predictive:
-    "However, stronger mechanism fidelity did not translate into a statistically conclusive in-domain QWK improvement.",
+    "Stronger mechanism fidelity did not translate into a statistically conclusive in-domain QWK improvement: every interval is narrow and includes zero, placing CSD on a par with each baseline.",
+  synthesis:
+    "Taken together, the mechanism transfer was obtained at no measurable cost to predictive accuracy. The dissociation between the two axes is reported as the study's central finding rather than smoothed over.",
   comparisons: [
-    { pair: "CSD vs No Distillation", outcome: "Not conclusive" },
-    { pair: "CSD vs Logit KD", outcome: "Not conclusive" },
-    { pair: "CSD vs Feature KD", outcome: "Not conclusive" },
+    { pair: "CSD vs No Distillation", delta: -0.0024, ciLow: -0.0336, ciHigh: 0.0285, outcome: "Not conclusive" },
+    { pair: "CSD vs Logit KD", delta: 0.0077, ciLow: -0.0304, ciHigh: 0.0463, outcome: "Not conclusive" },
+    { pair: "CSD vs Feature KD", delta: -0.0143, ciLow: -0.0445, ciHigh: 0.0153, outcome: "Not conclusive" },
   ],
   note: "A confidence interval that includes zero is not a claim. These comparisons are reported as null results rather than omitted.",
+  method:
+    "Paired patient-clustered bootstrap over 5 matched seeds (B = 10,000), permutation tests (P = 10,000), Holm correction within each family.",
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -182,6 +228,8 @@ export interface EfficiencyRow {
   variant: string;
   precision: string;
   latencyMs: number;
+  /** Serialized state_dict size in megabytes. */
+  sizeMb: number;
   paramsLabel: string;
   qwkRetentionPct: number | null;
   isSelected: boolean;
@@ -191,7 +239,8 @@ export const efficiencyResults: EfficiencyRow[] = [
   {
     variant: "Teacher (ResNet-50 dual-view)",
     precision: "FP32",
-    latencyMs: 76.4,
+    latencyMs: 627.61,
+    sizeMb: 154.09,
     paramsLabel: "40.3M",
     qwkRetentionPct: null,
     isSelected: false,
@@ -199,7 +248,8 @@ export const efficiencyResults: EfficiencyRow[] = [
   {
     variant: "Student",
     precision: "FP32",
-    latencyMs: 15.06,
+    latencyMs: 32.55,
+    sizeMb: 1.29,
     paramsLabel: "328K",
     qwkRetentionPct: 100,
     isSelected: false,
@@ -207,32 +257,44 @@ export const efficiencyResults: EfficiencyRow[] = [
   {
     variant: "Student PTQ",
     precision: "INT8",
-    latencyMs: 6.7,
+    latencyMs: 11.24,
+    sizeMb: 0.95,
     paramsLabel: "328K",
-    qwkRetentionPct: 98.3,
-    isSelected: false,
-  },
-  {
-    variant: "Student QAT",
-    precision: "INT8",
-    latencyMs: 6.45,
-    paramsLabel: "328K",
-    qwkRetentionPct: 97.1,
+    qwkRetentionPct: 97.3,
     isSelected: false,
   },
   {
     variant: "Student FT-PTQ",
     precision: "INT8",
-    latencyMs: 6.22,
+    latencyMs: 11.26,
+    sizeMb: 0.95,
     paramsLabel: "328K",
-    qwkRetentionPct: 98.3,
+    qwkRetentionPct: 96.8,
+    isSelected: false,
+  },
+  {
+    variant: "Student QAT",
+    precision: "INT8",
+    latencyMs: 11.35,
+    sizeMb: 0.95,
+    paramsLabel: "328K",
+    qwkRetentionPct: 99.0,
     isSelected: true,
   },
 ];
 
+/** Pre-registered RQ2 comparisons on the internal test set. */
+export const rq2Comparisons = [
+  { pair: "PTQ INT8 vs FP32", delta: -0.0164, ciLow: -0.036, ciHigh: 0.0023 },
+  { pair: "QAT INT8 vs FP32", delta: -0.0063, ciLow: -0.0293, ciHigh: 0.0175 },
+  { pair: "QAT INT8 vs PTQ INT8", delta: 0.0101, ciLow: -0.0179, ciHigh: 0.0411 },
+] as const;
+
 export const rq2Verdict = {
   headline:
-    "INT8 quantization substantially reduced inference cost while preserving most ordinal grading performance.",
+    "INT8 quantization substantially reduced inference cost while preserving ordinal grading performance: no variant showed a credible degradation against the FP32 student.",
+  control:
+    "A matched FP32 fine-tuning control was run alongside, so the retention is attributable to quantization-aware training rather than to the extra epochs it involves.",
   caution:
     "Quantization reduces computational cost. It does not improve grading accuracy, and this site does not claim that it does.",
 } as const;
@@ -249,13 +311,25 @@ export interface ExternalRow {
 }
 
 export const externalValidation: ExternalRow[] = [
-  { model: "Teacher", qwk: 0.7788, isTeacher: true, isSelected: false },
-  { model: "Best CSD", qwk: 0.7346, isTeacher: false, isSelected: false },
-  { model: "Selected FP32", qwk: 0.6442, isTeacher: false, isSelected: false },
-  { model: "PTQ INT8", qwk: 0.6607, isTeacher: false, isSelected: false },
-  { model: "QAT INT8", qwk: 0.7179, isTeacher: false, isSelected: false },
-  { model: "FT-PTQ INT8", qwk: 0.7208, isTeacher: false, isSelected: true },
+  { model: "Teacher", qwk: 0.7923, isTeacher: true, isSelected: false },
+  { model: "PTQ INT8", qwk: 0.6729, isTeacher: false, isSelected: false },
+  { model: "Student FP32 (CSD)", qwk: 0.6688, isTeacher: false, isSelected: false },
+  { model: "FP32 fine-tune control", qwk: 0.6567, isTeacher: false, isSelected: false },
+  { model: "FT-PTQ INT8", qwk: 0.6513, isTeacher: false, isSelected: false },
+  { model: "QAT INT8", qwk: 0.6344, isTeacher: false, isSelected: true },
 ];
+
+/** Set-C is the pre-registered confirmatory partition, frozen until the end. */
+export const externalSetup = {
+  partition: "DeepDRiD Set-C",
+  patients: 100,
+  eyes: 200,
+  images: 400,
+  exclusions: 0,
+  seeds: 5,
+  /** Student QWK as a share of the teacher's, on the external partition. */
+  teacherQwkRetainedPct: 84.4,
+} as const;
 
 export const externalCaveat =
   "External results are reported as supporting evidence. Confidence intervals overlap for several comparisons and external superiority should not be overstated.";
@@ -268,27 +342,31 @@ export const externalCaveat =
 export const limitations = [
   {
     title: "Moderate absolute QWK",
-    body: "Agreement is moderate rather than high. DR-VERGE is positioned as a research contribution on distillation mechanism, not as a state-of-the-art grading system.",
+    body: "Agreement is moderate rather than high — 0.7364 for the teacher and 0.6018 for the student on the internal test set. DR-VERGE is positioned as a research contribution on distillation mechanism and deployability, not as a state-of-the-art grading system.",
   },
   {
     title: "Relatively low Macro-F1",
     body: "Aggregate ordinal agreement is far better than per-class balance, which means the rare grades are recognised less reliably than the common ones.",
   },
   {
-    title: "Minority-grade difficulty",
-    body: "Grade 1 and Grade 3 are under-represented in the training data and are the grades the model most often misses.",
+    title: "Mild NPDR is the weakest grade",
+    body: "Grade 1 recall is 0.111 on the external partition. Early NPDR is the grade the system misses most often, and it is also the grade with the lowest agreement among human readers.",
   },
   {
-    title: "Severe-error rate remains non-trivial",
-    body: "Predictions that are two or more grades away from the reference still occur. In a clinical context those are the consequential errors.",
+    title: "Errors concentrate in adjacent grades",
+    body: "Adjacent accuracy reaches 0.7418 and ordinal monotonicity violations are zero, so mistakes almost always land one grade away rather than jumping. Predictions two or more grades from the reference still occur, and in a clinical context those are the consequential errors.",
   },
   {
-    title: "224x224 input resolution",
-    body: "Microaneurysms are among the smallest lesions that define early DR and may not survive downsampling to 224x224.",
+    title: "Input resolution bounds the smallest lesions",
+    body: "Stage A selected 384x384 over 224x224 by a wide margin, but microaneurysms are among the smallest lesions defining early DR and may still not survive downsampling.",
   },
   {
     title: "Mechanism gain is not a predictive guarantee",
-    body: "CSD transferred the decision-shift structure more faithfully, yet that did not produce a statistically conclusive in-domain QWK improvement. The two are separate claims.",
+    body: "CSD transferred the decision-shift structure more faithfully, yet that did not produce a statistically conclusive in-domain QWK improvement. The two are separate claims and are reported separately.",
+  },
+  {
+    title: "Methods are closely matched on accuracy",
+    body: "All four distillation conditions fall within a narrow band, and the selected method differed between runs. This is why the mechanism axis, not the accuracy axis, is where the contribution is claimed.",
   },
   {
     title: "Public-dataset generalizability",
@@ -325,43 +403,53 @@ export const datasets = [
 export const pipelineStages = [
   {
     step: "01",
+    title: "Recipe Selection",
+    body: "Resolution and sampling are chosen on validation before the teacher exists, so the choice cannot be shaped by later results. 384x384 was selected.",
+  },
+  {
+    step: "02",
     title: "APTOS Pretraining",
     body: "Both backbones are warm-started on single-field fundus images.",
   },
   {
-    step: "02",
-    title: "Dual-View Teacher",
-    body: "A ResNet-50 teacher learns from both fields jointly.",
-  },
-  {
     step: "03",
-    title: "Lightweight Student",
-    body: "A ~328K-parameter dual-view student is trained from scratch.",
+    title: "Dual-View Teacher",
+    body: "A ResNet-50 teacher learns from both fields jointly and reaches 0.7364 QWK.",
   },
   {
     step: "04",
-    title: "Knowledge Distillation",
-    body: "Logit KD and feature KD baselines are tuned and frozen.",
+    title: "Lightweight Student",
+    body: "A 328K-parameter dual-view student is trained from scratch.",
   },
   {
     step: "05",
+    title: "Knowledge Distillation",
+    body: "Logit KD and feature KD baselines are tuned over three seeds and frozen.",
+  },
+  {
+    step: "06",
     title: "Complementarity-Shift Distillation",
     body: "The teacher's dual-view decision shift is transferred to the student.",
   },
   {
-    step: "06",
-    title: "INT8 Quantization",
-    body: "PTQ and QAT are applied under a matched operator scope.",
-  },
-  {
     step: "07",
-    title: "External Evaluation",
-    body: "The selected model is evaluated once on DeepDRiD Set-C.",
+    title: "Threshold Calibration",
+    body: "One global decision threshold per condition is fitted on validation only.",
   },
   {
     step: "08",
+    title: "INT8 Quantization",
+    body: "PTQ, QAT and FT-PTQ are applied under a matched operator scope, with an FP32 fine-tuning control.",
+  },
+  {
+    step: "09",
+    title: "External Evaluation",
+    body: "Five matched seeds are evaluated once on the frozen DeepDRiD Set-C partition.",
+  },
+  {
+    step: "10",
     title: "Deployment",
-    body: "The selected INT8 artifact is exported for CPU inference.",
+    body: "The selected INT8 artifact is exported and verified to reload from disk.",
   },
 ] as const;
 
@@ -391,7 +479,7 @@ export const researchFigures: Record<string, ResearchFigure> = {
     src: `${FIG}/fig_01_dataset.png`,
     title: "Figure 2 — Dataset composition",
     caption:
-      "DRTiD eye counts per split and grade. Grade 4 is roughly 3.9% of training, which is why the train/validation split is stratified.",
+      "DRTiD eye counts per split and grade: 800 training, 200 validation and 550 test eyes. The rarest grades are a small fraction of training, which is why the train/validation split is stratified.",
   },
   workflow: {
     id: "fig_02_experimental_workflow",
@@ -404,7 +492,8 @@ export const researchFigures: Record<string, ResearchFigure> = {
     id: "fig_02_performance",
     src: `${FIG}/fig_02_performance.png`,
     title: "Figure 4 — Predictive performance",
-    caption: "Mean ± standard deviation across seeds on the internal test set.",
+    caption:
+      "Mean ± standard deviation across five matched seeds on the internal test set. The four distillation conditions sit within a narrow band, which is why the mechanism metrics carry the RQ1 argument.",
   },
   ordinalSafety: {
     id: "fig_03_ordinal_safety",
@@ -418,7 +507,7 @@ export const researchFigures: Record<string, ResearchFigure> = {
     src: `${FIG}/fig_04_per_grade_recall.png`,
     title: "Figure 6 — Per-grade recall",
     caption:
-      "Per-grade recall. Rare intermediate grades are where ordinal models usually fail.",
+      "Per-grade recall. The system is strongest at the ends of the ordinal scale; Mild NPDR is the weakest grade and is also the one human readers agree on least.",
   },
   confusion: {
     id: "fig_05_confusion",
@@ -440,45 +529,52 @@ export const researchFigures: Record<string, ResearchFigure> = {
     caption:
       "Lower ShiftL1 means the student's decision-shift structure is closer to the teacher's; higher CosAgree means the shift points the same way; higher BenefitCorr means the student gains from the dual view on the same samples the teacher does.",
   },
+  csdGradient: {
+    id: "fig_08_csd_gradient",
+    src: `${FIG}/fig_08_csd_gradient.png`,
+    title: "Figure 10 — CSD gradient balance",
+    caption:
+      "Ratio of the CSD gradient to the task gradient on the shared backbone. At the selected weight the ratio is 0.5335, so the shift objective contributes a real signal without overwhelming the grading task.",
+  },
   retention: {
     id: "fig_09_retention",
     src: `${FIG}/fig_09_retention.png`,
-    title: "Figure 10 — Quantization retention",
+    title: "Figure 11 — Quantization retention",
     caption:
       "Retention relative to the FP32 model. The 95% line is a pre-specified engineering criterion for choosing an artifact, not a clinical margin.",
   },
   efficiency: {
     id: "fig_10_efficiency",
     src: `${FIG}/fig_10_efficiency.png`,
-    title: "Figure 11 — Size and latency",
+    title: "Figure 12 — Size and latency",
     caption:
       "Serialized state_dict size and single-thread CPU latency (median of five blocks).",
   },
   pareto: {
     id: "fig_11_pareto",
     src: `${FIG}/fig_11_pareto.png`,
-    title: "Figure 12 — Performance/efficiency trade-off",
+    title: "Figure 13 — Performance/efficiency trade-off",
     caption:
       "QWK against CPU latency. Points closer to the top-left indicate a more favourable trade-off.",
   },
   forest: {
     id: "fig_12_forest",
     src: `${FIG}/fig_12_forest.png`,
-    title: "Figure 13 — Forest plot of every comparison",
+    title: "Figure 14 — Forest plot of every comparison",
     caption:
       "Every pre-registered QWK comparison. The point is the observed paired difference and the bar is the bootstrap interval. An interval crossing zero is not a claim.",
   },
   externalSetC: {
     id: "fig_13_external_setc",
     src: `${FIG}/fig_13_external_setc.png`,
-    title: "Figure 14 — External evaluation, DeepDRiD Set-C",
+    title: "Figure 15 — External evaluation, DeepDRiD Set-C",
     caption:
       "The confirmatory external partition. No tuning, threshold adjustment, or selection happened here.",
   },
   internalVsExternal: {
     id: "fig_14_internal_vs_external",
     src: `${FIG}/fig_14_internal_vs_external.png`,
-    title: "Figure 15 — Internal versus external",
+    title: "Figure 16 — Internal versus external",
     caption:
       "A drop on Set-C is a domain-shift finding to report, not something to tune away.",
   },
