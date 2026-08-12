@@ -1,0 +1,1 @@
+Severe error = |predicted - true| >= 2 grades, the clinically consequential mistake.

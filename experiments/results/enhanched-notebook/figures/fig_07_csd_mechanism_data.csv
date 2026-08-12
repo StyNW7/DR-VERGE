@@ -1,0 +1,16 @@
+metric,condition,mean
+ShiftL1,dual_no_distill,0.37586609125137327
+ShiftL1,dual_logitkd,0.3840480446815491
+ShiftL1,dual_featkd,0.3718381881713867
+ShiftL1,dual_csd,0.3509332239627838
+ShiftL1,abl_csd_counterfactual,0.35762598117192584
+CosAgree,dual_no_distill,0.35094830095767976
+CosAgree,dual_logitkd,0.28578919768333433
+CosAgree,dual_featkd,0.3815310299396515
+CosAgree,dual_csd,0.4361018717288971
+CosAgree,abl_csd_counterfactual,0.4327495296796163
+BenefitCorr,dual_no_distill,0.21928276047110556
+BenefitCorr,dual_logitkd,0.1795109488070011
+BenefitCorr,dual_featkd,0.1942828346043825
+BenefitCorr,dual_csd,0.30750212371349334
+BenefitCorr,abl_csd_counterfactual,0.2543548693259557

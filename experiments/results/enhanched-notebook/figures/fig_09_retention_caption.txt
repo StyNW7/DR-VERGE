@@ -1,0 +1,1 @@
+Retention relative to the FP32 model. The 95% line is a pre-specified engineering criterion for choosing an artifact, not a clinical margin.
