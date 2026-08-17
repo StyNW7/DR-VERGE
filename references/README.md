@@ -33,9 +33,11 @@ none has the combination:
 | **DR-VERGE** | **✓** | **✓** | **✓** | **✓** | **✓ PTQ** |
 
 **CrossFiT is the most important entry.** It established on DRTiD that dual-view beats either
-single view (84.21% vs 80.47% / 77.87%) — the empirical premise DR-VERGE rests on. The primary
-run re-established that premise independently: the teacher's own dual-view gain is **+0.1143
-QWK**. Without it, the entire method would be pointless.
+single view (84.21% vs 80.47% / 77.87%) — the empirical premise DR-VERGE rests on. The final run
+re-established that premise independently: the teacher's dual-view gain over independently
+trained single-view models is **+0.1782 QWK**, and at student scale dual-view beats disc-only by
+**+0.0540** and macula-only by **+0.0867**. Without that premise, the entire method would be
+pointless.
 
 ---
 
@@ -46,8 +48,11 @@ QWK**. Without it, the entire method would be pointless.
 Kept as a **standard for structure and rigour**, and as an honest comparison point: Pink-MVAN
 solved the analogous problem in mammography with dual-view KD + PTQ, but its distillation is
 generic logit KD on a single output. DR-VERGE's claim is specifically that the *complementarity
-shift* is a distinct and distillable signal. The paper is what that claim must be defensible
-against.
+shift* is a distinct and distillable signal — and the final run supports exactly that, with CSD
+leading all three mechanism metrics while generic logit-KD scores **worse than no distillation
+at all** on two of them. The paper is what that claim must be defensible against.
+
+> Not tracked by git — the PDF is a third-party submission and is not redistributed here.
 
 ---
 

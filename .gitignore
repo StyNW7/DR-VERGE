@@ -31,3 +31,6 @@ CrossFiT/
 .gitignore
 
 draft/
+
+# _private/ — internal working material kept locally, never published.
+_private/

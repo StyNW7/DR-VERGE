@@ -23,32 +23,51 @@ npm run dev               # http://localhost:5173
 | `npm run build` | Type-check then production build |
 | `npm run preview` | Serve the production build |
 | `npm run verify` | Inference-client contract tests (21 checks) |
-| `npm run check` | Type-check + verify |
+| `npm run verify:model` | Model artifact checks (14 checks) |
+| `npm run render-check` | Mounts the real app under jsdom in a dev build |
+| `npm run cycles` | Detects circular imports |
+| `npm run check` | All of the above |
 | `npm run lint` | ESLint |
 | `python scripts/audit-acceptance.py` | Acceptance audit against the spec (128 checks) |
 
 ---
 
-## The model is not deployed yet
+## The model runs for real, in the browser
 
-`VITE_MODEL_API_URL` is empty, so the demo runs in **mock mode**, and it says so
-everywhere it possibly can:
+The exported DR-VERGE student ships with the site and is executed **client-side** with
+`onnxruntime-web`. There is no server, no API key, and **no image ever leaves the
+visitor's machine**.
 
-- a **Demo Mode** badge in the page header
-- a dashed, non-dismissible banner above the upload area
-- **the same banner again directly above the result numbers**
-- `variant: "FT-PTQ INT8 (simulated)"` and `version: "1.0-mock"` in the model panel
-- a disclaimer stating *"No DR-VERGE model was executed"*
-- a **"Simulated output — no model was executed"** stamp on the printed summary
+```
+public/models/best_student_fp32/
+├── model.onnx        graph
+├── model.onnx.data   external tensor data — required, the graph alone is inert
+└── metadata.json     preprocessing constants and decision threshold
+```
 
-The mock output is *structurally* real — the cumulative vector is monotone
-non-increasing and the grade is the count of thresholds passed, exactly as a CORAL head
-behaves — so the interface is exercised against the shape of genuine output. **The
-numbers themselves mean nothing**, and are deterministic per file pair rather than
-random, so re-uploading the same images does not produce a suspiciously different
-"diagnosis".
+Two details make this faithful rather than merely functional:
 
-To go live: set `VITE_MODEL_API_URL` and `VITE_USE_MOCK_MODEL=false`. No code change.
+- **Preprocessing constants are read from `metadata.json`**, not hardcoded in the client.
+  If the exported model changes, the client follows it automatically.
+- **The grade is the count of CORAL thresholds passed**, never an argmax — the same rule
+  the notebook uses.
+
+**Verified against the research.** Running this exact ONNX artifact over all 200 DeepDRiD
+Set-C eyes produced **QWK 0.7307** against the notebook's **0.7298** for the same seed.
+The 0.0009 gap is attributable to image resampling (PIL vs cv2), which confirms the
+browser pipeline reproduces the experiment rather than approximating it.
+
+`npm run verify:model` checks the artifacts are present and coherent — including that
+`model.onnx.data` exists, since `model.onnx` is only ~190 kB of graph and silently
+produces nothing without its sidecar.
+
+### Mock mode still exists, as a fallback
+
+If the model fails to load, the client can fall back to a clearly-labelled mock. A mock
+result is **never** presentable as a real one: every response carries a `source` field
+(`"onnx-local"` / `"model-api"` / `"mock"`) and an `isMock` flag, and mock output is
+badged in six separate places in the UI. `npm run verify` asserts this rather than
+assuming it.
 
 ---
 
@@ -60,9 +79,9 @@ protected server-side (rate limiting / gateway).
 
 | Variable | Purpose | Default when unset |
 |---|---|---|
-| `VITE_MODEL_API_URL` | Inference endpoint; `multipart/form-data` with `macula` and `optic_disc` | empty → mock mode on |
-| `VITE_USE_MOCK_MODEL` | Force mock on/off | on when no API URL |
-| `VITE_SAMPLE_DATASET_URL` | Sample dual-view pairs | button renders disabled |
+| `VITE_MODEL_API_URL` | Optional remote endpoint; `multipart/form-data` with `macula` and `optic_disc` | empty → the bundled in-browser ONNX model is used |
+| `VITE_USE_MOCK_MODEL` | Force mock on/off | off — the local model is tried first |
+| `VITE_SAMPLE_DATASET_URL` | Downloadable sample dual-view pairs | button renders disabled |
 | `VITE_PAPER_URL` | Paper PDF | button renders disabled |
 | `VITE_GITHUB_URL` | Repository | link renders as "soon" |
 | `VITE_INSTITUTION` | Shown in footer/metadata | `BINUS University` |
@@ -105,15 +124,19 @@ src/
 │   └── research/    ResearchSections
 ├── pages/           HomePage, DemoPage, ResearchPage, Utility/NotFound404
 ├── data/            researchMetrics · drGrades · team · researchContent
-├── services/        inferenceApi
+├── services/        inferenceApi (routing + contract) · onnxModel (in-browser inference)
 ├── hooks/           useInference
 ├── utils/           fileValidation · formatting
 └── config/          siteConfig
 ```
 
 **Every research number lives in `src/data/`.** No component contains a hardcoded metric,
-so updating results when the paper finalises is a single-file edit. The audit enforces
-this — it fails if a value like `0.4605` appears outside `src/data/`.
+so updating results is a single-file edit. The audit enforces this — it fails if a metric
+value such as `0.3759` appears outside `src/data/`.
+
+All site content is sourced from the **enhanced run** (`artifacts_enhanced_v1_20260811`),
+the same run the paper uses. `researchMetrics.ts` records its provenance explicitly so the
+numbers on screen can be traced back to the run that produced them.
 
 ---
 
@@ -182,14 +205,26 @@ These are enforced by the acceptance audit, not just by convention:
 |---|---|
 | `tsc -b` type-check | clean |
 | `npm run build` | passes, no chunk over 600 kB |
+| `npm run cycles` — circular imports | none |
+| `npm run render-check` — real app under jsdom | **PASS** |
 | `npm run verify` — inference contract | **21/21** |
+| `npm run verify:model` — model artifacts | **14/14** |
 | `scripts/audit-acceptance.py` — spec section 20 | **128/128** |
 
-`npm run verify` is the one worth understanding: it bundles `inferenceApi.ts` and runs it
-in Node, asserting that partial and malformed API responses degrade gracefully, that error
-messages never leak internals, and that **every mock result is flagged as mock**. A demo
-that silently presents fabricated numbers as real inference would be the worst failure
-this site could have, so it is tested rather than assumed.
+Two of these are worth understanding.
+
+`npm run verify` bundles `inferenceApi.ts` and runs it in Node, asserting that partial and
+malformed responses degrade gracefully, that error messages never leak internals, and that
+**every mock result is flagged as mock**. A demo that silently presents fabricated numbers
+as real inference would be the worst failure this site could have, so it is tested rather
+than assumed.
+
+`npm run render-check` exists because of a real production bug. A component list fell out
+of sync with the data array it indexed, and since **TypeScript does not check array index
+access**, the build emitted no warning — the deployed site died with a minified React
+error #130 that names no component. This check bundles the app in development mode and
+mounts it under jsdom, so React reports the offending component by name. It also refuses
+to pass on an empty render, because a silent empty tree proves nothing.
 
 ### Bundle
 

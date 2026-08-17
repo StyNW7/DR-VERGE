@@ -17,9 +17,11 @@ Status   : 36/36 gate lolos · 0 error · FINAL_RUN_COMPLETE.txt tertulis
 | Berkas | Isi |
 |---|---|
 | **[`RESULTS_OVERVIEW.md`](RESULTS_OVERVIEW.md)** | **Baca ini dulu.** Seluruh hasil, penilaian jujur atas kekuatan dan kelemahan, jawaban RQ1 & RQ2, verifikasi integritas |
-| **[`PANDUAN_PAPER.md`](PANDUAN_PAPER.md)** | Apa yang ditulis di paper, cara menjawab RQ, kalimat klaim yang aman, bab keterbatasan, checklist submit |
 | `full_pipeline_notebook_enhanced.ipynb` | Notebook tereksekusi lengkap dengan seluruh keluaran |
-| `figures/` | 14 figur × 5 berkas (`.png` `.svg` `.pdf` `_caption.txt` `_data.csv`) |
+| `outputs/results/figures/` | 14 figur × 5 berkas (`.png` `.svg` `.pdf` `_caption.txt` `_data.csv`) |
+| `outputs/results/tables/` | 34 tabel hasil dalam `.csv` — angka mentah di balik setiap klaim |
+| `outputs/results/predictions/` | Prediksi per sampel untuk setiap model, seed, dan partisi |
+| `outputs/configs/` | Konfigurasi terkunci, manifest split, info kuantisasi, versi paket persis |
 
 > **Baca `RESULTS_OVERVIEW.md` sebelum membuka figur mana pun.** Sebuah figur tanpa konteks
 > hasilnya mudah disalahtafsirkan — terutama `fig_07` yang menampilkan keunggulan mekanisme CSD
@@ -89,10 +91,11 @@ Tiga figur yang memikul paper:
 
 ## Terkait
 
-- Run pendahulu → [`../simple-notebook/`](../simple-notebook/)
-- Perbandingan lintas run → [`../knowledge/`](../knowledge/)
+- Run pendukung → [`../simple-notebook/`](../simple-notebook/) · [`../efficient-notebook/`](../efficient-notebook/)
+- Perbandingan lintas run → [`../final-results-documentation/final-comparison.md`](../final-results-documentation/final-comparison.md)
 - Kode pipeline → [`../../pipeline/`](../../pipeline/)
 - Argumen penelitian → [`../../../research/`](../../../research/)
+- Demo yang menjalankan model ini → [`../../../frontend/`](../../../frontend/)
 
 ---
 

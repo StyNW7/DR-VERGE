@@ -334,5 +334,5 @@ bahwa demo menjalankan varian FP32, bukan artefak INT8 yang dilaporkan.
 
 - Format berkas model → [`model-files-for-deployment.md`](model-files-for-deployment.md)
 - Sampel uji → [`../../frontend/public/samples/README.md`](../../frontend/public/samples/README.md)
-- Hasil run → [`../../experiments/results/enhanched-notebook/RESULTS_OVERVIEW.md`](../../experiments/results/enhanched-notebook/RESULTS_OVERVIEW.md)
+- Hasil run → [`../../experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md`](../../experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md)
 - Aturan keselamatan demo → `project/prompts/dr-verge-fe.md`
