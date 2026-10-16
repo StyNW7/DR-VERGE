@@ -1,9 +1,20 @@
-import { Check, Loader2, Sparkles, EyeOff, BadgeCheck, CircleSlash, ExternalLink } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Sparkles,
+  EyeOff,
+  BadgeCheck,
+  CircleSlash,
+  ExternalLink,
+  FolderOpen,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SampleEntry, SampleManifest } from "@/data/samples";
 import { getGrade, gradeText } from "@/data/drGrades";
 import { Skeleton } from "@/components/common/Primitives";
 import { useI18n } from "@/i18n/context";
+import { ExternalButton } from "@/components/common/Button";
+import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 
 /**
  * One-click sample eyes.
@@ -49,10 +60,27 @@ export function SamplePicker({
             </p>
           </div>
         </div>
-        <span className="mono inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground sm:self-center">
-          <EyeOff className="h-3 w-3" aria-hidden="true" />
-          {t("Grade hidden until analysed", "*Grade* disembunyikan hingga dianalisis")}
-        </span>
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
+          <span className="mono inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            <EyeOff className="h-3 w-3" aria-hidden="true" />
+            {t("Grade hidden until analysed", "*Grade* disembunyikan hingga dianalisis")}
+          </span>
+          {/* The full sample set, for downloading or testing outside the demo. */}
+          <ExternalButton
+            href={siteConfig.sampleDatasetUrl}
+            enabled={isLinkConfigured(siteConfig.sampleDatasetUrl)}
+            variant="outline"
+            size="sm"
+            ariaLabel={ts(
+              "Open the sample images folder on Google Drive (new tab)",
+              "Buka folder citra sampel di Google Drive (tab baru)",
+            )}
+          >
+            <FolderOpen className="h-3.5 w-3.5" aria-hidden="true" />
+            {t("Open in Google Drive", "Buka di Google Drive")}
+            <ExternalLink className="h-3 w-3 opacity-60" aria-hidden="true" />
+          </ExternalButton>
+        </div>
       </div>
 
       <div className="flex snap-x gap-3 overflow-x-auto scroll-px-5 p-5 sm:scroll-px-6 sm:p-6">

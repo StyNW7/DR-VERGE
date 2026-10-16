@@ -64,7 +64,11 @@ export const siteConfig = {
   year: 2026,
 
   // External links, all overridable per deployment.
-  sampleDatasetUrl: readEnv(env.VITE_SAMPLE_DATASET_URL),
+  // Public Google Drive folder with the full sample set; an env value overrides it.
+  sampleDatasetUrl: readEnv(
+    env.VITE_SAMPLE_DATASET_URL,
+    "https://drive.google.com/drive/folders/1696R94LIC2lmZ_0-Z6cx2vm_2jRSl3hi?usp=sharing",
+  ),
   paperUrl: readEnv(env.VITE_PAPER_URL),
   githubUrl: readEnv(env.VITE_GITHUB_URL),
   modelApiUrl,
