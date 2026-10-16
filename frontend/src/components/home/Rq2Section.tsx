@@ -60,7 +60,12 @@ export default function Rq2Section() {
     <Section id="rq2">
       <SectionHeader
         eyebrow="RQ2 · Efficiency"
-        title="Designed to Be Lightweight"
+        index="06"
+        title={
+          <>
+            Designed to Be <em>Lightweight</em>
+          </>
+        }
         description="The student is two orders of magnitude smaller than the teacher, and INT8 quantization cuts its CPU inference cost again."
         size="lg"
       />
@@ -68,7 +73,7 @@ export default function Rq2Section() {
       <div className="mt-14 grid gap-5 lg:grid-cols-12">
         {/* Parameters */}
         <Reveal className="lg:col-span-5">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
               <span className="eyebrow">Model size</span>
               <HardDrive className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -108,7 +113,7 @@ export default function Rq2Section() {
 
         {/* Latency */}
         <Reveal delay={0.08} className="lg:col-span-7">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
               <span className="eyebrow">Single-thread CPU latency</span>
               <Zap className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -159,7 +164,7 @@ export default function Rq2Section() {
 
       <Reveal delay={0.1}>
         <div className="mt-6 grid gap-5 lg:grid-cols-3">
-          <div className="rounded-xl bg-foreground p-7 text-background sm:p-9 lg:col-span-2">
+          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9 lg:col-span-2">
             <Badge tone="outline" className="border-background/30 text-background">
               Finding
             </Badge>

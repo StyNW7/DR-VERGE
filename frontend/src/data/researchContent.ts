@@ -21,13 +21,15 @@ export const paperMeta = {
 } as const;
 
 export const abstract = {
+  // Still a draft: the paper itself is not final. The flag keeps the "Draft"
+  // marker on screen until the published abstract replaces this text.
   isPlaceholder: true,
-  note: "Placeholder summary — awaiting the final paper abstract.",
+  note: "English rendering of the draft paper's abstract (Intisari). The wording may still change before the paper is final.",
   paragraphs: [
-    "Diabetic retinopathy screening increasingly relies on automated analysis of retinal fundus photographs, yet most systems reason over a single retinal field. A macula-centered image and an optic-disc-centered image capture different regions of the retina, and combining them changes what a model predicts. DR-VERGE studies that change directly.",
-    "We define the complementarity shift as the difference between a model's dual-view cumulative ordinal prediction and the average of its two single-view predictions. Complementarity-Shift Distillation (CSD) trains a lightweight student to reproduce the teacher's shift, rather than only the teacher's final logits or intermediate features.",
-    "Across a locked evaluation protocol on DRTiD with external evaluation on DeepDRiD, CSD transferred the teacher's decision-shift structure more faithfully than logit or feature distillation on all three mechanism metrics. That mechanism improvement did not, however, produce a statistically conclusive improvement in in-domain grading agreement — a distinction this work reports rather than obscures.",
-    "The selected lightweight student uses approximately 328K parameters and, after INT8 quantization, runs in 11.35 ms on a single CPU thread while retaining 99.0% of its FP32 ordinal agreement.",
+    "Diabetic retinopathy (DR) is a complication of diabetes that can lead to vision impairment, which makes early screening and severity grading important. Single-field approaches cover a limited area of the retina, while dual-view modelling of macula-centred and optic-disc-centred images can enrich the predictive signal — at a higher computational cost.",
+    "This study develops and evaluates DR-VERGE (View-Evidence Relational Grading Engine), a five-grade dual-view DR grading framework that combines CORAL ordinal modelling, lightweight knowledge distillation, Complementarity-Shift Distillation (CSD) and INT8 quantization. CSD trains the student to imitate how the teacher's ordinal output changes when the prediction moves from the average of the individual views to the joint dual-view prediction.",
+    "The main experiments use DRTiD at 384 × 384 with standard sampling; DeepDRiD Set-C is reserved for external evaluation. The ResNet-50 teacher reaches QWK 0.7364 and the 328,588-parameter CSD student reaches 0.6018. Descriptively, CSD aligns best with the teacher's prediction shift (ShiftL1 0.3509, CosAgree 0.4361, BenefitCorr 0.3075), yet its QWK differences against no distillation, logit KD and feature KD are not statistically significant.",
+    "For deployment, QAT INT8 retains 98.96% of the FP32 student's QWK on the internal test set with a 0.9507 MB artifact and 11.347 ms CPU latency — about 162.1× smaller and 55.3× faster than the teacher. On Set-C the FP32 student retains 84.4% of the teacher's QWK, and among student variants PTQ gives the highest estimate. Better shift alignment is therefore not always accompanied by higher QWK. The efficiency results support further development of DR-VERGE for resource-constrained CPU settings, including health facilities in Indonesia's 3T regions, after on-device testing and prospective validation.",
   ],
 } as const;
 

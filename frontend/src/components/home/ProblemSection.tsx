@@ -15,10 +15,11 @@ export default function ProblemSection() {
     <Section id="problem" tone="surface">
       <SectionHeader
         eyebrow="The Problem"
+        index="01"
         title={
           <>
             Diabetic Retinopathy Demands
-            <br className="hidden sm:block" /> More Than a Single View
+            <br className="hidden sm:block" /> More Than a <em>Single View</em>
           </>
         }
         description="Diabetic retinopathy is graded from photographs of the retina. Three properties of that task shape everything about how a model for it should be built."
@@ -26,7 +27,7 @@ export default function ProblemSection() {
       />
 
       {/* Three challenges */}
-      <div className="mt-16 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+      <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
         {challenges.map((c, i) => {
           const Icon = iconFor(i);
           return (
@@ -48,7 +49,7 @@ export default function ProblemSection() {
 
       {/* The ordinal scale */}
       <Reveal delay={0.1}>
-        <div className="mt-16 rounded-xl border border-border bg-card p-7 sm:p-10">
+        <div className="mt-16 card-premium p-7 sm:p-10">
           <div className="mb-10 flex flex-col gap-2">
             <span className="eyebrow">The Grading Scale</span>
             <h3 className="text-2xl font-bold tracking-tight">

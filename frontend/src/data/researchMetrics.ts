@@ -64,7 +64,20 @@ export const modelStats = {
   ordinalGrades: 5,
   fundusViews: 2,
   inputResolution: 384,
+  /** Deployed QAT INT8 artifact versus the teacher (paper abstract, RQ2). */
+  teacherSizeMb: 154.089,
+  deployedSizeMb: 0.9507,
+  deployedSizeReductionVsTeacher: 162.1,
+  deployedSpeedupVsTeacher: 55.3,
 } as const;
+
+/** The four numbers under the home hero — the deployment story at a glance. */
+export const heroStats = [
+  { value: "328K", label: "parameters", detail: "Dual-view student" },
+  { value: "0.95 MB", label: "INT8 artifact", detail: "Deployed QAT model" },
+  { value: "11.35 ms", label: "per eye on CPU", detail: "Single thread" },
+  { value: "162×", label: "smaller than teacher", detail: "55× faster, too" },
+] as const;
 
 /** The hero metric grid on the home page. */
 export const headlineMetrics = [

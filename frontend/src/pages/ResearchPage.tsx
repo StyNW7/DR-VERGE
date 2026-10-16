@@ -17,7 +17,30 @@ import {
 } from "@/components/research/ResearchSections";
 import { paperMeta } from "@/data/researchContent";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
-import { DISCLAIMER_CLINICAL } from "@/data/researchMetrics";
+import { DISCLAIMER_CLINICAL, runProvenance } from "@/data/researchMetrics";
+
+const provenance = [
+  {
+    label: "Source run",
+    value: runProvenance.label,
+    detail: runProvenance.runId,
+  },
+  {
+    label: "Integrity gates",
+    value: `${runProvenance.gatesPassed}/${runProvenance.gatesTotal}`,
+    detail: "All passed, zero errors",
+  },
+  {
+    label: "Self-audit",
+    value: `${runProvenance.auditedValues} values`,
+    detail: `Recomputed from predictions · ${runProvenance.auditMismatches} mismatches`,
+  },
+  {
+    label: "Statistics",
+    value: `${runProvenance.seedsPerCondition} seeds`,
+    detail: `B = ${runProvenance.bootstrapResamples.toLocaleString("en-US")} bootstrap · patient-clustered`,
+  },
+];
 
 export default function ResearchPage() {
   const paperOk = isLinkConfigured(siteConfig.paperUrl);
@@ -31,22 +54,26 @@ export default function ResearchPage() {
       />
 
       {/* ================= HEADER ================= */}
-      <section className="relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16">
+      <section className="grain relative overflow-hidden pb-14 pt-12 sm:pb-16 sm:pt-16">
+        <div className="spotlight pointer-events-none absolute inset-0" aria-hidden="true" />
         <div
-          className="pointer-events-none absolute inset-0 grid-bg fade-mask-b opacity-40"
+          className="grid-bg fade-mask-b pointer-events-none absolute inset-0 opacity-40"
           aria-hidden="true"
         />
         <Container className="relative">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Badge tone="outline" icon={FileText}>
               {paperMeta.eyebrow}
             </Badge>
             <Badge tone="default">{paperMeta.competition}</Badge>
+            <Badge tone="default">{paperMeta.field}</Badge>
           </div>
 
-          <h1 className="display mt-8 text-display-lg">{paperMeta.title}</h1>
+          <h1 className="display mt-8 text-display-lg">
+            DR-<em>VERGE</em>
+          </h1>
 
-          <p className="mt-8 max-w-3xl text-lg font-medium leading-snug text-muted-foreground sm:text-xl">
+          <p className="mt-7 max-w-3xl text-pretty text-lg font-medium leading-snug text-muted-foreground sm:text-2xl">
             {paperMeta.subtitle}
           </p>
 
@@ -82,6 +109,29 @@ export default function ResearchPage() {
               available.
             </p>
           )}
+
+          {/* Provenance: where every number on this page comes from. */}
+          <dl className="mt-14 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur lg:grid-cols-4">
+            {provenance.map((p, i) => (
+              <div
+                key={p.label}
+                className={
+                  "flex flex-col gap-1.5 p-5 sm:p-6 " +
+                  (i % 2 === 1 ? "border-l border-border " : "") +
+                  (i >= 2 ? "border-t border-border lg:border-t-0 " : "") +
+                  (i === 2 ? "lg:border-l" : "")
+                }
+              >
+                <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+                  {p.label}
+                </dt>
+                <dd className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
+                  {p.value}
+                </dd>
+                <dd className="text-[11px] leading-snug text-muted-foreground">{p.detail}</dd>
+              </div>
+            ))}
+          </dl>
         </Container>
       </section>
 
@@ -102,14 +152,16 @@ export default function ResearchPage() {
       {/* ================= DOWNLOAD ================= */}
       <Section id="download">
         <Reveal>
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 sm:p-12 lg:p-16">
+          <div className="card-premium grain relative overflow-hidden p-8 sm:p-12 lg:p-16">
             <div
               className="pointer-events-none absolute inset-0 grid-bg opacity-40"
               aria-hidden="true"
             />
             <div className="relative mx-auto max-w-2xl text-center">
               <span className="eyebrow">Full Paper</span>
-              <h2 className="display mt-5 text-display-md">Read the Full Paper</h2>
+              <h2 className="display mt-5 text-display-md">
+                Read the <em>Full Paper</em>
+              </h2>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground">
                 The complete write-up covers the locked evaluation protocol, the statistical
                 machinery behind every comparison, the ablations, and the full set of

@@ -90,6 +90,13 @@ export const siteConfig = {
   acceptedExtensions: [".jpg", ".jpeg", ".png"] as const,
 } as const;
 
+/**
+ * True only when inference genuinely happens on the visitor's device — the one
+ * configuration in which "your images never leave this device" is literally
+ * true. Every privacy claim in the UI is gated on this.
+ */
+export const runsOnDevice = !siteConfig.useMockModel && siteConfig.useLocalModel;
+
 /** True when a link was never configured, so the UI can disable it honestly. */
 export function isLinkConfigured(url: string): boolean {
   return typeof url === "string" && url.trim().length > 0;

@@ -16,7 +16,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
   const maxGrade = 4;
 
   return (
-    <div className="print-block overflow-hidden rounded-xl border border-border bg-card">
+    <div className="print-block card-premium overflow-hidden">
       <div className="grid gap-px bg-border md:grid-cols-5">
         {/* The grade itself */}
         <div className="flex flex-col justify-between bg-foreground p-8 text-background md:col-span-2 sm:p-10">
@@ -315,7 +315,7 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="print-block rounded-xl border border-border bg-card p-6 sm:p-8">
+    <section className="print-block card-premium p-6 sm:p-8">
       <div className="mb-6 flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         <div>

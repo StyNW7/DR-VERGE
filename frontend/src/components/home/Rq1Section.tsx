@@ -41,7 +41,7 @@ function MechanismPanel({ metricKey }: { metricKey: MechanismMetricKey }) {
   const csdIsBest = proposed[metricKey] === best;
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-card p-6 sm:p-7">
+    <div className="flex h-full flex-col card-premium p-6 sm:p-7">
       <div className="mb-1 flex items-start justify-between gap-3">
         <h3 className="text-base font-bold tracking-tight">{meta.label}</h3>
         <Badge tone="outline" icon={meta.direction === "lower" ? TrendingDown : TrendingUp}>
@@ -76,7 +76,12 @@ export default function Rq1Section() {
     <Section id="rq1" tone="surface">
       <SectionHeader
         eyebrow="RQ1 · Knowledge Transfer"
-        title="What Did CSD Actually Learn?"
+        index="05"
+        title={
+          <>
+            What Did CSD <em>Actually</em> Learn?
+          </>
+        }
         description="Three metrics measure whether the student reproduced the teacher's dual-view decision shift — not whether it graded better."
         size="lg"
       />
@@ -91,7 +96,7 @@ export default function Rq1Section() {
 
       {/* Replication is the reason this ordering is worth reporting at all. */}
       <Reveal delay={0.1}>
-        <div className="mt-5 flex flex-col gap-4 rounded-xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
+        <div className="mt-5 flex flex-col gap-4 card-premium p-6 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
           <div className="flex shrink-0 items-baseline gap-2">
             <span className="mono text-3xl font-bold tracking-tight">
               {mechanismReplication.wins}/{mechanismReplication.measurements}
@@ -110,7 +115,7 @@ export default function Rq1Section() {
           presenting only the first half would misrepresent the result. */}
       <Reveal delay={0.1}>
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          <div className="rounded-xl bg-foreground p-7 text-background sm:p-9">
+          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9">
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
               The mechanism finding
             </span>
@@ -119,7 +124,7 @@ export default function Rq1Section() {
             </p>
           </div>
 
-          <div className="rounded-xl border-2 border-dashed border-foreground bg-card p-7 sm:p-9">
+          <div className="rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-9">
             <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               The predictive finding
             </span>
@@ -156,7 +161,7 @@ export default function Rq1Section() {
       {/* Neither half is the finding on its own — this line is what they mean
           together, and it is the sentence the paper leads with. */}
       <Reveal delay={0.12}>
-        <div className="mt-5 rounded-xl border border-border bg-surface p-7 sm:p-9">
+        <div className="mt-5 rounded-2xl border border-border bg-surface p-7 sm:p-9">
           <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             What the two findings mean together
           </span>

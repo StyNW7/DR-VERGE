@@ -1,11 +1,12 @@
-import { Check, AlertTriangle, ArrowRight, Quote } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { Check, AlertTriangle, Quote } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
 import {
   SectionHeader,
   Reveal,
   Callout,
   Badge,
-  Divider,
 } from "@/components/common/Primitives";
 import { ResearchFigure } from "@/components/common/ResearchFigure";
 import { LazyMonoBarChart } from "@/components/common/LazyChart";
@@ -33,6 +34,7 @@ import {
   DISCLAIMER_METRICS,
 } from "@/data/researchMetrics";
 import { siteConfig } from "@/config/siteConfig";
+import { useScrollSpy, scrollToSection } from "@/hooks/useScrollSpy";
 import { formatCompact } from "@/utils/formatting";
 
 /* -------------------------------------------------------------------------- */
@@ -70,7 +72,7 @@ export function AbstractSection() {
 
   return (
     <Section id="abstract">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-7">
           <div className="flex items-center gap-3">
             <span className="eyebrow">Abstract</span>
@@ -80,7 +82,7 @@ export function AbstractSection() {
           {abstract.isPlaceholder && (
             // Never present draft prose as the published abstract.
             <Callout tone="note" className="mt-5">
-              {abstract.note} The final text will replace this once the paper is complete.
+              {abstract.note}
             </Callout>
           )}
 
@@ -101,7 +103,7 @@ export function AbstractSection() {
         </div>
 
         <aside className="lg:col-span-5">
-          <div className="rounded-xl border border-border bg-card p-6 sm:p-7">
+          <div className="card-premium p-6 sm:p-7">
             <span className="eyebrow">Research Metadata</span>
             <dl className="mt-6 flex flex-col">
               {meta.map((m, i) => (
@@ -123,7 +125,7 @@ export function AbstractSection() {
             </dl>
           </div>
 
-          <div className="mt-5 grid gap-px overflow-hidden rounded-xl border border-border bg-border">
+          <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-border bg-border">
             {datasets.map((d) => (
               <div key={d.name} className="bg-card p-5">
                 <div className="flex items-baseline justify-between gap-3">
@@ -153,7 +155,12 @@ export function ResearchQuestionsSection() {
     <Section id="questions" tone="surface">
       <SectionHeader
         eyebrow="Research Questions"
-        title="Two questions, asked separately"
+        index="02"
+        title={
+          <>
+            Two questions, asked <em>separately</em>
+          </>
+        }
         description="One is about what the distillation transfers. The other is about what the deployment costs. They are evaluated independently and reported independently."
         size="lg"
       />
@@ -161,7 +168,7 @@ export function ResearchQuestionsSection() {
       <div className="mt-14 grid gap-5 lg:grid-cols-2">
         {researchQuestions.map((rq, i) => (
           <Reveal key={rq.id} delay={i * 0.08}>
-            <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-9">
+            <div className="flex h-full flex-col card-premium p-7 sm:p-9">
               <div className="flex items-baseline justify-between gap-4">
                 <span className="display text-5xl sm:text-6xl">{rq.label}</span>
                 <span className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -209,14 +216,19 @@ export function ResearchGapSection() {
     <Section id="gap">
       <SectionHeader
         eyebrow="Research Gap"
-        title="Where this sits in the literature"
+        index="03"
+        title={
+          <>
+            Where this sits in the <em>literature</em>
+          </>
+        }
         size="lg"
       />
 
       <div className="mt-14 grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <span className="eyebrow">Existing approaches</span>
-          <div className="mt-6 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+          <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
             {researchGap.existing.map((e) => (
               <div key={e.title} className="bg-card p-5">
                 <h3 className="text-[13px] font-bold">{e.title}</h3>
@@ -229,7 +241,7 @@ export function ResearchGapSection() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="flex h-full flex-col rounded-xl bg-foreground p-7 text-background sm:p-8">
+          <div className="flex h-full flex-col grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-8">
             <Quote className="h-5 w-5 opacity-40" aria-hidden="true" />
             <p className="mt-6 text-xl font-semibold leading-snug tracking-tight">
               {researchGap.question}
@@ -263,13 +275,18 @@ export function MethodSection() {
     <Section id="method" tone="surface">
       <SectionHeader
         eyebrow="Method"
-        title="From two fields to one ordinal grade"
+        index="04"
+        title={
+          <>
+            From two fields to one <em>ordinal grade</em>
+          </>
+        }
         size="lg"
       />
 
       {/* Architecture */}
       <Reveal>
-        <div className="mt-14 rounded-xl border border-border bg-card p-6 sm:p-8">
+        <div className="mt-14 card-premium p-6 sm:p-8">
           <span className="eyebrow">Architecture</span>
           <div className="mt-6 -mx-2 overflow-x-auto px-2 pb-2">
             <div className="min-w-[680px] text-foreground">
@@ -281,7 +298,7 @@ export function MethodSection() {
 
       {/* Stages */}
       <Reveal delay={0.06}>
-        <ol className="mt-6 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {methodStages.map((s, i) => (
             <li key={s.title} className="flex flex-col gap-3 bg-card p-5">
               <span className="mono text-[10px] tracking-[0.16em] text-subtle">
@@ -298,7 +315,7 @@ export function MethodSection() {
       <Reveal delay={0.08}>
         <div className="mt-6 grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+            <div className="flex h-full flex-col card-premium p-7 sm:p-8">
               <span className="eyebrow mb-7">The CSD objective</span>
               <div className="flex flex-col gap-3">
                 {csdExplanation.formulas.map((f, i) => (
@@ -326,7 +343,7 @@ export function MethodSection() {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="flex h-full flex-col rounded-xl border border-border bg-card p-6 sm:p-8">
+            <div className="flex h-full flex-col card-premium p-6 sm:p-8">
               <span className="eyebrow">Transfer</span>
               <div className="mt-6 -mx-2 flex-1 overflow-x-auto px-2 pb-2">
                 <div className="min-w-[620px] text-foreground">
@@ -369,7 +386,12 @@ export function Rq1ResultsSection() {
     <Section id="rq1-results">
       <SectionHeader
         eyebrow="Results · RQ1"
-        title="Mechanism Works. Predictive Superiority Is Not Established."
+        index="05"
+        title={
+          <>
+            Mechanism Works. <em>Predictive Superiority Is Not Established.</em>
+          </>
+        }
         description="These are two separate findings and this page reports both with equal weight."
         size="lg"
       />
@@ -377,7 +399,7 @@ export function Rq1ResultsSection() {
       <div className="mt-14 grid gap-6 lg:grid-cols-2">
         {/* LEFT: shift fidelity */}
         <Reveal>
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <div className="flex items-baseline justify-between gap-4">
               <h3 className="text-lg font-bold tracking-tight">Shift Fidelity</h3>
               <Badge tone="solid">CSD best on all three</Badge>
@@ -417,7 +439,7 @@ export function Rq1ResultsSection() {
 
         {/* RIGHT: predictive QWK */}
         <Reveal delay={0.08}>
-          <div className="flex h-full flex-col rounded-xl border-2 border-dashed border-foreground bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-8">
             <div className="flex items-baseline justify-between gap-4">
               <h3 className="text-lg font-bold tracking-tight">Predictive QWK</h3>
               <Badge tone="warn">All null</Badge>
@@ -488,13 +510,18 @@ export function Rq2ResultsSection() {
     <Section id="rq2-results" tone="surface">
       <SectionHeader
         eyebrow="Results · RQ2"
-        title="Efficiency Without Large Performance Sacrifice"
+        index="06"
+        title={
+          <>
+            Efficiency Without Large <em>Performance Sacrifice</em>
+          </>
+        }
         size="lg"
       />
 
       <div className="mt-14 grid gap-6 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <span className="eyebrow mb-7">Single-thread CPU latency</span>
             <LazyMonoBarChart
               data={latencyData}
@@ -594,14 +621,19 @@ export function ExternalValidationSection() {
     <Section id="external">
       <SectionHeader
         eyebrow="External Validation"
-        title="DeepDRiD Set-C"
+        index="07"
+        title={
+          <>
+            DeepDRiD <em>Set-C</em>
+          </>
+        }
         description="The confirmatory external partition. No tuning, threshold adjustment, or model selection happened on this data."
         size="lg"
       />
 
       <div className="mt-14 grid gap-6 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
-          <div className="rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="card-premium p-7 sm:p-8">
             <span className="eyebrow mb-7 block">Quadratic Weighted Kappa</span>
             <LazyMonoBarChart
               data={data}
@@ -617,7 +649,7 @@ export function ExternalValidationSection() {
 
         <Reveal delay={0.08} className="lg:col-span-5">
           <div className="flex h-full flex-col gap-5">
-            <div className="flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
+            <div className="flex flex-col gap-px overflow-hidden rounded-2xl border border-border bg-border">
               {externalValidation.map((r) => (
                 <div
                   key={r.model}
@@ -675,7 +707,12 @@ export function FiguresSection() {
     <Section id="figures" tone="surface">
       <SectionHeader
         eyebrow="Supplementary Figures"
-        title="Where the model succeeds and where it fails"
+        index="08"
+        title={
+          <>
+            Where the model succeeds and where it <em>fails</em>
+          </>
+        }
         description="Aggregate metrics hide per-grade behaviour. These figures show it directly."
         size="lg"
       />
@@ -704,12 +741,17 @@ export function LimitationsSection() {
     <Section id="limitations">
       <SectionHeader
         eyebrow="Limitations"
-        title="What this work does not establish"
+        index="09"
+        title={
+          <>
+            What this work does <em>not</em> establish
+          </>
+        }
         description="Stated in full. A limitations section that is honest about the weaknesses is what makes the rest of the results worth trusting."
         size="lg"
       />
 
-      <div className="mt-14 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+      <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
         {limitations.map((l, i) => (
           <Reveal key={l.title} delay={i * 0.04}>
             <div className="flex h-full gap-4 bg-card p-6 sm:p-7">
@@ -740,7 +782,7 @@ export function SdgImpactSection() {
 
   return (
     <Section id="sdg-impact" tone="inverted">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">
           <span className="display text-display-lg leading-none">{sdgContent.number}</span>
           <h2 className="mt-6 text-2xl font-bold tracking-tight">
@@ -782,41 +824,71 @@ export function SdgImpactSection() {
 export function ReadingOrder() {
   const steps = [
     { id: "abstract", label: "Abstract" },
-    { id: "questions", label: "Research Questions" },
-    { id: "gap", label: "Research Gap" },
+    { id: "questions", label: "Questions" },
+    { id: "gap", label: "Gap" },
     { id: "method", label: "Method" },
     { id: "rq1-results", label: "RQ1 Results" },
     { id: "rq2-results", label: "RQ2 Results" },
-    { id: "external", label: "External Validation" },
+    { id: "external", label: "External" },
     { id: "figures", label: "Figures" },
     { id: "limitations", label: "Limitations" },
+    { id: "sdg-impact", label: "SDG 3" },
   ];
+  const active = useScrollSpy(steps.map((s) => s.id));
+  const activeIndex = steps.findIndex((s) => s.id === active);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Keep the active chip in view on narrow screens, where the row scrolls.
+  useEffect(() => {
+    if (!active || !navRef.current) return;
+    const chip = navRef.current.querySelector<HTMLElement>(`[data-id="${active}"]`);
+    if (!chip) return;
+    const nav = navRef.current;
+    const left = chip.offsetLeft - nav.clientWidth / 2 + chip.clientWidth / 2;
+    nav.scrollTo({ left, behavior: "smooth" });
+  }, [active]);
 
   return (
-    <div className="no-print border-y border-border bg-surface">
-      <div className="mx-auto max-w-[1200px] px-5 py-5 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 overflow-x-auto">
-          <span className="mono shrink-0 text-[10px] uppercase tracking-[0.16em] text-subtle">
-            On this page
+    <div className="no-print sticky top-[4.25rem] z-30 sm:top-[4.75rem]">
+      <div className="mx-auto max-w-[1200px] px-3 sm:px-6 lg:px-8">
+        <div className="glass flex items-center gap-3 rounded-full border border-border py-1.5 pl-4 pr-1.5 shadow-[0_10px_30px_-18px_hsl(var(--shadow-color)/0.4)]">
+          <span className="mono hidden shrink-0 text-[10px] uppercase tracking-[0.16em] text-subtle sm:block">
+            {activeIndex >= 0
+              ? `${String(activeIndex + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`
+              : "On this page"}
           </span>
-          <Divider className="hidden h-4 w-px shrink-0 border-l border-border sm:block" />
-          <nav className="flex items-center gap-1">
-            {steps.map((s, i) => (
-              <span key={s.id} className="flex shrink-0 items-center">
-                <a
-                  href={`#${s.id}`}
-                  className="whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden="true" />
+          <nav
+            ref={navRef}
+            aria-label="On this page"
+            className="no-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
+          >
+            {steps.map((st) => {
+              const isActive = st.id === active;
+              return (
+                <button
+                  key={st.id}
+                  type="button"
+                  data-id={st.id}
+                  onClick={() => scrollToSection(st.id)}
+                  aria-current={isActive ? "true" : undefined}
+                  className={
+                    "relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors " +
+                    (isActive ? "text-background" : "text-muted-foreground hover:text-foreground")
+                  }
                 >
-                  {s.label}
-                </a>
-                {i < steps.length - 1 && (
-                  <ArrowRight
-                    className="h-3 w-3 shrink-0 text-subtle"
-                    aria-hidden="true"
-                  />
-                )}
-              </span>
-            ))}
+                  {isActive && (
+                    <motion.span
+                      layoutId="research-toc-pill"
+                      className="absolute inset-0 rounded-full bg-foreground"
+                      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="relative">{st.label}</span>
+                </button>
+              );
+            })}
           </nav>
         </div>
       </div>

@@ -18,7 +18,7 @@ interface ViewInfo {
 
 function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc" }) {
   return (
-    <div className="group flex h-full flex-col rounded-xl border border-border bg-card p-6 transition-colors duration-300 hover:border-foreground/40 sm:p-8">
+    <div className="group flex h-full flex-col card-premium p-6 transition-colors duration-300 hover:border-foreground/40 sm:p-8">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <span className="mono text-[11px] tracking-[0.16em] text-subtle">
@@ -53,7 +53,12 @@ export default function TwoViewsSection() {
     <Section id="two-views">
       <SectionHeader
         eyebrow="Why Two Views"
-        title="One eye, two windows onto the retina"
+        index="02"
+        title={
+          <>
+            One eye, two <em>windows</em> onto the retina
+          </>
+        }
         description="Each capture is centred on a different anatomical landmark, so each contains retinal territory the other does not."
         size="lg"
       />
@@ -69,7 +74,7 @@ export default function TwoViewsSection() {
 
       {/* Field overlap */}
       <Reveal delay={0.12}>
-        <div className="mt-6 rounded-xl border border-border bg-card p-7 sm:p-10">
+        <div className="mt-6 card-premium p-7 sm:p-10">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="mx-auto w-full max-w-md text-foreground">
               <DualFieldDiagram />
@@ -93,7 +98,7 @@ export default function TwoViewsSection() {
 
       {/* Visual equation */}
       <Reveal delay={0.14}>
-        <div className="mt-6 overflow-hidden rounded-xl bg-foreground p-7 text-background sm:p-10">
+        <div className="mt-6 grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-10">
           <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
             The evidence path
           </span>

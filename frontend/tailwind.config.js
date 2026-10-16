@@ -57,6 +57,7 @@ module.exports = {
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        serif: ["Instrument Serif", "ui-serif", "Georgia", "serif"],
       },
       fontSize: {
         // Fluid editorial display sizes. clamp() means the hero never needs a
@@ -90,6 +91,13 @@ module.exports = {
         "dash-flow": {
           to: { strokeDashoffset: "-24" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "spin-slow": {
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -98,6 +106,8 @@ module.exports = {
         shimmer: "shimmer 1.8s infinite",
         "pulse-sweep": "pulse-sweep 2s ease-in-out infinite",
         "dash-flow": "dash-flow 1s linear infinite",
+        marquee: "marquee 40s linear infinite",
+        "spin-slow": "spin-slow 24s linear infinite",
       },
       transitionTimingFunction: {
         editorial: "cubic-bezier(0.22, 1, 0.36, 1)",

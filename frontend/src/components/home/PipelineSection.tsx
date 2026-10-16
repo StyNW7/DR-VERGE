@@ -48,14 +48,19 @@ export default function PipelineSection() {
     <Section id="pipeline" tone="surface">
       <SectionHeader
         eyebrow="Research Pipeline"
-        title={`${pipelineStages.length} stages, run in one locked order`}
+        index="08"
+        title={
+          <>
+            {pipelineStages.length} stages, run in one <em>locked</em> order
+          </>
+        }
         description="Every selection decision happens on validation. The test set is opened once, and the external set stays frozen until the very end."
         size="lg"
       />
 
       <div className="mt-16">
         {/* Desktop: horizontal rail. Mobile: vertical list. */}
-        <ol className="relative grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="relative grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {pipelineStages.map((s, i) => {
             const Icon = iconFor(i);
             const isCsd = s.title.includes("Complementarity");

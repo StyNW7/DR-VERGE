@@ -31,7 +31,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "mono inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.14em]",
+        "mono inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] uppercase leading-none tracking-[0.14em]",
         badgeTones[tone],
         className,
       )}
@@ -109,6 +109,7 @@ export function SectionHeader({
   align = "left",
   className,
   size = "md",
+  index,
 }: {
   eyebrow?: string;
   title: React.ReactNode;
@@ -116,19 +117,28 @@ export function SectionHeader({
   align?: "left" | "center";
   className?: string;
   size?: "md" | "lg";
+  /** Optional chapter number, shown in front of the eyebrow ("02"). */
+  index?: string;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-4",
+        "flex flex-col gap-5",
         align === "center" && "items-center text-center",
         className,
       )}
     >
       {eyebrow && (
-        <div className="flex items-center gap-3">
-          <span className="h-px w-6 bg-foreground" aria-hidden="true" />
-          <span className="eyebrow">{eyebrow}</span>
+        <div
+          className={cn(
+            "inline-flex items-center gap-2.5 rounded-full border border-border bg-card/60 py-1 pl-1 pr-3.5 shadow-sm backdrop-blur",
+            align === "center" ? "self-center" : "self-start",
+          )}
+        >
+          <span className="mono flex h-6 min-w-6 items-center justify-center rounded-full bg-foreground px-1.5 text-[10px] font-semibold text-background">
+            {index ?? <span className="h-1.5 w-1.5 rounded-full bg-background" />}
+          </span>
+          <span className="eyebrow text-foreground/80">{eyebrow}</span>
         </div>
       )}
       <h2
@@ -142,7 +152,7 @@ export function SectionHeader({
       {description && (
         <p
           className={cn(
-            "max-w-prose text-base leading-relaxed text-muted-foreground sm:text-lg",
+            "max-w-prose text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg",
             align === "center" && "mx-auto",
           )}
         >
@@ -173,25 +183,38 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-xl border p-6 transition-colors duration-300 sm:p-7",
+        "group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all duration-300 ease-editorial sm:p-7",
         emphasis
-          ? "border-foreground bg-foreground text-background"
-          : "border-border bg-card hover:border-foreground/40",
+          ? "grain border-foreground bg-foreground text-background shadow-xl"
+          : "card-premium card-lift",
         className,
       )}
     >
+      {/* Corner glow, foreground at low alpha — monochrome by construction. */}
+      <span
+        className={cn(
+          "pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full blur-2xl transition-opacity duration-500",
+          emphasis ? "bg-background/10" : "bg-foreground/[0.04] opacity-0 group-hover:opacity-100",
+        )}
+        aria-hidden="true"
+      />
       <div
         className={cn(
-          "mono text-3xl font-semibold tracking-tight sm:text-4xl",
-          emphasis ? "text-background" : "text-foreground",
+          "relative text-4xl font-bold tracking-[-0.04em] tabular-nums sm:text-5xl",
+          emphasis ? "text-background" : "ink-gradient",
         )}
       >
         {value}
       </div>
-      <div className="mt-4">
+      <div
+        className={cn(
+          "relative mt-6 border-t pt-4",
+          emphasis ? "border-background/15" : "border-border",
+        )}
+      >
         <div
           className={cn(
-            "text-sm font-medium",
+            "text-sm font-semibold",
             emphasis ? "text-background" : "text-foreground",
           )}
         >
@@ -247,7 +270,7 @@ export function Callout({
   return (
     <div
       className={cn(
-        "flex gap-3 rounded-lg border bg-surface p-4 sm:gap-4 sm:p-5",
+        "flex gap-3 rounded-xl border bg-surface/80 p-4 sm:gap-4 sm:p-5",
         tone === "medical"
           ? "border-border border-l-[3px] border-l-foreground"
           : "border-border",
@@ -255,17 +278,21 @@ export function Callout({
       )}
       role="note"
     >
-      <Icon
-        className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
-        aria-hidden="true"
-      />
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-card">
+        <Icon className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" />
+      </span>
       <div className="min-w-0">
         {title && (
-          <div className="mono mb-1 text-[10px] uppercase tracking-[0.16em] text-foreground">
+          <div className="mono mb-1 pt-1 text-[10px] uppercase tracking-[0.16em] text-foreground">
             {title}
           </div>
         )}
-        <div className="text-[13px] leading-relaxed text-muted-foreground">
+        <div
+          className={cn(
+            "text-[13px] leading-relaxed text-muted-foreground",
+            !title && "pt-1",
+          )}
+        >
           {children}
         </div>
       </div>

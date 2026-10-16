@@ -44,7 +44,7 @@ function MemberCard({ member }: { member: TeamMember }) {
   return (
     <div
       className={cn(
-        "group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-colors duration-300",
+        "group flex h-full flex-col card-premium p-5 transition-colors duration-300",
         member.placeholder ? "border-dashed" : "hover:border-foreground/40",
       )}
     >
@@ -107,7 +107,12 @@ export default function TeamSection() {
     <Section id="team">
       <SectionHeader
         eyebrow="The Team"
-        title="Built for GEMASTIK XIX"
+        index="09"
+        title={
+          <>
+            Built for <em>{siteConfig.competition}</em>
+          </>
+        }
         description={`Research, engineering, and evaluation for ${siteConfig.projectName} at ${siteConfig.institution}.`}
         size="lg"
       />

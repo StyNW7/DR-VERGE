@@ -9,7 +9,12 @@ export default function CsdSection() {
     <Section id="csd" tone="surface">
       <SectionHeader
         eyebrow="The Method"
-        title="Distilling More Than the Final Prediction"
+        index="03"
+        title={
+          <>
+            Distilling More Than the <em>Final Prediction</em>
+          </>
+        }
         description={csdExplanation.intro}
         size="lg"
       />
@@ -17,7 +22,7 @@ export default function CsdSection() {
       <div className="mt-16 grid gap-6 lg:grid-cols-12">
         {/* The four conceptual steps */}
         <Reveal className="lg:col-span-5">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <span className="eyebrow mb-7">How the signal is formed</span>
             <ol className="flex flex-col">
               {csdExplanation.steps.map((s, i) => (
@@ -46,7 +51,7 @@ export default function CsdSection() {
 
         {/* Formula block */}
         <Reveal delay={0.08} className="lg:col-span-7">
-          <div className="flex h-full flex-col rounded-xl border border-border bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
             <span className="eyebrow mb-7">The shift, written down</span>
 
             <div className="flex flex-col gap-3">
@@ -83,7 +88,7 @@ export default function CsdSection() {
 
       {/* Full method diagram */}
       <Reveal delay={0.1}>
-        <div className="mt-6 overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8">
+        <div className="mt-6 overflow-hidden card-premium p-6 sm:p-8">
           <span className="eyebrow">Teacher to student transfer</span>
           {/* Horizontal scroll on narrow screens keeps the diagram legible
               instead of shrinking it into illegibility. */}
@@ -98,7 +103,7 @@ export default function CsdSection() {
       {/* The claim, stated precisely */}
       <Reveal delay={0.12}>
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          <div className="rounded-xl bg-foreground p-7 text-background sm:p-9">
+          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9">
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
               What CSD does
             </span>

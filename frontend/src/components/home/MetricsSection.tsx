@@ -7,7 +7,12 @@ export default function MetricsSection() {
     <Section id="findings">
       <SectionHeader
         eyebrow="Research Findings"
-        title="What the experiments produced"
+        index="04"
+        title={
+          <>
+            What the experiments <em>produced</em>
+          </>
+        }
         description="Results from the locked DR-VERGE evaluation protocol: five seeds per condition, selection on validation only, and a test set opened once."
         size="lg"
       />

@@ -74,9 +74,9 @@ export function UploadDropzone({
   return (
     <div className="flex flex-col">
       {/* Slot header */}
-      <div className="mb-3 flex items-baseline justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="mono text-[11px] tracking-[0.16em] text-subtle">{index}</span>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="mono flex h-6 w-6 items-center justify-center rounded-full border border-border text-[10px] text-foreground">{index}</span>
           <span className="mono text-[11px] uppercase tracking-[0.14em] text-foreground">
             {label}
           </span>
@@ -106,8 +106,8 @@ export function UploadDropzone({
 
       {value ? (
         /* ---------- preview ---------- */
-        <div className="group relative overflow-hidden rounded-xl border border-border bg-card">
-          <div className="relative aspect-[4/3] w-full bg-surface">
+        <div className="group card-premium relative overflow-hidden">
+          <div className="relative aspect-[4/3] w-full bg-black">
             <img
               src={value.previewUrl}
               alt={`Uploaded ${label.toLowerCase()} fundus image: ${value.file.name}`}
@@ -176,22 +176,25 @@ export function UploadDropzone({
           aria-describedby={error ? errorId : undefined}
           aria-invalid={error ? true : undefined}
           className={cn(
-            "flex aspect-[4/3] w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200",
+            "group relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed p-6 text-center transition-all duration-300 ease-editorial",
             "disabled:cursor-not-allowed disabled:opacity-50",
             dragging
               ? "border-foreground bg-muted scale-[0.99]"
               : error
                 ? "border-foreground/60 bg-card"
-                : "border-border bg-card hover:border-foreground/50 hover:bg-muted",
+                : "border-border bg-card hover:border-foreground/50 hover:bg-surface",
           )}
         >
-          <div className="h-20 w-20 opacity-25">
+          <div className="dot-bg fade-mask-radial pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+          <div className="relative h-20 w-20 opacity-25 transition-all duration-500 group-hover:scale-105 group-hover:opacity-40">
             <FundusIllustration variant={variant} />
           </div>
 
-          <div className="flex flex-col items-center gap-1.5">
-            <div className="inline-flex items-center gap-2 text-sm font-medium">
+          <div className="relative flex flex-col items-center gap-2">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform duration-300 group-hover:-translate-y-0.5">
               <Upload className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div className="text-sm font-semibold">
               {dragging ? "Drop the image here" : "Drag and drop, or click to browse"}
             </div>
             <p className="max-w-[26ch] text-[11px] leading-relaxed text-muted-foreground">
@@ -199,7 +202,7 @@ export function UploadDropzone({
             </p>
           </div>
 
-          <span className="mono text-[9px] uppercase tracking-[0.14em] text-subtle">
+          <span className="mono relative text-[9px] uppercase tracking-[0.14em] text-subtle">
             JPG · JPEG · PNG
           </span>
         </button>

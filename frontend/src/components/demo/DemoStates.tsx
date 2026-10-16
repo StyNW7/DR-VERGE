@@ -41,7 +41,7 @@ export function ProcessingState({
 
   return (
     <div
-      className="rounded-xl border border-border bg-card p-8 sm:p-12"
+      className="card-premium p-8 sm:p-12"
       role="status"
       aria-live="polite"
       aria-label="Running analysis"

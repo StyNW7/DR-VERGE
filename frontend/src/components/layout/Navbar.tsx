@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, FileText, ArrowUpRight, Moon, Sun } from "lucide-react";
+import { Menu, X, FileText, ArrowUpRight, Moon, Sun, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 import { useTheme } from "@/components/theme-provider";
 import { LinkButton } from "@/components/common/Button";
+import { ReadingProgress } from "@/components/common/SectionRail";
 
 const navItems = [
-  { label: "Home", to: "/" },
-  { label: "Model Demo", to: "/demo" },
-  { label: "Research", to: "/research" },
+  { label: "Home", to: "/", hint: "The research story" },
+  { label: "Model Demo", to: "/demo", hint: "Grade a sample eye" },
+  { label: "Research", to: "/research", hint: "Method, results, limits" },
 ];
 
 /** The DR-VERGE mark: two overlapping view circles resolving into one engine. */
@@ -46,7 +47,7 @@ function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+      className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
     >
       {isDark ? (
         <Sun className="h-4 w-4" aria-hidden="true" />
@@ -88,14 +89,6 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const linkClass = ({ isActive }: { isActive: boolean }) =>
-    cn(
-      "relative py-1 text-sm transition-colors duration-200",
-      isActive
-        ? "text-foreground after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:bg-foreground"
-        : "text-muted-foreground hover:text-foreground",
-    );
-
   return (
     <>
       {/* Keyboard users land here first and can jump straight past the nav. */}
@@ -106,26 +99,30 @@ export default function Navbar() {
         Skip to content
       </a>
 
+      <ReadingProgress />
+
       <nav
         className={cn(
-          "no-print fixed inset-x-0 top-0 z-50 transition-all duration-300 ease-editorial",
-          scrolled
-            ? "border-b border-border bg-background/80 backdrop-blur-xl"
-            : "border-b border-transparent bg-transparent",
+          "no-print fixed inset-x-0 top-0 z-50 transition-[padding] duration-500 ease-editorial",
+          scrolled ? "px-3 pt-2.5 sm:px-6 sm:pt-3" : "px-0 pt-0",
         )}
       >
         <div
           className={cn(
-            "mx-auto flex max-w-[1440px] items-center justify-between px-5 transition-all duration-300 sm:px-6 lg:px-8",
-            scrolled ? "h-14" : "h-20",
+            "mx-auto flex items-center justify-between transition-all duration-500 ease-editorial",
+            scrolled
+              ? "glass h-14 max-w-[1120px] rounded-full border border-border pl-2 pr-2 shadow-[0_10px_40px_-16px_hsl(var(--shadow-color)/0.35)] sm:pl-3"
+              : "h-16 max-w-[1440px] border border-transparent px-5 sm:h-20 sm:px-6 lg:px-8",
           )}
         >
           <Link
             to="/"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
+            className="flex items-center gap-2.5 rounded-full pr-2 transition-opacity hover:opacity-80"
             aria-label={`${siteConfig.projectName} home`}
           >
-            <Logo />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background">
+              <Logo className="h-5 w-5" />
+            </span>
             <span className="flex flex-col leading-none">
               <span className="text-[15px] font-bold tracking-tight">
                 {siteConfig.projectName}
@@ -133,7 +130,7 @@ export default function Navbar() {
               <span
                 className={cn(
                   "mono overflow-hidden text-[9px] uppercase tracking-[0.18em] text-muted-foreground transition-all duration-300",
-                  scrolled ? "max-h-0 opacity-0" : "max-h-4 opacity-100",
+                  scrolled ? "max-h-0 opacity-0" : "mt-1 max-h-4 opacity-100",
                 )}
               >
                 {siteConfig.competition}
@@ -141,11 +138,33 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop */}
-          <div className="hidden items-center gap-8 md:flex">
+          {/* Desktop: a segmented control whose active pill slides between items. */}
+          <div className="hidden items-center gap-0.5 rounded-full border border-border bg-card/50 p-1 md:flex">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className={linkClass} end={item.to === "/"}>
-                {item.label}
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "relative rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors duration-200",
+                    isActive ? "text-background" : "text-muted-foreground hover:text-foreground",
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-active-pill"
+                        className="absolute inset-0 rounded-full bg-foreground"
+                        transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="relative">{item.label}</span>
+                  </>
+                )}
               </NavLink>
             ))}
             {isLinkConfigured(siteConfig.paperUrl) && (
@@ -153,7 +172,7 @@ export default function Navbar() {
                 href={siteConfig.paperUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Paper
                 <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -161,10 +180,14 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
             <ThemeToggle />
-            <LinkButton to="/demo" size="sm" className="hidden sm:inline-flex">
+            <LinkButton to="/demo" size="sm" className="group hidden sm:inline-flex">
               Try DR-VERGE
+              <ArrowRight
+                className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </LinkButton>
             <button
               type="button"
@@ -172,7 +195,7 @@ export default function Navbar() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-foreground md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/60 text-foreground transition-colors hover:border-foreground/40 md:hidden"
             >
               {open ? (
                 <X className="h-4 w-4" aria-hidden="true" />
@@ -208,13 +231,25 @@ export default function Navbar() {
                     end={item.to === "/"}
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center justify-between border-b border-border py-5 text-2xl font-semibold tracking-tight transition-colors",
+                        "flex items-center justify-between gap-4 border-b border-border py-5 transition-colors",
                         isActive ? "text-foreground" : "text-muted-foreground",
                       )
                     }
                   >
-                    {item.label}
-                    <ArrowUpRight className="h-5 w-5" aria-hidden="true" />
+                    <span className="flex items-baseline gap-4">
+                      <span className="mono text-[11px] text-subtle">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-2xl font-semibold tracking-tight">
+                          {item.label}
+                        </span>
+                        <span className="mt-1 text-[12px] text-muted-foreground">
+                          {item.hint}
+                        </span>
+                      </span>
+                    </span>
+                    <ArrowUpRight className="h-5 w-5 shrink-0" aria-hidden="true" />
                   </NavLink>
                 </motion.div>
               ))}

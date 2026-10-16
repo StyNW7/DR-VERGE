@@ -13,7 +13,7 @@ import { sdgContent } from "@/data/researchContent";
 export default function SdgSection() {
   return (
     <Section id="sdg" tone="inverted" className="overflow-hidden">
-      <div className="grid gap-14 lg:grid-cols-12 lg:gap-10">
+      <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-10">
         {/* The number */}
         <div className="lg:col-span-5">
           <Reveal>

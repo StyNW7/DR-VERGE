@@ -19,21 +19,30 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="no-print border-t border-border bg-surface">
-      <Container className="py-16 sm:py-20">
+    <footer className="no-print grain relative overflow-hidden border-t border-border bg-surface">
+      <div className="spotlight pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+      <Container className="relative py-16 sm:py-20">
         <div className="grid gap-12 md:grid-cols-12">
           {/* Identity */}
           <div className="md:col-span-5">
-            <div className="display text-3xl">{siteConfig.projectName}</div>
-            <p className="mt-2 text-sm text-muted-foreground">{siteConfig.fullName}</p>
-            <div className="mt-6 flex flex-col gap-1">
-              <span className="mono text-[11px] uppercase tracking-[0.18em] text-foreground">
+            <div className="display text-3xl">
+              {siteConfig.projectName}
+            </div>
+            <p className="mt-2 font-serif text-lg italic text-muted-foreground">
+              {siteConfig.fullName}
+            </p>
+            <p className="mt-5 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
+              Dual-view diabetic retinopathy grading through Complementarity-Shift
+              Distillation and lightweight INT8 deployment.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="mono rounded-full bg-foreground px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-background">
                 {siteConfig.competition}
               </span>
-              <span className="text-sm text-muted-foreground">
-                AI for Healthcare Research
+              <span className="mono rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                {siteConfig.category}
               </span>
-              <span className="text-sm text-muted-foreground">
+              <span className="mono rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
                 {siteConfig.institution}
               </span>
             </div>
@@ -100,8 +109,16 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Oversized wordmark: the page's closing gesture. Decorative only. */}
+        <div
+          className="ink-gradient pointer-events-none mt-16 select-none text-center text-[clamp(4rem,17vw,15rem)] font-extrabold leading-[0.8] tracking-[-0.06em] opacity-[0.12]"
+          aria-hidden="true"
+        >
+          {siteConfig.projectName}
+        </div>
+
         {/* Disclaimer — the site's most repeated statement, and the last word. */}
-        <div className="mt-14 border-t border-border pt-8">
+        <div className="border-t border-border pt-8">
           <p className="max-w-3xl text-[13px] leading-relaxed text-muted-foreground">
             <span className="font-medium text-foreground">
               {siteConfig.projectName} is a research prototype

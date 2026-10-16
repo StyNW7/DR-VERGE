@@ -119,13 +119,13 @@ src/
 │   ├── layout/      Navbar (sticky, compacts on scroll), Footer, PageContainer, Seo
 │   ├── common/      Button, Primitives (Badge/Callout/MetricCard/Reveal/ScoreBar/Skeleton),
 │   │                MonoChart, LazyChart, Diagrams, FundusIllustration, ResearchFigure
-│   ├── home/        Hero, Problem, TwoViews, Csd, Metrics, Rq1, Rq2, Sdg, Pipeline, Team, Cta
-│   ├── demo/        UploadDropzone, ResultPanel, DemoStates
+│   ├── home/        Hero, Journey, Problem, TwoViews, Csd, Metrics, Rq1, Rq2, Sdg, Pipeline, Team, Cta
+│   ├── demo/        UploadDropzone, SamplePicker, DemoStepper, ResultPanel, DemoStates
 │   └── research/    ResearchSections
 ├── pages/           HomePage, DemoPage, ResearchPage, Utility/NotFound404
 ├── data/            researchMetrics · drGrades · team · researchContent
 ├── services/        inferenceApi (routing + contract) · onnxModel (in-browser inference)
-├── hooks/           useInference
+├── hooks/           useInference · useSamples · useScrollSpy
 ├── utils/           fileValidation · formatting
 └── config/          siteConfig
 ```
@@ -159,6 +159,26 @@ rule rather than a red box. Theme is applied before first paint by an inline scr
 dark-mode visitors never see a white flash.
 
 **No emoji anywhere** — all icons are `lucide-react`, enforced by the audit.
+
+Premium layer, still 0% saturation: an *Instrument Serif* italic accent for one
+emphasised phrase per heading (`<em>` inside `.display`), `card-premium` /
+`card-lift` cards with monochrome elevation, a `glass` floating navbar, and a
+faint `grain` texture on inverted blocks. Shadows are drawn in black at low alpha
+(`--shadow-color`), so nothing introduces a hue.
+
+### Navigation and flow
+
+- **Home** opens with a *Start here* strip (understand → try → check the
+  evidence) and a chapter rail on wide screens that tracks the section being read.
+- **Demo** shows a live three-step progress indicator, a one-click **sample-eye
+  picker** fed by `public/samples/manifest.json`, and a sticky *Analyze* bar.
+  The picker is blind: reference grades appear only after inference, next to the
+  curation notice and the unfiltered Set-C numbers from the manifest.
+- **Research** has a sticky, scroll-aware *On this page* bar, a provenance strip
+  (run ID, 36/36 gates, audited values), and every figure opens in a lightbox.
+- Privacy claims ("images never leave your device") are gated on
+  `runsOnDevice` in `siteConfig`, so they disappear if the site is pointed at a
+  remote API or mock mode.
 
 ### Imagery
 

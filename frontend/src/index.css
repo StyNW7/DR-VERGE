@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -48,6 +48,10 @@
     --ring: 0 0% 0%;
 
     --radius: 0.75rem;
+
+    /* Elevation is drawn in pure black at low alpha, so it stays monochrome. */
+    --shadow-color: 0 0% 0%;
+    --shadow-strength: 0.06;
   }
 
   .dark {
@@ -82,6 +86,9 @@
     --border-strong: 0 0% 25%;
     --input: 0 0% 15%;
     --ring: 0 0% 100%;
+
+    --shadow-color: 0 0% 0%;
+    --shadow-strength: 0.5;
   }
 }
 
@@ -152,7 +159,7 @@
   }
 
   .surface-card {
-    @apply rounded-xl border border-border bg-card;
+    @apply rounded-2xl border border-border bg-card;
   }
 
   /* Hairline grid paper. Two repeating gradients, masked so it fades out rather
@@ -187,6 +194,104 @@
       black 85%,
       transparent 100%
     );
+  }
+
+  /* Serif italic accent. Used sparingly inside display headings (an <em>), it
+     is the one typographic contrast that makes a monochrome page read as
+     editorial rather than default. Weight and slant only, never colour. */
+  .display em,
+  .serif-accent {
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* Premium card: hairline border, a faint top highlight and a soft monochrome
+     shadow. Hover lifts it by a couple of pixels. */
+  .card-premium {
+    @apply relative rounded-2xl border border-border bg-card;
+    box-shadow:
+      0 1px 0 0 hsl(var(--foreground) / 0.03) inset,
+      0 1px 2px hsl(var(--shadow-color) / calc(var(--shadow-strength) * 0.6)),
+      0 8px 24px -12px hsl(var(--shadow-color) / var(--shadow-strength));
+  }
+
+  .card-lift {
+    @apply transition-all duration-300 ease-editorial;
+  }
+  .card-lift:hover {
+    @apply -translate-y-0.5 border-foreground/25;
+    box-shadow:
+      0 1px 0 0 hsl(var(--foreground) / 0.04) inset,
+      0 2px 4px hsl(var(--shadow-color) / calc(var(--shadow-strength) * 0.6)),
+      0 18px 40px -16px hsl(var(--shadow-color) / calc(var(--shadow-strength) * 1.6));
+  }
+
+  /* Frosted surface for floating chrome (navbar, sticky bars). */
+  .glass {
+    background: hsl(var(--background) / 0.72);
+    -webkit-backdrop-filter: saturate(140%) blur(18px);
+    backdrop-filter: saturate(140%) blur(18px);
+  }
+
+  /* A soft grey spotlight. Pure foreground at very low alpha, so it inverts
+     with the theme and never introduces a hue. */
+  .spotlight {
+    background: radial-gradient(
+      60% 50% at 50% 0%,
+      hsl(var(--foreground) / 0.07) 0%,
+      transparent 70%
+    );
+  }
+
+  /* Monochrome ink gradient for oversized numerals and wordmarks. */
+  .ink-gradient {
+    background-image: linear-gradient(
+      180deg,
+      hsl(var(--foreground)) 0%,
+      hsl(var(--foreground) / 0.55) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Film grain. A tiny SVG noise tile at low opacity removes the flat,
+     "unfinished" look of large solid fields. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .dark .grain::after {
+    opacity: 0.06;
+  }
+
+  /* Dotted paper, a quieter alternative to the grid. */
+  .dot-bg {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / 0.12) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+  }
+
+  .fade-mask-radial {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* Hides the scrollbar on horizontally scrolling chip rows while keeping
+     them scrollable by touch, wheel and keyboard. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   /* Research figures are grayscale PNGs on a white matplotlib canvas. In dark

@@ -14,7 +14,7 @@ export default function RootLayout() {
     <ThemeProvider defaultTheme="dark" storageKey="dr-verge-theme">
       <div className="relative flex min-h-svh flex-col bg-background text-foreground">
         <Navbar />
-        <div id="main" className="flex-1 pt-14 sm:pt-20">
+        <div id="main" className="flex-1 pt-16 sm:pt-20">
           <Outlet />
         </div>
         <Footer />
