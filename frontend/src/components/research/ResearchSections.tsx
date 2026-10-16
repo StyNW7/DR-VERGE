@@ -2,15 +2,11 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, AlertTriangle, Quote } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
-import {
-  SectionHeader,
-  Reveal,
-  Callout,
-  Badge,
-} from "@/components/common/Primitives";
+import { SectionHeader, Reveal, Callout, Badge } from "@/components/common/Primitives";
 import { ResearchFigure } from "@/components/common/ResearchFigure";
 import { LazyMonoBarChart } from "@/components/common/LazyChart";
 import { ArchitectureDiagram, ShiftDiagram } from "@/components/common/Diagrams";
+import { Sdg3Logo } from "@/components/common/Sdg3Logo";
 import {
   abstract,
   paperMeta,
@@ -36,18 +32,22 @@ import {
 import { siteConfig } from "@/config/siteConfig";
 import { useScrollSpy, scrollToSection } from "@/hooks/useScrollSpy";
 import { formatCompact } from "@/utils/formatting";
+import { signed, ciText } from "@/utils/stats";
+import { l, useI18n } from "@/i18n/context";
 
 /* -------------------------------------------------------------------------- */
 /* 6.2 Abstract + metadata                                                      */
 /* -------------------------------------------------------------------------- */
 
 export function AbstractSection() {
-  const meta: Array<{ label: string; value: React.ReactNode }> = [
-    { label: "Competition", value: paperMeta.competition },
-    { label: "Field", value: paperMeta.field },
-    { label: "Task", value: paperMeta.task },
+  const { t, tr } = useI18n();
+
+  const meta: Array<{ label: React.ReactNode; value: React.ReactNode }> = [
+    { label: t("Competition", "Kompetisi"), value: paperMeta.competition },
+    { label: t("Field", "Bidang"), value: paperMeta.field },
+    { label: t("Task", "Tugas"), value: tr(paperMeta.task) },
     {
-      label: "Dataset",
+      label: t("Dataset", "Dataset"),
       value: (
         <span className="flex flex-col gap-0.5">
           {paperMeta.datasets.map((d) => (
@@ -57,17 +57,17 @@ export function AbstractSection() {
       ),
     },
     {
-      label: "Views",
+      label: t("Views", "Citra"),
       value: (
         <span className="flex flex-col gap-0.5">
           {paperMeta.views.map((v) => (
-            <span key={v}>{v}</span>
+            <span key={v.en}>{tr(v)}</span>
           ))}
         </span>
       ),
     },
-    { label: "Classes", value: paperMeta.classes },
-    { label: "Institution", value: siteConfig.institution },
+    { label: t("Classes", "Kelas"), value: tr(paperMeta.classes) },
+    { label: t("Institution", "Institusi"), value: siteConfig.institution },
   ];
 
   return (
@@ -75,14 +75,14 @@ export function AbstractSection() {
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-7">
           <div className="flex items-center gap-3">
-            <span className="eyebrow">Abstract</span>
-            {abstract.isPlaceholder && <Badge tone="warn">Draft</Badge>}
+            <span className="eyebrow">{t("Abstract", "Abstrak")}</span>
+            {abstract.isPlaceholder && <Badge tone="warn">{t("Draft", "*Draft*")}</Badge>}
           </div>
 
           {abstract.isPlaceholder && (
             // Never present draft prose as the published abstract.
             <Callout tone="note" className="mt-5">
-              {abstract.note}
+              {tr(abstract.note)}
             </Callout>
           )}
 
@@ -96,7 +96,7 @@ export function AbstractSection() {
                     : "text-[15px] leading-relaxed text-muted-foreground"
                 }
               >
-                {p}
+                {tr(p)}
               </p>
             ))}
           </div>
@@ -104,11 +104,11 @@ export function AbstractSection() {
 
         <aside className="lg:col-span-5">
           <div className="card-premium p-6 sm:p-7">
-            <span className="eyebrow">Research Metadata</span>
+            <span className="eyebrow">{t("Research Metadata", "Metadata Penelitian")}</span>
             <dl className="mt-6 flex flex-col">
               {meta.map((m, i) => (
                 <div
-                  key={m.label}
+                  key={i}
                   className={
                     "flex justify-between gap-6 py-3.5 " +
                     (i < meta.length - 1 ? "border-b border-border" : "")
@@ -117,9 +117,7 @@ export function AbstractSection() {
                   <dt className="mono shrink-0 text-[10px] uppercase tracking-[0.14em] text-subtle">
                     {m.label}
                   </dt>
-                  <dd className="text-right text-[13px] font-medium leading-snug">
-                    {m.value}
-                  </dd>
+                  <dd className="text-right text-[13px] font-medium leading-snug">{m.value}</dd>
                 </div>
               ))}
             </dl>
@@ -130,12 +128,12 @@ export function AbstractSection() {
               <div key={d.name} className="bg-card p-5">
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-sm font-bold">{d.name}</span>
-                  <span className="mono text-[9px] uppercase tracking-[0.12em] text-subtle">
-                    {d.role}
+                  <span className="mono text-right text-[9px] uppercase tracking-[0.12em] text-subtle">
+                    {tr(d.role)}
                   </span>
                 </div>
                 <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-                  {d.detail}
+                  {tr(d.detail)}
                 </p>
               </div>
             ))}
@@ -151,50 +149,58 @@ export function AbstractSection() {
 /* -------------------------------------------------------------------------- */
 
 export function ResearchQuestionsSection() {
+  const { t, tr, pick } = useI18n();
+
   return (
     <Section id="questions" tone="surface">
       <SectionHeader
-        eyebrow="Research Questions"
+        eyebrow={t("Research Questions", "Pertanyaan Penelitian")}
         index="02"
-        title={
+        title={pick(
           <>
             Two questions, asked <em>separately</em>
-          </>
-        }
-        description="One is about what the distillation transfers. The other is about what the deployment costs. They are evaluated independently and reported independently."
+          </>,
+          <>
+            Dua pertanyaan, diajukan <em>terpisah</em>
+          </>,
+        )}
+        description={t(
+          "One is about what the distillation transfers. The other is about what the deployment costs. They are evaluated independently and reported independently.",
+          "Pertanyaan pertama menyangkut apa yang ditransfer oleh distilasi. Pertanyaan kedua menyangkut biaya *deployment*. Keduanya dievaluasi dan dilaporkan secara terpisah.",
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-5 lg:grid-cols-2">
+      <div className="mt-14 grid grid-cols-1 gap-5 lg:grid-cols-2">
         {researchQuestions.map((rq, i) => (
           <Reveal key={rq.id} delay={i * 0.08}>
-            <div className="flex h-full flex-col card-premium p-7 sm:p-9">
+            <div className="card-premium flex h-full flex-col p-7 sm:p-9">
               <div className="flex items-baseline justify-between gap-4">
                 <span className="display text-5xl sm:text-6xl">{rq.label}</span>
-                <span className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  {rq.topic}
+                <span className="mono text-right text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  {tr(rq.topic)}
                 </span>
               </div>
 
               <p className="mt-8 text-[15px] font-medium leading-relaxed text-foreground">
-                {rq.question}
+                {tr(rq.question)}
               </p>
 
               <div className="mt-auto pt-8">
                 <span className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
-                  Judged on
+                  {t("Judged on", "Dinilai berdasarkan")}
                 </span>
                 <ul className="mt-3 flex flex-col gap-2">
                   {rq.judgedOn.map((j) => (
                     <li
-                      key={j}
+                      key={j.en}
                       className="flex items-start gap-2.5 text-[13px] text-muted-foreground"
                     >
                       <Check
                         className="mt-0.5 h-3.5 w-3.5 shrink-0 text-foreground"
                         aria-hidden="true"
                       />
-                      {j}
+                      <span>{tr(j)}</span>
                     </li>
                   ))}
                 </ul>
@@ -212,28 +218,33 @@ export function ResearchQuestionsSection() {
 /* -------------------------------------------------------------------------- */
 
 export function ResearchGapSection() {
+  const { t, tr, pick } = useI18n();
+
   return (
     <Section id="gap">
       <SectionHeader
-        eyebrow="Research Gap"
+        eyebrow={t("Research Gap", "Celah Penelitian")}
         index="03"
-        title={
+        title={pick(
           <>
             Where this sits in the <em>literature</em>
-          </>
-        }
+          </>,
+          <>
+            Posisi penelitian ini dalam <em>literatur</em>
+          </>,
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-12">
+      <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <span className="eyebrow">Existing approaches</span>
+          <span className="eyebrow">{t("Existing approaches", "Pendekatan yang sudah ada")}</span>
           <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
             {researchGap.existing.map((e) => (
-              <div key={e.title} className="bg-card p-5">
-                <h3 className="text-[13px] font-bold">{e.title}</h3>
+              <div key={e.title.en} className="bg-card p-5">
+                <h3 className="text-[13px] font-bold">{tr(e.title)}</h3>
                 <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                  {e.body}
+                  {tr(e.body)}
                 </p>
               </div>
             ))}
@@ -241,14 +252,14 @@ export function ResearchGapSection() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="flex h-full flex-col grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-8">
+          <div className="grain relative flex h-full flex-col overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-8">
             <Quote className="h-5 w-5 opacity-40" aria-hidden="true" />
             <p className="mt-6 text-xl font-semibold leading-snug tracking-tight">
-              {researchGap.question}
+              {tr(researchGap.question)}
             </p>
             <div className="mt-auto pt-8">
-              <span className="mono text-[10px] uppercase tracking-[0.16em] opacity-50">
-                The specific question
+              <span className="mono text-[10px] uppercase tracking-[0.16em] opacity-60">
+                {t("The specific question", "Pertanyaan spesifiknya")}
               </span>
             </div>
           </div>
@@ -257,9 +268,16 @@ export function ResearchGapSection() {
 
       {/* Careful novelty wording — never "the first ever". */}
       <Reveal delay={0.08}>
-        <Callout tone="research" title="Novelty claim, stated precisely" className="mt-6">
-          {researchGap.novelty} That is a statement about the literature we reviewed, not a
-          claim of absolute priority.
+        <Callout
+          tone="research"
+          title={t("Novelty claim, stated precisely", "Klaim kebaruan, dinyatakan secara cermat")}
+          className="mt-6"
+        >
+          {tr(researchGap.novelty)}{" "}
+          {t(
+            "That is a statement about the literature we reviewed, not a claim of absolute priority.",
+            "Pernyataan ini terbatas pada literatur yang kami kaji, bukan klaim sebagai yang pertama secara mutlak.",
+          )}
         </Callout>
       </Reveal>
     </Section>
@@ -271,23 +289,28 @@ export function ResearchGapSection() {
 /* -------------------------------------------------------------------------- */
 
 export function MethodSection() {
+  const { t, tr, pick } = useI18n();
+
   return (
     <Section id="method" tone="surface">
       <SectionHeader
-        eyebrow="Method"
+        eyebrow={t("Method", "Metode")}
         index="04"
-        title={
+        title={pick(
           <>
             From two fields to one <em>ordinal grade</em>
-          </>
-        }
+          </>,
+          <>
+            Dari dua <i>field</i> menjadi satu <em>grade ordinal</em>
+          </>,
+        )}
         size="lg"
       />
 
       {/* Architecture */}
       <Reveal>
         <div className="mt-14 card-premium p-6 sm:p-8">
-          <span className="eyebrow">Architecture</span>
+          <span className="eyebrow">{t("Architecture", "Arsitektur")}</span>
           <div className="mt-6 -mx-2 overflow-x-auto px-2 pb-2">
             <div className="min-w-[680px] text-foreground">
               <ArchitectureDiagram />
@@ -300,12 +323,12 @@ export function MethodSection() {
       <Reveal delay={0.06}>
         <ol className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {methodStages.map((s, i) => (
-            <li key={s.title} className="flex flex-col gap-3 bg-card p-5">
+            <li key={s.title.en} className="flex flex-col gap-3 bg-card p-5">
               <span className="mono text-[10px] tracking-[0.16em] text-subtle">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-[13px] font-bold leading-tight">{s.title}</h3>
-              <p className="text-[12px] leading-relaxed text-muted-foreground">{s.body}</p>
+              <h3 className="text-[13px] font-bold leading-tight">{tr(s.title)}</h3>
+              <p className="text-[12px] leading-relaxed text-muted-foreground">{tr(s.body)}</p>
             </li>
           ))}
         </ol>
@@ -313,14 +336,14 @@ export function MethodSection() {
 
       {/* CSD formulas */}
       <Reveal delay={0.08}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-12">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <div className="flex h-full flex-col card-premium p-7 sm:p-8">
-              <span className="eyebrow mb-7">The CSD objective</span>
+            <div className="card-premium flex h-full flex-col p-7 sm:p-8">
+              <span className="eyebrow mb-7">{t("The CSD objective", "Fungsi objektif CSD")}</span>
               <div className="flex flex-col gap-3">
                 {csdExplanation.formulas.map((f, i) => (
                   <div key={i}>
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border bg-surface px-4 py-3.5">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-xl border border-border bg-surface px-4 py-3.5">
                       <span className="mono text-base font-semibold">
                         {f.lhs}
                         {f.superscript && (
@@ -331,20 +354,20 @@ export function MethodSection() {
                       <span className="mono text-sm">{f.rhs}</span>
                     </div>
                     <div className="mt-1.5 pl-4 text-[11px] text-muted-foreground">
-                      {f.note}
+                      {tr(f.note)}
                     </div>
                   </div>
                 ))}
               </div>
               <p className="mt-auto border-t border-border pt-6 text-[12px] leading-relaxed text-muted-foreground">
-                {csdExplanation.deltaMeaning}
+                {tr(csdExplanation.deltaMeaning)}
               </p>
             </div>
           </div>
 
           <div className="lg:col-span-7">
-            <div className="flex h-full flex-col card-premium p-6 sm:p-8">
-              <span className="eyebrow">Transfer</span>
+            <div className="card-premium flex h-full flex-col p-6 sm:p-8">
+              <span className="eyebrow">{t("Transfer", "Transfer")}</span>
               <div className="mt-6 -mx-2 flex-1 overflow-x-auto px-2 pb-2">
                 <div className="min-w-[620px] text-foreground">
                   <ShiftDiagram />
@@ -356,7 +379,7 @@ export function MethodSection() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.architecture} />
           <ResearchFigure figure={researchFigures.workflow} />
         </div>
@@ -370,9 +393,9 @@ export function MethodSection() {
 /* -------------------------------------------------------------------------- */
 
 export function Rq1ResultsSection() {
-  const mechanismRows = (
-    ["shiftL1", "cosAgree", "benefitCorr"] as const
-  ).map((key) => ({
+  const { t, tr, trs, pick, num, lang } = useI18n();
+
+  const mechanismRows = (["shiftL1", "cosAgree", "benefitCorr"] as const).map((key) => ({
     key,
     meta: mechanismMetricMeta[key],
     rows: mechanismResults.map((r) => ({
@@ -385,27 +408,38 @@ export function Rq1ResultsSection() {
   return (
     <Section id="rq1-results">
       <SectionHeader
-        eyebrow="Results · RQ1"
+        eyebrow={t("Results · RQ1", "Hasil · RQ1")}
         index="05"
-        title={
+        title={pick(
           <>
             Mechanism Works. <em>Predictive Superiority Is Not Established.</em>
-          </>
-        }
-        description="These are two separate findings and this page reports both with equal weight."
+          </>,
+          <>
+            Mekanismenya Berhasil. <em>Keunggulan Prediktif Belum Terbukti.</em>
+          </>,
+        )}
+        description={t(
+          "These are two separate findings and this page reports both with equal weight.",
+          "Keduanya adalah temuan yang terpisah, dan halaman ini melaporkan keduanya dengan bobot yang sama.",
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-2">
+      <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* LEFT: shift fidelity */}
         <Reveal>
-          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
-            <div className="flex items-baseline justify-between gap-4">
-              <h3 className="text-lg font-bold tracking-tight">Shift Fidelity</h3>
-              <Badge tone="solid">CSD best on all three</Badge>
+          <div className="card-premium flex h-full flex-col p-7 sm:p-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h3 className="text-lg font-bold tracking-tight">
+                {t("Shift Fidelity", "*Shift Fidelity*")}
+              </h3>
+              <Badge tone="solid">{t("CSD best on all three", "CSD terbaik pada ketiganya")}</Badge>
             </div>
             <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-              Whether the student reproduced the teacher's dual-view decision shift.
+              {t(
+                "Whether the student reproduced the teacher's dual-view decision shift.",
+                "Apakah *student* mereproduksi pergeseran keputusan *dual-view* milik *teacher*.",
+              )}
             </p>
 
             <div className="mt-8 flex flex-col gap-8">
@@ -413,10 +447,12 @@ export function Rq1ResultsSection() {
                 <div key={key}>
                   <div className="mb-3 flex items-baseline justify-between gap-3">
                     <span className="mono text-[11px] uppercase tracking-[0.14em]">
-                      {meta.label}
+                      {tr(meta.label)}
                     </span>
                     <span className="mono text-[10px] uppercase tracking-[0.12em] text-subtle">
-                      {meta.direction === "lower" ? "lower better" : "higher better"}
+                      {meta.direction === "lower"
+                        ? t("lower better", "makin rendah makin baik")
+                        : t("higher better", "makin tinggi makin baik")}
                     </span>
                   </div>
                   <LazyMonoBarChart
@@ -427,8 +463,8 @@ export function Rq1ResultsSection() {
                       Math.max(0, Math.min(...rows.map((r) => r.value)) * 0.9),
                       Math.max(...rows.map((r) => r.value)) * 1.08,
                     ]}
-                    ariaLabel={`${meta.label} by method: ${rows
-                      .map((r) => `${r.name} ${r.value.toFixed(4)}`)
+                    ariaLabel={`${trs(meta.label)}: ${rows
+                      .map((r) => `${r.name} ${num(r.value, 4)}`)
                       .join(", ")}`}
                   />
                 </div>
@@ -440,51 +476,63 @@ export function Rq1ResultsSection() {
         {/* RIGHT: predictive QWK */}
         <Reveal delay={0.08}>
           <div className="flex h-full flex-col rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-8">
-            <div className="flex items-baseline justify-between gap-4">
-              <h3 className="text-lg font-bold tracking-tight">Predictive QWK</h3>
-              <Badge tone="warn">All null</Badge>
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h3 className="text-lg font-bold tracking-tight">
+                {t("Predictive QWK", "QWK Prediktif")}
+              </h3>
+              <Badge tone="warn">{t("All null", "Semua *null*")}</Badge>
             </div>
             <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-              Whether that mechanism gain produced better in-domain grading agreement.
+              {t(
+                "Whether that mechanism gain produced better in-domain grading agreement.",
+                "Apakah keunggulan mekanisme tersebut menghasilkan kesepakatan *grading in-domain* yang lebih baik.",
+              )}
             </p>
 
-            <div className="mt-8 flex flex-col gap-px overflow-hidden rounded-lg border border-border bg-border">
+            <div className="mt-8 flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
               {rq1Verdict.comparisons.map((c) => (
-                <div
-                  key={c.pair}
-                  className="flex items-center justify-between gap-4 bg-card px-5 py-4"
-                >
-                  <span className="text-[13px] font-medium">{c.pair}</span>
-                  <span className="mono whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-                    {c.outcome}
+                <div key={c.pair.en} className="flex flex-col gap-1 bg-card px-5 py-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[13px] font-medium">{tr(c.pair)}</span>
+                    <span className="mono whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                      {tr(c.outcome)}
+                    </span>
+                  </div>
+                  <span className="mono text-[11px] tabular-nums text-subtle">
+                    ΔQWK {signed(c.delta, lang)} · {ciText(c.ciLow, c.ciHigh, lang)}
                   </span>
                 </div>
               ))}
             </div>
 
-            <Callout tone="caution" title="Reading a null result" className="mt-7">
-              {rq1Verdict.note} These comparisons are reported rather than omitted, because
-              omitting them would leave the mechanism result looking like a predictive one.
+            <Callout
+              tone="caution"
+              title={t("Reading a null result", "Cara membaca hasil *null*")}
+              className="mt-7"
+            >
+              {tr(rq1Verdict.note)}{" "}
+              {t(
+                "These comparisons are reported rather than omitted, because omitting them would leave the mechanism result looking like a predictive one.",
+                "Perbandingan ini dilaporkan, bukan dihilangkan, karena menghilangkannya akan membuat hasil mekanisme tampak seolah-olah merupakan hasil prediktif.",
+              )}
             </Callout>
 
             <div className="mt-auto pt-8">
-              <p className="text-[15px] font-semibold leading-snug">
-                {rq1Verdict.predictive}
-              </p>
+              <p className="text-[15px] font-semibold leading-snug">{tr(rq1Verdict.predictive)}</p>
             </div>
           </div>
         </Reveal>
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.csdMechanism} />
           <ResearchFigure figure={researchFigures.forest} />
         </div>
       </Reveal>
 
       <Reveal delay={0.12}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.performance} />
           <ResearchFigure figure={researchFigures.dualViewGain} />
         </div>
@@ -498,6 +546,8 @@ export function Rq1ResultsSection() {
 /* -------------------------------------------------------------------------- */
 
 export function Rq2ResultsSection() {
+  const { t, ts, pick, num, lang } = useI18n();
+
   const latencyData = efficiencyResults
     .filter((r) => !r.variant.startsWith("Teacher"))
     .map((r) => ({
@@ -509,27 +559,32 @@ export function Rq2ResultsSection() {
   return (
     <Section id="rq2-results" tone="surface">
       <SectionHeader
-        eyebrow="Results · RQ2"
+        eyebrow={t("Results · RQ2", "Hasil · RQ2")}
         index="06"
-        title={
+        title={pick(
           <>
             Efficiency Without Large <em>Performance Sacrifice</em>
-          </>
-        }
+          </>,
+          <>
+            Efisien Tanpa <em>Mengorbankan Banyak Performa</em>
+          </>,
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-12">
+      <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
-          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
-            <span className="eyebrow mb-7">Single-thread CPU latency</span>
+          <div className="card-premium flex h-full flex-col p-7 sm:p-8">
+            <span className="eyebrow mb-7">
+              {t("Single-thread CPU latency", "Latensi CPU *single-thread*")}
+            </span>
             <LazyMonoBarChart
               data={latencyData}
               height={210}
               digits={2}
               unit="ms"
-              ariaLabel={`CPU latency by variant: ${latencyData
-                .map((d) => `${d.name} ${d.value.toFixed(2)} milliseconds`)
+              ariaLabel={`${ts("CPU latency by variant", "Latensi CPU per varian")}: ${latencyData
+                .map((d) => `${d.name} ${num(d.value, 2)} ${ts("milliseconds", "milidetik")}`)
                 .join(", ")}`}
             />
           </div>
@@ -538,27 +593,33 @@ export function Rq2ResultsSection() {
         <Reveal delay={0.08} className="lg:col-span-5">
           <div className="grid h-full gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <StatBlock
-              value={`${modelStats.selectedQwkRetentionPct}%`}
-              label="INT8 QWK retention"
-              detail="Selected artifact, relative to the FP32 student"
+              value={`${num(modelStats.selectedQwkRetentionPct, 1)}%`}
+              label={t("INT8 QWK retention", "Retensi QWK INT8")}
+              detail={t(
+                "Selected artifact, relative to the FP32 student",
+                "Artefak terpilih, relatif terhadap *student* FP32",
+              )}
             />
             <StatBlock
-              value={`${modelStats.studentFp32LatencyMs.toFixed(2)} → ${modelStats.selectedDeploymentLatencyMs.toFixed(2)} ms`}
-              label="FP32 to selected INT8"
-              detail="Single-thread CPU inference"
+              value={`${num(modelStats.studentFp32LatencyMs, 2)} → ${num(modelStats.selectedDeploymentLatencyMs, 2)} ms`}
+              label={t("FP32 to selected INT8", "Dari FP32 ke INT8 terpilih")}
+              detail={t("Single-thread CPU inference", "Inferensi CPU *single-thread*")}
               emphasis
             />
             <StatBlock
-              value={formatCompact(modelStats.studentParams)}
-              label="Student parameters"
-              detail={`${modelStats.compressionFactor}× fewer than the teacher`}
+              value={formatCompact(modelStats.studentParams, lang)}
+              label={t("Student parameters", "Parameter *student*")}
+              detail={t(
+                `${modelStats.compressionFactor}× fewer than the teacher`,
+                `${modelStats.compressionFactor}× lebih sedikit dibandingkan *teacher*`,
+              )}
             />
           </div>
         </Reveal>
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.retention} />
           <ResearchFigure figure={researchFigures.efficiency} />
         </div>
@@ -580,17 +641,17 @@ function StatBlock({
   emphasis = false,
 }: {
   value: string;
-  label: string;
-  detail: string;
+  label: React.ReactNode;
+  detail: React.ReactNode;
   emphasis?: boolean;
 }) {
   return (
     <div
       className={
-        "flex flex-col justify-center rounded-xl border p-6 " +
+        "flex flex-col justify-center rounded-2xl border p-6 " +
         (emphasis
-          ? "border-foreground bg-foreground text-background"
-          : "border-border bg-card")
+          ? "grain relative overflow-hidden border-foreground bg-foreground text-background"
+          : "card-premium")
       }
     >
       <div className="mono text-2xl font-bold tracking-tight">{value}</div>
@@ -611,8 +672,10 @@ function StatBlock({
 /* -------------------------------------------------------------------------- */
 
 export function ExternalValidationSection() {
+  const { t, ts, tr, trs, pick, num } = useI18n();
+
   const data = externalValidation.map((r) => ({
-    name: r.model,
+    name: trs(r.model),
     value: r.qwk,
     emphasis: r.isSelected || r.isTeacher,
   }));
@@ -620,28 +683,36 @@ export function ExternalValidationSection() {
   return (
     <Section id="external">
       <SectionHeader
-        eyebrow="External Validation"
+        eyebrow={t("External Validation", "Validasi Eksternal")}
         index="07"
-        title={
+        title={pick(
           <>
             DeepDRiD <em>Set-C</em>
-          </>
-        }
-        description="The confirmatory external partition. No tuning, threshold adjustment, or model selection happened on this data."
+          </>,
+          <>
+            DeepDRiD <em>Set-C</em>
+          </>,
+        )}
+        description={t(
+          "The confirmatory external partition. No tuning, threshold adjustment, or model selection happened on this data.",
+          "Partisi eksternal konfirmatori. Tidak ada penyetelan, penyesuaian ambang, maupun pemilihan model yang dilakukan pada data ini.",
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-12">
+      <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
           <div className="card-premium p-7 sm:p-8">
-            <span className="eyebrow mb-7 block">Quadratic Weighted Kappa</span>
+            <span className="eyebrow mb-7 block">
+              {t("Quadratic Weighted Kappa", "*Quadratic Weighted Kappa*")}
+            </span>
             <LazyMonoBarChart
               data={data}
               height={260}
               digits={4}
               domain={[0, 0.9]}
-              ariaLabel={`External QWK on DeepDRiD Set-C: ${data
-                .map((d) => `${d.name} ${d.value.toFixed(4)}`)
+              ariaLabel={`${ts("External QWK on DeepDRiD Set-C", "QWK eksternal pada DeepDRiD Set-C")}: ${data
+                .map((d) => `${d.name} ${num(d.value, 4)}`)
                 .join(", ")}`}
             />
           </div>
@@ -652,21 +723,21 @@ export function ExternalValidationSection() {
             <div className="flex flex-col gap-px overflow-hidden rounded-2xl border border-border bg-border">
               {externalValidation.map((r) => (
                 <div
-                  key={r.model}
+                  key={r.model.en}
                   className={
                     "flex items-center justify-between gap-4 px-5 py-3.5 " +
                     (r.isSelected ? "bg-foreground text-background" : "bg-card")
                   }
                 >
-                  <span className="text-[13px] font-medium">{r.model}</span>
+                  <span className="text-[13px] font-medium">{tr(r.model)}</span>
                   <div className="flex items-center gap-3">
                     {r.isSelected && (
                       <span className="mono text-[9px] uppercase tracking-[0.12em] opacity-60">
-                        selected
+                        {t("deployed", "di-*deploy*")}
                       </span>
                     )}
                     <span className="mono text-[13px] font-semibold tabular-nums">
-                      {r.qwk.toFixed(4)}
+                      {num(r.qwk, 4)}
                     </span>
                   </div>
                 </div>
@@ -674,15 +745,15 @@ export function ExternalValidationSection() {
             </div>
 
             {/* The caveat is not a footnote here — it sits beside the numbers. */}
-            <Callout tone="caution" title="Do not overstate this">
-              {externalCaveat}
+            <Callout tone="caution" title={t("Do not overstate this", "Jangan dilebih-lebihkan")}>
+              {tr(externalCaveat)}
             </Callout>
           </div>
         </Reveal>
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.externalSetC} />
           <ResearchFigure figure={researchFigures.internalVsExternal} />
         </div>
@@ -696,6 +767,7 @@ export function ExternalValidationSection() {
 /* -------------------------------------------------------------------------- */
 
 export function FiguresSection() {
+  const { t, tr, pick } = useI18n();
   const figs = [
     researchFigures.dataset,
     researchFigures.perGradeRecall,
@@ -706,17 +778,23 @@ export function FiguresSection() {
   return (
     <Section id="figures" tone="surface">
       <SectionHeader
-        eyebrow="Supplementary Figures"
+        eyebrow={t("Supplementary Figures", "Gambar Pendukung")}
         index="08"
-        title={
+        title={pick(
           <>
             Where the model succeeds and where it <em>fails</em>
-          </>
-        }
-        description="Aggregate metrics hide per-grade behaviour. These figures show it directly."
+          </>,
+          <>
+            Di mana model berhasil dan di mana model <em>gagal</em>
+          </>,
+        )}
+        description={t(
+          "Aggregate metrics hide per-grade behaviour. These figures show it directly.",
+          "Metrik agregat menyembunyikan perilaku per *grade*. Gambar-gambar ini menunjukkannya secara langsung.",
+        )}
         size="lg"
       />
-      <div className="mt-14 grid gap-8 lg:grid-cols-2">
+      <div className="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {figs.map((f, i) => (
           <Reveal key={f.id} delay={i * 0.06}>
             <ResearchFigure figure={f} />
@@ -725,7 +803,7 @@ export function FiguresSection() {
       </div>
       <Reveal delay={0.1}>
         <Callout tone="research" className="mt-10">
-          {DISCLAIMER_METRICS}
+          {tr(DISCLAIMER_METRICS)}
         </Callout>
       </Reveal>
     </Section>
@@ -737,38 +815,63 @@ export function FiguresSection() {
 /* -------------------------------------------------------------------------- */
 
 export function LimitationsSection() {
+  const { t, tr, pick } = useI18n();
+
   return (
     <Section id="limitations">
       <SectionHeader
-        eyebrow="Limitations"
+        eyebrow={t("Limitations", "Keterbatasan")}
         index="09"
-        title={
+        title={pick(
           <>
             What this work does <em>not</em> establish
-          </>
-        }
-        description="Stated in full. A limitations section that is honest about the weaknesses is what makes the rest of the results worth trusting."
+          </>,
+          <>
+            Hal yang <em>belum</em> dibuktikan penelitian ini
+          </>,
+        )}
+        description={t(
+          "Stated in full. A limitations section that is honest about the weaknesses is what makes the rest of the results worth trusting.",
+          "Disampaikan secara lengkap. Bagian keterbatasan yang jujur terhadap kelemahan inilah yang membuat hasil-hasil lainnya layak dipercaya.",
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
-        {limitations.map((l, i) => (
-          <Reveal key={l.title} delay={i * 0.04}>
-            <div className="flex h-full gap-4 bg-card p-6 sm:p-7">
-              <AlertTriangle
-                className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
-                aria-hidden="true"
-              />
+      {/* The grid is revealed as one piece: cells fading in individually would
+          briefly expose the hairline background as grey blocks. */}
+      <Reveal>
+        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
+          {limitations.map((lim, i) => (
+            <div
+              key={lim.title.en}
+              // An odd count would leave an empty hairline cell; the last item
+              // spans the row instead.
+              className={
+                "flex h-full gap-4 bg-card p-6 sm:p-7 " +
+                (i === limitations.length - 1 && limitations.length % 2 === 1
+                  ? "sm:col-span-2"
+                  : "")
+              }
+            >
+              <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground">
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <div>
-                <h3 className="text-[14px] font-bold leading-tight">{l.title}</h3>
+                <h3 className="flex items-start gap-2 text-[14px] font-bold leading-tight">
+                  <AlertTriangle
+                    className="mt-px h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <span>{tr(lim.title)}</span>
+                </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                  {l.body}
+                  {tr(lim.body)}
                 </p>
               </div>
             </div>
-          </Reveal>
-        ))}
-      </div>
+          ))}
+        </div>
+      </Reveal>
     </Section>
   );
 }
@@ -777,39 +880,49 @@ export function LimitationsSection() {
 /* 6.11 SDG impact                                                              */
 /* -------------------------------------------------------------------------- */
 
+const pillars = [
+  l("Research", "Penelitian"),
+  l("Technology", "Teknologi"),
+  l("Accessibility", "Aksesibilitas"),
+  l("Preventive Health", "Kesehatan Preventif"),
+];
+
 export function SdgImpactSection() {
-  const pillars = ["Research", "Technology", "Accessibility", "Preventive Health"];
+  const { t, tr } = useI18n();
 
   return (
-    <Section id="sdg-impact" tone="inverted">
+    <Section id="sdg-impact" tone="inverted" className="grain overflow-hidden">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">
-          <span className="display text-display-lg leading-none">{sdgContent.number}</span>
-          <h2 className="mt-6 text-2xl font-bold tracking-tight">
-            SDG {sdgContent.number} — {sdgContent.title}
-          </h2>
+          <div className="w-32 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-background/20 sm:w-40">
+            <Sdg3Logo />
+          </div>
+          <h2 className="mt-6 text-2xl font-bold tracking-tight">SDG 3 — {tr(sdgContent.title)}</h2>
         </div>
 
         <div className="lg:col-span-8">
-          <p className="text-lg font-medium leading-snug">{sdgContent.intro}</p>
+          <p className="text-lg font-medium leading-snug">{tr(sdgContent.intro)}</p>
 
           <div className="mt-9 flex flex-wrap gap-2.5">
             {pillars.map((p) => (
               <span
-                key={p}
+                key={p.en}
                 className="mono rounded-full border border-background/30 px-4 py-1.5 text-[10px] uppercase tracking-[0.14em]"
               >
-                {p}
+                {tr(p)}
               </span>
             ))}
           </div>
 
           {/* "Potential contribution", never "proven impact". */}
-          <div className="mt-9 rounded-lg border border-background/25 border-l-[3px] border-l-background p-5">
+          <div className="mt-9 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5">
             <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em]">
-              Potential contribution, not proven impact
+              {t(
+                "Potential contribution, not proven impact",
+                "Potensi kontribusi, bukan dampak yang telah terbukti",
+              )}
             </div>
-            <p className="text-[13px] leading-relaxed opacity-70">{sdgContent.caution}</p>
+            <p className="text-[13px] leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>
           </div>
         </div>
       </div>
@@ -821,21 +934,23 @@ export function SdgImpactSection() {
 /* Reading order helper                                                         */
 /* -------------------------------------------------------------------------- */
 
+const tocSteps = [
+  { id: "abstract", label: l("Abstract", "Abstrak") },
+  { id: "questions", label: l("Questions", "Pertanyaan") },
+  { id: "gap", label: l("Gap", "Celah") },
+  { id: "method", label: l("Method", "Metode") },
+  { id: "rq1-results", label: l("RQ1 Results", "Hasil RQ1") },
+  { id: "rq2-results", label: l("RQ2 Results", "Hasil RQ2") },
+  { id: "external", label: l("External", "Eksternal") },
+  { id: "figures", label: l("Figures", "Gambar") },
+  { id: "limitations", label: l("Limitations", "Keterbatasan") },
+  { id: "sdg-impact", label: l("SDG 3", "SDG 3") },
+];
+
 export function ReadingOrder() {
-  const steps = [
-    { id: "abstract", label: "Abstract" },
-    { id: "questions", label: "Questions" },
-    { id: "gap", label: "Gap" },
-    { id: "method", label: "Method" },
-    { id: "rq1-results", label: "RQ1 Results" },
-    { id: "rq2-results", label: "RQ2 Results" },
-    { id: "external", label: "External" },
-    { id: "figures", label: "Figures" },
-    { id: "limitations", label: "Limitations" },
-    { id: "sdg-impact", label: "SDG 3" },
-  ];
-  const active = useScrollSpy(steps.map((s) => s.id));
-  const activeIndex = steps.findIndex((s) => s.id === active);
+  const { ts, trs } = useI18n();
+  const active = useScrollSpy(tocSteps.map((s) => s.id));
+  const activeIndex = tocSteps.findIndex((s) => s.id === active);
   const navRef = useRef<HTMLElement>(null);
 
   // Keep the active chip in view on narrow screens, where the row scrolls.
@@ -854,16 +969,16 @@ export function ReadingOrder() {
         <div className="glass flex items-center gap-3 rounded-full border border-border py-1.5 pl-4 pr-1.5 shadow-[0_10px_30px_-18px_hsl(var(--shadow-color)/0.4)]">
           <span className="mono hidden shrink-0 text-[10px] uppercase tracking-[0.16em] text-subtle sm:block">
             {activeIndex >= 0
-              ? `${String(activeIndex + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`
-              : "On this page"}
+              ? `${String(activeIndex + 1).padStart(2, "0")} / ${String(tocSteps.length).padStart(2, "0")}`
+              : ts("On this page", "Di halaman ini")}
           </span>
           <span className="hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden="true" />
           <nav
             ref={navRef}
-            aria-label="On this page"
+            aria-label={ts("On this page", "Di halaman ini")}
             className="no-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
           >
-            {steps.map((st) => {
+            {tocSteps.map((st) => {
               const isActive = st.id === active;
               return (
                 <button
@@ -885,7 +1000,7 @@ export function ReadingOrder() {
                       aria-hidden="true"
                     />
                   )}
-                  <span className="relative">{st.label}</span>
+                  <span className="relative">{trs(st.label)}</span>
                 </button>
               );
             })}

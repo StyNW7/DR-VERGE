@@ -10,6 +10,14 @@ import {
   LabelList,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { useI18n, type Lang } from "@/i18n/context";
+import { formatScore } from "@/utils/formatting";
+
+/** Axis ticks: up to three decimals, in the reader's number format. */
+const tickFormat = (lang: Lang) => (v: unknown) =>
+  typeof v === "number"
+    ? v.toLocaleString(lang === "id" ? "id-ID" : "en-US", { maximumFractionDigits: 3 })
+    : String(v ?? "");
 
 /**
  * Recharts wrapped in the site's monochrome system.
@@ -36,19 +44,21 @@ function MonoTooltip({
   label,
   unit,
   digits,
+  lang,
 }: {
   active?: boolean;
   payload?: Array<{ value: number }>;
   label?: string;
   unit?: string;
   digits: number;
+  lang: Lang;
 }) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-lg">
       <div className="text-[11px] font-medium text-popover-foreground">{label}</div>
       <div className="mono mt-0.5 text-sm font-semibold text-popover-foreground">
-        {payload[0].value.toFixed(digits)}
+        {formatScore(payload[0].value, digits, lang)}
         {unit ? ` ${unit}` : ""}
       </div>
     </div>
@@ -78,6 +88,7 @@ export function MonoBarChart({
   ariaLabel: string;
 }) {
   const isHorizontalBars = layout === "vertical";
+  const { lang } = useI18n();
 
   return (
     <div className={cn("w-full", className)} role="img" aria-label={ariaLabel}>
@@ -100,6 +111,7 @@ export function MonoBarChart({
                 type="number"
                 domain={domain ?? [0, "auto"]}
                 tick={{ fill: MUTED, fontSize: 10 }}
+                tickFormatter={tickFormat(lang)}
                 axisLine={{ stroke: BORDER }}
                 tickLine={false}
               />
@@ -123,6 +135,7 @@ export function MonoBarChart({
               <YAxis
                 domain={domain ?? [0, "auto"]}
                 tick={{ fill: MUTED, fontSize: 10 }}
+                tickFormatter={tickFormat(lang)}
                 axisLine={false}
                 tickLine={false}
                 width={44}
@@ -131,7 +144,7 @@ export function MonoBarChart({
           )}
           <Tooltip
             cursor={{ fill: FG, fillOpacity: 0.05 }}
-            content={<MonoTooltip unit={unit} digits={digits} />}
+            content={<MonoTooltip unit={unit} digits={digits} lang={lang} />}
           />
           <Bar dataKey="value" radius={isHorizontalBars ? [0, 4, 4, 0] : [4, 4, 0, 0]}>
             {data.map((d, i) => (
@@ -149,7 +162,7 @@ export function MonoBarChart({
                 // Recharts types the label value loosely, so it is narrowed here
                 // rather than asserted — a non-numeric label renders as-is.
                 formatter={(v: unknown) =>
-                  typeof v === "number" ? v.toFixed(digits) : String(v ?? "")
+                  typeof v === "number" ? formatScore(v, digits, lang) : String(v ?? "")
                 }
                 style={{ fill: MUTED, fontSize: 10, fontFamily: "JetBrains Mono, monospace" }}
               />

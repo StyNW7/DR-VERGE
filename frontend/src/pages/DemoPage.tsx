@@ -35,13 +35,16 @@ import { useSampleManifest, fetchSampleFile } from "@/hooks/useSamples";
 import { isMockMode } from "@/services/inferenceApi";
 import { siteConfig, isLinkConfigured, runsOnDevice } from "@/config/siteConfig";
 import { DISCLAIMER_CLINICAL } from "@/data/researchMetrics";
+import { getGrade, gradeText } from "@/data/drGrades";
 import type { SampleEntry } from "@/data/samples";
 import {
   readImageMeta,
   validateImageFile,
   type UploadedImage,
+  type ValidationCode,
 } from "@/utils/fileValidation";
 import { formatBytes, formatScore, formatMs, formatTimestamp } from "@/utils/formatting";
+import { useI18n } from "@/i18n/context";
 import { cn } from "@/lib/utils";
 
 type Slot = "macula" | "disc";
@@ -49,24 +52,39 @@ type Slot = "macula" | "disc";
 const slotConfig = {
   macula: {
     index: "01",
-    label: "Macula",
-    title: "Macula-Centered Fundus Image",
-    hint: "Centred on the macula — the field most single-view systems use.",
+    label: { en: "Macula", id: "Makula" },
+    title: { en: "Macula-Centered Fundus Image", id: "Citra Fundus Berpusat Makula" },
+    hint: {
+      en: "Centred on the macula — the field most single-view systems use.",
+      id: "Berpusat pada makula — *field* yang digunakan oleh sebagian besar sistem *single-view*.",
+    },
   },
   disc: {
     index: "02",
-    label: "Optic Disc",
-    title: "Optic-Disc-Centered Fundus Image",
-    hint: "Centred on the optic disc, capturing complementary retinal territory.",
+    label: { en: "Optic Disc", id: "Diskus Optik" },
+    title: { en: "Optic-Disc-Centered Fundus Image", id: "Citra Fundus Berpusat Diskus Optik" },
+    hint: {
+      en: "Centred on the optic disc, capturing complementary retinal territory.",
+      id: "Berpusat pada diskus optik, menangkap area retina pelengkap.",
+    },
   },
 } as const;
 
+interface SlotError {
+  code?: ValidationCode;
+  /** English message from the validator, used for English and as a fallback. */
+  message: string;
+  size?: number;
+}
+
 export default function DemoPage() {
+  const { t, ts, trs, tr, lang, pick } = useI18n();
+
   const [images, setImages] = useState<Record<Slot, UploadedImage | null>>({
     macula: null,
     disc: null,
   });
-  const [errors, setErrors] = useState<Record<Slot, string | null>>({
+  const [errors, setErrors] = useState<Record<Slot, SlotError | null>>({
     macula: null,
     disc: null,
   });
@@ -78,7 +96,7 @@ export default function DemoPage() {
   const { manifest, loading: manifestLoading } = useSampleManifest();
   const [activeSample, setActiveSample] = useState<SampleEntry | null>(null);
   const [pendingSample, setPendingSample] = useState<string | null>(null);
-  const [sampleError, setSampleError] = useState<string | null>(null);
+  const [sampleError, setSampleError] = useState(false);
   const [analyzedSample, setAnalyzedSample] = useState<SampleEntry | null>(null);
 
   const inference = useInference();
@@ -87,6 +105,22 @@ export default function DemoPage() {
 
   const bothReady = Boolean(images.macula && images.disc);
   const readyCount = Number(Boolean(images.macula)) + Number(Boolean(images.disc));
+
+  /** Validation messages in the reader's language. */
+  const errorText = (e: SlotError | null): string | null => {
+    if (!e) return null;
+    if (lang === "en" || !e.code) return e.message;
+    switch (e.code) {
+      case "no-file":
+        return "Tidak ada berkas yang dipilih.";
+      case "type":
+        return "Jenis berkas tidak didukung. Silakan unggah citra JPG, JPEG, atau PNG.";
+      case "empty":
+        return "Berkas tersebut tampaknya kosong. Silakan pilih citra lain.";
+      case "size":
+        return `Berkas terlalu besar (${formatBytes(e.size ?? 0, "id")}). Batas maksimumnya ${formatBytes(siteConfig.maxUploadBytes, "id")}.`;
+    }
+  };
 
   // Keep the hook's idle/ready state in step with upload readiness.
   // Depends on the stable `setReadiness` callback rather than the whole hook
@@ -118,7 +152,14 @@ export default function DemoPage() {
   const handleSelect = useCallback(async (slot: Slot, file: File) => {
     const validation = validateImageFile(file);
     if (!validation.ok) {
-      setErrors((e) => ({ ...e, [slot]: validation.error ?? "That file could not be used." }));
+      setErrors((e) => ({
+        ...e,
+        [slot]: {
+          code: validation.code,
+          message: validation.error ?? "That file could not be used.",
+          size: file.size,
+        },
+      }));
       return;
     }
 
@@ -162,7 +203,7 @@ export default function DemoPage() {
   const handlePickSample = useCallback(
     async (sample: SampleEntry) => {
       setPendingSample(sample.sample_id);
-      setSampleError(null);
+      setSampleError(false);
       try {
         const [macula, disc] = await Promise.all([
           fetchSampleFile(sample, "macula"),
@@ -173,7 +214,7 @@ export default function DemoPage() {
         // A new pair invalidates any previous result.
         if (inference.status === "success" || inference.status === "error") inference.reset();
       } catch {
-        setSampleError("That sample could not be loaded. Please try another one, or upload your own pair.");
+        setSampleError(true);
       } finally {
         setPendingSample(null);
       }
@@ -208,16 +249,27 @@ export default function DemoPage() {
   }, [inference.status]);
 
   const result = inference.result;
+  const resultGrade = result ? getGrade(result.grade) : null;
+  const resultGradeName = result
+    ? resultGrade
+      ? gradeText(resultGrade, lang).name
+      : result.gradeName
+    : "";
 
   // Stepper state mirrors the page, never the other way round.
   const stepDone = [bothReady, inference.status === "success", inference.status === "success"];
   const currentStep: DemoStep = !bothReady ? 0 : inference.status === "success" ? 2 : 1;
 
+  const missingSlot = images.macula ? ts("optic-disc", "diskus optik") : ts("macula", "makula");
+
   return (
     <PageContainer>
       <Seo
-        title="Model Demo"
-        description="Upload a macula-centered and optic-disc-centered retinal fundus image pair and inspect the DR-VERGE ordinal grading output. Research prototype; not for clinical use."
+        title={ts("Model Demo", "Demo Model")}
+        description={ts(
+          "Upload a macula-centered and optic-disc-centered retinal fundus image pair and inspect the DR-VERGE ordinal grading output. Research prototype; not for clinical use.",
+          "Unggah pasangan citra fundus retina berpusat makula dan berpusat diskus optik, lalu periksa keluaran grading ordinal DR-VERGE. Prototipe penelitian; bukan untuk penggunaan klinis.",
+        )}
       />
 
       {/* ================= HERO ================= */}
@@ -232,44 +284,61 @@ export default function DemoPage() {
             <div className="max-w-3xl">
               <div className="flex flex-wrap items-center gap-2.5">
                 <Badge tone="outline" icon={ScanEye}>
-                  Research Prototype
+                  {t("Research Prototype", "Prototipe Penelitian")}
                 </Badge>
-                {mock && <Badge tone="warn">Demo Mode</Badge>}
+                {mock && <Badge tone="warn">{t("Demo Mode", "Mode Demo")}</Badge>}
                 {runsOnDevice && (
                   <Badge tone="outline" icon={Cpu}>
-                    Runs on your device
+                    {t("Runs on your device", "Berjalan di perangkat Anda")}
                   </Badge>
                 )}
               </div>
 
               <h1 className="display mt-7 text-display-md">
-                Test <em>DR-VERGE</em>
+                {pick(
+                  <>
+                    Test <em>DR-VERGE</em>
+                  </>,
+                  <>
+                    Uji <em>DR-VERGE</em>
+                  </>,
+                )}
               </h1>
               <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Give the model two views of the same eye and inspect its ordinal grading
-                output. Pick a sample eye for the fastest start.
+                {t(
+                  "Give the model two views of the same eye and inspect its ordinal grading output. Pick a sample eye for the fastest start.",
+                  "Berikan model dua citra dari mata yang sama, lalu periksa keluaran *grading* ordinalnya. Pilih sampel mata untuk memulai dengan cepat.",
+                )}
               </p>
             </div>
 
             <DemoStepper current={currentStep} done={stepDone} />
           </div>
 
-          <div className="mt-10 grid gap-3 lg:grid-cols-2">
-            <Callout tone="medical" title="Research and educational use only">
-              {DISCLAIMER_CLINICAL} Do not upload images expecting a medical answer, and do
-              not upload identifiable patient data.
+          <div className="mt-10 grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <Callout
+              tone="medical"
+              title={t("Research and educational use only", "Hanya untuk penelitian dan edukasi")}
+            >
+              {tr(DISCLAIMER_CLINICAL)}{" "}
+              {t(
+                "Do not upload images expecting a medical answer, and do not upload identifiable patient data.",
+                "Jangan mengunggah citra dengan harapan memperoleh jawaban medis, dan jangan mengunggah data pasien yang dapat diidentifikasi.",
+              )}
             </Callout>
 
             {/* Two things a visitor cannot infer and should not have to guess:
                 where their images go, and which artifact actually produced the
                 number they are about to read. */}
             {runsOnDevice && (
-              <Callout tone="note" title="Inference runs entirely in your browser">
-                Your images are never uploaded — the model is downloaded once and executed
-                on this device. The demo runs the {siteConfig.localModelVariant} student;
-                the deployment model reported in the paper is the{" "}
-                {siteConfig.paperDeploymentVariant} variant of the same method, which
-                cannot be executed in a browser.
+              <Callout
+                tone="note"
+                title={t("Inference runs entirely in your browser", "Inferensi berjalan sepenuhnya di *browser* Anda")}
+              >
+                {t(
+                  `Your images are never uploaded — the model is downloaded once and executed on this device. The demo runs the ${siteConfig.localModelVariant} student; the deployment model reported in the paper is the ${siteConfig.paperDeploymentVariant} variant of the same method, which cannot be executed in a browser.`,
+                  `Citra Anda tidak pernah diunggah — model diunduh satu kali lalu dijalankan di perangkat ini. Demo ini menjalankan *student* ${siteConfig.localModelVariant}; model *deployment* yang dilaporkan dalam makalah adalah varian ${siteConfig.paperDeploymentVariant} dari metode yang sama, yang tidak dapat dijalankan di *browser*.`,
+                )}
               </Callout>
             )}
           </div>
@@ -285,14 +354,20 @@ export default function DemoPage() {
       {/* ================= STEP 1: INPUT ================= */}
       <Section id="upload" tone="surface" className="py-14 sm:py-20">
         <SectionHeader
-          eyebrow="Step 1"
+          eyebrow={t("Step 1", "Langkah 1")}
           index="01"
-          title={
+          title={pick(
             <>
               Choose a <em>dual-view</em> pair
-            </>
-          }
-          description="DR-VERGE needs both fields of the same eye — that pairing is the premise of the method, so analysis stays disabled until both are provided."
+            </>,
+            <>
+              Pilih pasangan <em>dual-view</em>
+            </>,
+          )}
+          description={t(
+            "DR-VERGE needs both fields of the same eye — that pairing is the premise of the method, so analysis stays disabled until both are provided.",
+            "DR-VERGE membutuhkan kedua *field* dari mata yang sama — pasangan inilah premis metodenya, sehingga analisis tetap nonaktif sampai keduanya tersedia.",
+          )}
         />
 
         <div className="mt-10">
@@ -306,27 +381,43 @@ export default function DemoPage() {
           />
           {sampleError && (
             <p role="alert" className="mt-3 text-[12px] text-foreground">
-              {sampleError}
+              {t(
+                "That sample could not be loaded. Please try another one, or upload your own pair.",
+                "Sampel tersebut tidak dapat dimuat. Silakan coba sampel lain, atau unggah pasangan citra Anda sendiri.",
+              )}
             </p>
           )}
         </div>
 
-        <Divider label="or upload your own pair" className="my-10" />
+        <Divider
+          label={t("or upload your own pair", "atau unggah pasangan citra sendiri")}
+          className="my-10"
+        />
 
         {/* What a valid upload looks like, said once and briefly. */}
         <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-muted-foreground">
           <span className="inline-flex items-center gap-2">
             <ImageIcon className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
-            JPG · JPEG · PNG, up to {formatBytes(siteConfig.maxUploadBytes)} each
+            {t(
+              `JPG · JPEG · PNG, up to ${formatBytes(siteConfig.maxUploadBytes)} each`,
+              `JPG · JPEG · PNG, maksimum ${formatBytes(siteConfig.maxUploadBytes, "id")} per berkas`,
+            )}
           </span>
           <span className="inline-flex items-center gap-2">
             <ScanEye className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
-            Two fields of the <strong className="font-semibold text-foreground">same</strong> eye
+            {pick(
+              <span>
+                Two fields of the <strong className="font-semibold text-foreground">same</strong> eye
+              </span>,
+              <span>
+                Dua <i>field</i> dari mata yang <strong className="font-semibold text-foreground">sama</strong>
+              </span>,
+            )}
           </span>
           {runsOnDevice && (
             <span className="inline-flex items-center gap-2">
               <Lock className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
-              Images stay on this device
+              {t("Images stay on this device", "Citra tetap berada di perangkat ini")}
             </span>
           )}
         </div>
@@ -336,11 +427,11 @@ export default function DemoPage() {
             <UploadDropzone
               key={slot}
               index={slotConfig[slot].index}
-              label={slotConfig[slot].label}
-              hint={slotConfig[slot].hint}
+              label={trs(slotConfig[slot].label)}
+              hint={tr(slotConfig[slot].hint)}
               variant={slot}
               value={images[slot]}
-              error={errors[slot]}
+              error={errorText(errors[slot])}
               disabled={inference.isProcessing}
               onSelect={(file) => handleManualSelect(slot, file)}
               onClear={() => handleClear(slot)}
@@ -349,7 +440,8 @@ export default function DemoPage() {
           ))}
         </div>
 
-        {/* Run control. Sticky, so it stays reachable below two tall dropzones. */}
+        {/* Run control. Sticky once something is selected, so it stays
+            reachable below two tall dropzones. */}
         <div className={cn("z-20 mt-8", readyCount > 0 && "sticky bottom-4")}>
           <div
             className={cn(
@@ -374,13 +466,26 @@ export default function DemoPage() {
               <p className="text-[13px] text-muted-foreground" aria-live="polite">
                 {bothReady ? (
                   <span className="font-medium text-foreground">
-                    {activeSample ? `Sample eye ${activeSample.sample_id} ready.` : "Both views ready."}{" "}
-                    <span className="font-normal text-muted-foreground">Run the analysis.</span>
+                    {activeSample
+                      ? t(
+                          `Sample eye ${activeSample.sample_id} ready.`,
+                          `Sampel mata ${activeSample.sample_id} siap.`,
+                        )
+                      : t("Both views ready.", "Kedua citra siap.")}{" "}
+                    <span className="font-normal text-muted-foreground">
+                      {t("Run the analysis.", "Jalankan analisis.")}
+                    </span>
                   </span>
                 ) : images.macula || images.disc ? (
-                  `Add the ${images.macula ? "optic-disc" : "macula"}-centered image to continue.`
+                  t(
+                    `Add the ${missingSlot}-centered image to continue.`,
+                    `Tambahkan citra berpusat ${missingSlot} untuk melanjutkan.`,
+                  )
                 ) : (
-                  "Pick a sample or upload both images to enable analysis."
+                  t(
+                    "Pick a sample or upload both images to enable analysis.",
+                    "Pilih sampel atau unggah kedua citra untuk mengaktifkan analisis.",
+                  )
                 )}
               </p>
             </div>
@@ -393,7 +498,9 @@ export default function DemoPage() {
               className="w-full sm:w-auto"
             >
               {!inference.isProcessing && <Play className="h-4 w-4" aria-hidden="true" />}
-              {inference.isProcessing ? "Analyzing…" : "Analyze with DR-VERGE"}
+              {inference.isProcessing
+                ? t("Analyzing…", "Menganalisis…")
+                : t("Analyze with DR-VERGE", "Analisis dengan DR-VERGE")}
             </Button>
           </div>
         </div>
@@ -428,34 +535,40 @@ export default function DemoPage() {
               <div className="print-only mb-4">
                 <div className="text-2xl font-bold">DR-VERGE</div>
                 <div className="mono mt-1 text-[11px] uppercase tracking-[0.14em]">
-                  Research Prototype · Result Summary
+                  {t("Research Prototype · Result Summary", "Prototipe Penelitian · Ringkasan Hasil")}
                 </div>
                 <div className="mono mt-1 text-[11px]">
-                  {formatTimestamp(new Date(result.receivedAt))}
+                  {formatTimestamp(new Date(result.receivedAt), lang)}
                 </div>
                 {result.isMock && (
                   <div className="mono mt-2 border border-black px-2 py-1 text-[11px] uppercase tracking-[0.14em]">
-                    Simulated output — no model was executed
+                    {t(
+                      "Simulated output — no model was executed",
+                      "Keluaran simulasi — tidak ada model yang dijalankan",
+                    )}
                   </div>
                 )}
               </div>
 
               <div className="no-print flex flex-wrap items-end justify-between gap-4">
                 <SectionHeader
-                  eyebrow="Step 3 · Result"
+                  eyebrow={t("Step 3 · Result", "Langkah 3 · Hasil")}
                   index="03"
-                  title={
+                  title={pick(
                     <>
                       DR-VERGE <em>Analysis</em>
-                    </>
-                  }
+                    </>,
+                    <>
+                      <em>Hasil Analisis</em> DR-VERGE
+                    </>,
+                  )}
                 />
                 <Badge tone={result.isMock ? "warn" : "outline"}>
                   {result.isMock
-                    ? "Simulated"
+                    ? t("Simulated", "Simulasi")
                     : result.source === "onnx-local"
-                      ? "Model output · on-device"
-                      : "Model output"}
+                      ? t("Model output · on-device", "Keluaran model · di perangkat")
+                      : t("Model output", "Keluaran model")}
                 </Badge>
               </div>
 
@@ -473,7 +586,7 @@ export default function DemoPage() {
                 />
               )}
 
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <OrdinalThresholdScores result={result} />
                 <div className="flex flex-col gap-6">
                   <RelativeGradeScores result={result} />
@@ -484,46 +597,51 @@ export default function DemoPage() {
                 </div>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <ModelInformation result={result} />
                 <ResultInterpretation result={result} />
               </div>
 
               {/* Printed disclaimer — the last thing on the page. */}
               <div className="print-only mt-6 border-t border-black pt-4 text-[11px] leading-relaxed">
-                DR-VERGE is a research prototype and is not intended as a standalone
-                clinical diagnostic system. Ordinal threshold scores and relative grade
-                scores are internal model outputs and are not calibrated clinical
-                probabilities. Please consult an ophthalmologist for clinical
-                interpretation.
+                {t(
+                  "DR-VERGE is a research prototype and is not intended as a standalone clinical diagnostic system. Ordinal threshold scores and relative grade scores are internal model outputs and are not calibrated clinical probabilities. Please consult an ophthalmologist for clinical interpretation.",
+                  "DR-VERGE adalah prototipe penelitian dan tidak ditujukan sebagai sistem diagnosis klinis yang berdiri sendiri. Skor ambang ordinal dan skor relatif per *grade* merupakan keluaran internal model dan bukan probabilitas klinis yang terkalibrasi. Silakan berkonsultasi dengan dokter spesialis mata untuk interpretasi klinis.",
+                )}
               </div>
 
               {/* Actions */}
               <div className="no-print card-premium flex flex-col items-center gap-5 p-6 text-center sm:p-8">
                 <div>
-                  <h3 className="text-lg font-bold tracking-tight">What next?</h3>
+                  <h3 className="text-lg font-bold tracking-tight">
+                    {t("What next?", "Selanjutnya?")}
+                  </h3>
                   <p className="mt-1 text-[13px] text-muted-foreground">
-                    Try another eye, keep a copy of this summary, or see how the model was
-                    evaluated.
+                    {t(
+                      "Try another eye, keep a copy of this summary, or see how the model was evaluated.",
+                      "Coba mata lain, simpan salinan ringkasan ini, atau lihat bagaimana model dievaluasi.",
+                    )}
                   </p>
                 </div>
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                   <Button onClick={handleStartOver}>
                     <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                    Analyze Another Pair
+                    {t("Analyze Another Pair", "Analisis Pasangan Lain")}
                   </Button>
                   <Button variant="outline" onClick={() => window.print()}>
                     <Printer className="h-4 w-4" aria-hidden="true" />
-                    Print / Save Result Summary
+                    {t("Print / Save Result Summary", "Cetak / Simpan Ringkasan Hasil")}
                   </Button>
                   <LinkButton to="/research" variant="ghost">
-                    How it was evaluated
+                    {t("How it was evaluated", "Cara model dievaluasi")}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </LinkButton>
                 </div>
                 <p className="text-[11px] text-subtle">
-                  The printed summary contains the grade, scores, model configuration, and
-                  timestamp. Uploaded images are not included.
+                  {t(
+                    "The printed summary contains the grade, scores, model configuration, and timestamp. Uploaded images are not included.",
+                    "Ringkasan cetak memuat *grade*, skor, konfigurasi model, dan waktu analisis. Citra yang diunggah tidak disertakan.",
+                  )}
                 </p>
               </div>
             </div>
@@ -537,46 +655,55 @@ export default function DemoPage() {
           <Reveal>
             <div className="grid gap-5 md:grid-cols-2">
               <div className="card-premium flex flex-col gap-4 p-7 sm:p-9">
-                <span className="eyebrow">Understand the method</span>
+                <span className="eyebrow">{t("Understand the method", "Pahami metodenya")}</span>
                 <h2 className="text-2xl font-bold tracking-tight">
-                  What do these outputs actually mean?
+                  {t("What do these outputs actually mean?", "Apa sebenarnya arti keluaran ini?")}
                 </h2>
                 <p className="text-[14px] leading-relaxed text-muted-foreground">
-                  The research page explains the CORAL ordinal head, the complementarity
-                  shift that DR-VERGE distils, and what the evaluation did and did not
-                  establish.
+                  {t(
+                    "The research page explains the CORAL ordinal head, the complementarity shift that DR-VERGE distils, and what the evaluation did and did not establish.",
+                    "Halaman penelitian menjelaskan *head* ordinal CORAL, *complementarity shift* yang didistilasi DR-VERGE, serta apa saja yang berhasil dan belum berhasil dibuktikan oleh evaluasi.",
+                  )}
                 </p>
                 <div className="mt-auto pt-2">
                   <LinkButton to="/research" variant="outline">
-                    Read the Research
+                    {t("Read the Research", "Baca Penelitian")}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </LinkButton>
                 </div>
               </div>
 
               <div className="card-premium flex flex-col gap-4 p-7 sm:p-9">
-                <span className="eyebrow">More test images</span>
+                <span className="eyebrow">{t("More test images", "Citra uji lainnya")}</span>
                 <h2 className="text-2xl font-bold tracking-tight">
-                  Want to test offline or in bulk?
+                  {t("Want to test offline or in bulk?", "Ingin menguji secara luring atau dalam jumlah banyak?")}
                 </h2>
                 <p className="text-[14px] leading-relaxed text-muted-foreground">
-                  Download sample dual-view fundus image pairs prepared for research
-                  demonstration. The samples open in a new tab.
+                  {t(
+                    "Download sample dual-view fundus image pairs prepared for research demonstration. The samples open in a new tab.",
+                    "Unduh pasangan citra fundus *dual-view* contoh yang disiapkan untuk demonstrasi penelitian. Sampel akan terbuka di tab baru.",
+                  )}
                 </p>
                 <div className="mt-auto pt-2">
                   <ExternalButton
                     href={siteConfig.sampleDatasetUrl}
                     enabled={isLinkConfigured(siteConfig.sampleDatasetUrl)}
                     variant="outline"
-                    disabledTitle="The sample dataset link has not been configured for this deployment yet."
+                    disabledTitle={ts(
+                      "The sample dataset link has not been configured for this deployment yet.",
+                      "Tautan dataset sampel belum dikonfigurasi untuk deployment ini.",
+                    )}
                   >
                     <Download className="h-4 w-4" aria-hidden="true" />
-                    Get Sample Images
+                    {t("Get Sample Images", "Unduh Citra Sampel")}
                     <ExternalLink className="h-3.5 w-3.5 opacity-60" aria-hidden="true" />
                   </ExternalButton>
                   {!isLinkConfigured(siteConfig.sampleDatasetUrl) && (
                     <p className="mt-3 text-[11px] text-subtle">
-                      Sample dataset link not yet configured.
+                      {t(
+                        "Sample dataset link not yet configured.",
+                        "Tautan dataset sampel belum dikonfigurasi.",
+                      )}
                     </p>
                   )}
                 </div>
@@ -589,21 +716,38 @@ export default function DemoPage() {
       {/* Zoom modal */}
       <ZoomModal
         image={zoomSlot ? images[zoomSlot] : null}
-        label={zoomSlot ? slotConfig[zoomSlot].title : ""}
+        label={zoomSlot ? trs(slotConfig[zoomSlot].title) : ""}
         onClose={() => setZoomSlot(null)}
       />
 
       {/* Screen-reader-only live summary of the final result. */}
       <div className="sr-only" aria-live="polite">
         {result
-          ? `Analysis complete. Predicted grade ${result.grade}, ${result.gradeName}.` +
+          ? ts(
+              `Analysis complete. Predicted grade ${result.grade}, ${resultGradeName}.`,
+              `Analisis selesai. Prediksi grade ${result.grade}, ${resultGradeName}.`,
+            ) +
             (result.ordinalScores.length
-              ? ` Ordinal threshold scores: ${result.ordinalScores
-                  .map((s, i) => `P greater than ${i}, ${formatScore(s, 2)}`)
-                  .join("; ")}.`
+              ? ts(" Ordinal threshold scores: ", " Skor ambang ordinal: ") +
+                result.ordinalScores
+                  .map(
+                    (s, i) =>
+                      `${ts("P greater than", "P lebih dari")} ${i}, ${formatScore(s, 2, lang)}`,
+                  )
+                  .join("; ") +
+                "."
               : "") +
-            (result.latencyMs !== null ? ` Inference latency ${formatMs(result.latencyMs)}.` : "") +
-            (result.isMock ? " This is simulated output; no model was executed." : "")
+            (result.latencyMs !== null
+              ? ts(" Inference latency ", " Latensi inferensi ") +
+                formatMs(result.latencyMs, 2, lang) +
+                "."
+              : "") +
+            (result.isMock
+              ? ts(
+                  " This is simulated output; no model was executed.",
+                  " Ini adalah keluaran simulasi; tidak ada model yang dijalankan.",
+                )
+              : "")
           : ""}
       </div>
     </PageContainer>

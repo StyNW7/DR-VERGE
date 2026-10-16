@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, FileText, ArrowUpRight, Moon, Sun, ArrowRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Menu, X, FileText, ArrowUpRight, Moon, Sun, ArrowRight, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 import { useTheme } from "@/components/theme-provider";
 import { LinkButton } from "@/components/common/Button";
 import { ReadingProgress } from "@/components/common/SectionRail";
+import { useI18n, useLang, type Lang } from "@/i18n/context";
+import { transitionContent, transitionTheme } from "@/lib/viewTransition";
 
 const navItems = [
-  { label: "Home", to: "/", hint: "The research story" },
-  { label: "Model Demo", to: "/demo", hint: "Grade a sample eye" },
-  { label: "Research", to: "/research", hint: "Method, results, limits" },
+  { label: { en: "Home", id: "Beranda" }, to: "/", hint: { en: "The research story", id: "Alur cerita penelitian" } },
+  { label: { en: "Model Demo", id: "Demo Model" }, to: "/demo", hint: { en: "Grade a sample eye", id: "Uji model pada sampel mata" } },
+  { label: { en: "Research", id: "Penelitian" }, to: "/research", hint: { en: "Method, results, limits", id: "Metode, hasil, dan keterbatasan" } },
 ];
 
 /** The DR-VERGE mark: two overlapping view circles resolving into one engine. */
@@ -34,27 +36,112 @@ function Logo({ className }: { className?: string }) {
   );
 }
 
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const isDark =
+function useIsDark() {
+  const { theme } = useTheme();
+  return (
     theme === "dark" ||
     (theme === "system" &&
       typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
+      window.matchMedia("(prefers-color-scheme: dark)").matches)
+  );
+}
+
+/** Sun/moon toggle. The icon rotates out and in; the page itself is revealed
+ *  as a circle growing from this button (see transitionTheme). */
+function ThemeToggle() {
+  const { setTheme } = useTheme();
+  const isDark = useIsDark();
+  const { ts } = useI18n();
+  const reduce = useReducedMotion();
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        transitionTheme(() => setTheme(isDark ? "light" : "dark"), {
+          x: r.left + r.width / 2,
+          y: r.top + r.height / 2,
+        });
+      }}
+      aria-label={
+        isDark
+          ? ts("Switch to light theme", "Beralih ke tema terang")
+          : ts("Switch to dark theme", "Beralih ke tema gelap")
+      }
+      title={isDark ? ts("Light theme", "Tema terang") : ts("Dark theme", "Tema gelap")}
       className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
     >
-      {isDark ? (
-        <Sun className="h-4 w-4" aria-hidden="true" />
-      ) : (
-        <Moon className="h-4 w-4" aria-hidden="true" />
-      )}
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={isDark ? "sun" : "moon"}
+          initial={reduce ? false : { rotate: -90, scale: 0.4, opacity: 0 }}
+          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+          exit={reduce ? undefined : { rotate: 90, scale: 0.4, opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="flex"
+        >
+          {isDark ? (
+            <Sun className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <Moon className="h-4 w-4" aria-hidden="true" />
+          )}
+        </motion.span>
+      </AnimatePresence>
     </button>
+  );
+}
+
+/** EN / ID segmented switch with a sliding indicator. */
+function LanguageToggle({ layoutId, className }: { layoutId: string; className?: string }) {
+  const { lang, setLang } = useLang();
+  const { ts } = useI18n();
+  const options: { value: Lang; label: string; full: string }[] = [
+    { value: "id", label: "ID", full: "Bahasa Indonesia" },
+    { value: "en", label: "EN", full: "English" },
+  ];
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={ts("Language", "Bahasa")}
+      className={cn(
+        "relative flex h-9 items-center gap-0.5 rounded-full border border-border bg-card/60 p-1",
+        className,
+      )}
+    >
+      <Languages className="mx-1 hidden h-3.5 w-3.5 text-muted-foreground sm:block" aria-hidden="true" />
+      {options.map((o) => {
+        const active = o.value === lang;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={o.full}
+            title={o.full}
+            onClick={() => {
+              if (!active) transitionContent(() => setLang(o.value));
+            }}
+            className={cn(
+              "mono relative h-7 rounded-full px-2.5 text-[11px] font-semibold tracking-[0.08em] transition-colors duration-200",
+              active ? "text-background" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {active && (
+              <motion.span
+                layoutId={layoutId}
+                className="absolute inset-0 rounded-full bg-foreground"
+                transition={{ type: "spring", stiffness: 480, damping: 36 }}
+                aria-hidden="true"
+              />
+            )}
+            <span className="relative">{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -62,6 +149,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { t, ts, trs } = useI18n();
 
   // Compact the bar after a small scroll distance.
   useEffect(() => {
@@ -96,7 +184,7 @@ export default function Navbar() {
         href="#main"
         className="sr-only z-[60] focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:text-background"
       >
-        Skip to content
+        {t("Skip to content", "Langsung ke konten")}
       </a>
 
       <ReadingProgress />
@@ -109,7 +197,7 @@ export default function Navbar() {
       >
         <div
           className={cn(
-            "mx-auto flex items-center justify-between transition-all duration-500 ease-editorial",
+            "mx-auto flex items-center justify-between gap-3 transition-all duration-500 ease-editorial",
             scrolled
               ? "glass h-14 max-w-[1120px] rounded-full border border-border pl-2 pr-2 shadow-[0_10px_40px_-16px_hsl(var(--shadow-color)/0.35)] sm:pl-3"
               : "h-16 max-w-[1440px] border border-transparent px-5 sm:h-20 sm:px-6 lg:px-8",
@@ -117,8 +205,8 @@ export default function Navbar() {
         >
           <Link
             to="/"
-            className="flex items-center gap-2.5 rounded-full pr-2 transition-opacity hover:opacity-80"
-            aria-label={`${siteConfig.projectName} home`}
+            className="flex shrink-0 items-center gap-2.5 rounded-full pr-2 transition-opacity hover:opacity-80"
+            aria-label={ts(`${siteConfig.projectName} home`, `Beranda ${siteConfig.projectName}`)}
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background">
               <Logo className="h-5 w-5" />
@@ -147,7 +235,7 @@ export default function Navbar() {
                 end={item.to === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "relative rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors duration-200",
+                    "relative whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors duration-200",
                     isActive ? "text-background" : "text-muted-foreground hover:text-foreground",
                   )
                 }
@@ -162,7 +250,7 @@ export default function Navbar() {
                         aria-hidden="true"
                       />
                     )}
-                    <span className="relative">{item.label}</span>
+                    <span className="relative">{trs(item.label)}</span>
                   </>
                 )}
               </NavLink>
@@ -174,16 +262,17 @@ export default function Navbar() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                Paper
+                {t("Paper", "Makalah")}
                 <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
+            <LanguageToggle layoutId="lang-pill-desktop" />
             <ThemeToggle />
-            <LinkButton to="/demo" size="sm" className="group hidden sm:inline-flex">
-              Try DR-VERGE
+            <LinkButton to="/demo" size="sm" className="group hidden lg:inline-flex">
+              {t("Try DR-VERGE", "Coba DR-VERGE")}
               <ArrowRight
                 className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
                 aria-hidden="true"
@@ -192,7 +281,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? ts("Close menu", "Tutup menu") : ts("Open menu", "Buka menu")}
               aria-expanded={open}
               aria-controls="mobile-nav"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/60 text-foreground transition-colors hover:border-foreground/40 md:hidden"
@@ -242,10 +331,10 @@ export default function Navbar() {
                       </span>
                       <span className="flex flex-col">
                         <span className="text-2xl font-semibold tracking-tight">
-                          {item.label}
+                          {trs(item.label)}
                         </span>
                         <span className="mt-1 text-[12px] text-muted-foreground">
-                          {item.hint}
+                          {trs(item.hint)}
                         </span>
                       </span>
                     </span>
@@ -261,19 +350,22 @@ export default function Navbar() {
                   rel="noopener noreferrer"
                   className="flex items-center justify-between border-b border-border py-5 text-2xl font-semibold tracking-tight text-muted-foreground"
                 >
-                  Paper
+                  {t("Paper", "Makalah")}
                   <FileText className="h-5 w-5" aria-hidden="true" />
                 </a>
               )}
+
             </div>
 
             <div className="mt-auto p-5 pb-10">
               <LinkButton to="/demo" size="lg" className="w-full">
-                Try DR-VERGE
+                {t("Try DR-VERGE", "Coba DR-VERGE")}
               </LinkButton>
               <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
-                Research prototype. Not intended as a standalone clinical diagnostic
-                system.
+                {t(
+                  "Research prototype. Not intended as a standalone clinical diagnostic system.",
+                  "Prototipe penelitian. Tidak ditujukan sebagai sistem diagnosis klinis yang berdiri sendiri.",
+                )}
               </p>
             </div>
           </motion.div>

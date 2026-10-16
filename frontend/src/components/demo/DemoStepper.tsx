@@ -1,13 +1,14 @@
 import { Check } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { l, useI18n } from "@/i18n/context";
 
 export type DemoStep = 0 | 1 | 2;
 
 const steps = [
-  { title: "Choose an eye", hint: "Sample or your own pair" },
-  { title: "Run the analysis", hint: "On-device, a few seconds" },
-  { title: "Read the result", hint: "Grade, scores, context" },
+  { title: l("Choose an eye", "Pilih mata"), hint: l("Sample or your own pair", "Sampel atau pasangan citra sendiri") },
+  { title: l("Run the analysis", "Jalankan analisis"), hint: l("On-device, a few seconds", "Di perangkat, beberapa detik") },
+  { title: l("Read the result", "Baca hasilnya"), hint: l("Grade, scores, context", "*Grade*, skor, dan konteks") },
 ] as const;
 
 /**
@@ -18,15 +19,16 @@ const steps = [
  */
 export function DemoStepper({ current, done }: { current: DemoStep; done: boolean[] }) {
   const reduce = useReducedMotion();
+  const { ts, tr } = useI18n();
 
   return (
-    <ol className="grid grid-cols-3 gap-2 sm:gap-3" aria-label="Demo progress">
+    <ol className="grid grid-cols-3 gap-2 sm:gap-3" aria-label={ts("Demo progress", "Progres demo")}>
       {steps.map((s, i) => {
         const isDone = done[i];
         const isCurrent = current === i && !isDone;
         return (
           <li
-            key={s.title}
+            key={s.title.en}
             aria-current={isCurrent ? "step" : undefined}
             className={cn(
               "relative overflow-hidden rounded-2xl border p-3 transition-colors duration-500 sm:p-4",
@@ -55,10 +57,10 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
                     isDone || isCurrent ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
-                  {s.title}
+                  {tr(s.title)}
                 </div>
                 <div className="hidden truncate text-[11px] text-muted-foreground sm:block">
-                  {s.hint}
+                  {tr(s.hint)}
                 </div>
               </div>
             </div>

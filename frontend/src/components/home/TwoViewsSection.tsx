@@ -6,26 +6,28 @@ import {
   DualFieldDiagram,
 } from "@/components/common/FundusIllustration";
 import { viewComparison } from "@/data/researchContent";
+import { useI18n, type L } from "@/i18n/context";
 
 /** Structural shape shared by both entries in `viewComparison`. `as const` in the
  *  data file makes each literal type its own, so the prop is described here. */
 interface ViewInfo {
-  label: string;
+  label: L;
   number: string;
-  body: string;
-  captures: readonly string[];
+  body: L;
+  captures: readonly L[];
 }
 
 function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc" }) {
+  const { tr } = useI18n();
   return (
-    <div className="group flex h-full flex-col card-premium p-6 transition-colors duration-300 hover:border-foreground/40 sm:p-8">
+    <div className="group card-premium card-lift flex h-full flex-col p-6 sm:p-8">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <span className="mono text-[11px] tracking-[0.16em] text-subtle">
             {view.number}
           </span>
           <h3 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">
-            {view.label}
+            {tr(view.label)}
           </h3>
         </div>
       </div>
@@ -34,13 +36,13 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
         <FundusIllustration variant={variant} showLabels />
       </div>
 
-      <p className="text-sm leading-relaxed text-muted-foreground">{view.body}</p>
+      <p className="text-sm leading-relaxed text-muted-foreground">{tr(view.body)}</p>
 
       <ul className="mt-6 flex flex-col gap-2.5 border-t border-border pt-5">
         {view.captures.map((c) => (
-          <li key={c} className="flex items-center gap-2.5 text-[13px] text-foreground">
+          <li key={c.en} className="flex items-center gap-2.5 text-[13px] text-foreground">
             <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-            {c}
+            {tr(c)}
           </li>
         ))}
       </ul>
@@ -49,17 +51,25 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
 }
 
 export default function TwoViewsSection() {
+  const { t, tr, pick } = useI18n();
+
   return (
     <Section id="two-views">
       <SectionHeader
-        eyebrow="Why Two Views"
+        eyebrow={t("Why Two Views", "Mengapa Dua *View*")}
         index="02"
-        title={
+        title={pick(
           <>
             One eye, two <em>windows</em> onto the retina
-          </>
-        }
-        description="Each capture is centred on a different anatomical landmark, so each contains retinal territory the other does not."
+          </>,
+          <>
+            Satu mata, dua <em>jendela</em> menuju retina
+          </>,
+        )}
+        description={t(
+          "Each capture is centred on a different anatomical landmark, so each contains retinal territory the other does not.",
+          "Setiap citra berpusat pada penanda anatomis yang berbeda, sehingga masing-masing memuat area retina yang tidak dimiliki citra lainnya.",
+        )}
         size="lg"
       />
 
@@ -80,16 +90,15 @@ export default function TwoViewsSection() {
               <DualFieldDiagram />
             </div>
             <div>
-              <span className="eyebrow">Complementarity</span>
+              <span className="eyebrow">{t("Complementarity", "Komplementaritas")}</span>
               <p className="mt-4 text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
-                {viewComparison.thesis}
+                {tr(viewComparison.thesis)}
               </p>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                The two fields overlap, but not entirely. Where they overlap, the second
-                view corroborates the first. Where they do not, it contributes retinal
-                territory that a single-field model never sees. DR-VERGE studies the
-                difference that second view makes to the prediction — and whether that
-                difference can be taught to a smaller model.
+                {t(
+                  "The two fields overlap, but not entirely. Where they overlap, the second view corroborates the first. Where they do not, it contributes retinal territory that a single-field model never sees. DR-VERGE studies the difference that second view makes to the prediction — and whether that difference can be taught to a smaller model.",
+                  "Kedua *field* saling tumpang-tindih, tetapi tidak sepenuhnya. Pada area yang tumpang-tindih, *view* kedua menguatkan *view* pertama. Pada area yang tidak tumpang-tindih, *view* kedua menyumbang area retina yang tidak pernah dilihat oleh model *single-field*. DR-VERGE meneliti perbedaan yang dihasilkan *view* kedua terhadap prediksi — dan apakah perbedaan itu dapat diajarkan kepada model yang lebih kecil.",
+                )}
               </p>
             </div>
           </div>
@@ -100,16 +109,16 @@ export default function TwoViewsSection() {
       <Reveal delay={0.14}>
         <div className="mt-6 grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-10">
           <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
-            The evidence path
+            {t("The evidence path", "Alur bukti")}
           </span>
           <div className="mt-7 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
-            <EquationTerm label="Macula View" />
+            <EquationTerm label={t("Macula View", "Citra Makula")} />
             <EquationOp icon={Plus} />
-            <EquationTerm label="Optic Disc View" />
+            <EquationTerm label={t("Optic Disc View", "Citra Diskus Optik")} />
             <EquationOp icon={ArrowRight} />
-            <EquationTerm label="Dual-View Evidence" />
+            <EquationTerm label={t("Dual-View Evidence", "Bukti *Dual-View*")} />
             <EquationOp icon={ArrowRight} />
-            <EquationTerm label="Ordinal DR Grade" emphasis />
+            <EquationTerm label={t("Ordinal DR Grade", "*Grade* Ordinal DR")} emphasis />
           </div>
         </div>
       </Reveal>
@@ -117,11 +126,11 @@ export default function TwoViewsSection() {
   );
 }
 
-function EquationTerm({ label, emphasis = false }: { label: string; emphasis?: boolean }) {
+function EquationTerm({ label, emphasis = false }: { label: React.ReactNode; emphasis?: boolean }) {
   return (
     <div
       className={
-        "flex flex-1 items-center justify-center rounded-lg border px-4 py-4 text-center text-[13px] font-medium leading-tight sm:text-sm " +
+        "flex flex-1 items-center justify-center rounded-xl border px-4 py-4 text-center text-[13px] font-medium leading-tight sm:text-sm " +
         (emphasis
           ? "border-background bg-background text-foreground"
           : "border-background/25 text-background")

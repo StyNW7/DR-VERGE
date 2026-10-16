@@ -10,9 +10,13 @@ import { formatBytes } from "./formatting";
  * pretending to would be fake analysis presented as real.
  */
 
+export type ValidationCode = "no-file" | "type" | "empty" | "size";
+
 export interface ValidationResult {
   ok: boolean;
+  /** English message (the UI localises by `code`). */
   error?: string;
+  code?: ValidationCode;
 }
 
 export interface ImageMeta {
@@ -34,7 +38,7 @@ function hasAcceptedExtension(name: string): boolean {
 
 export function validateImageFile(file: File | null | undefined): ValidationResult {
   if (!file) {
-    return { ok: false, error: "No file was selected." };
+    return { ok: false, code: "no-file", error: "No file was selected." };
   }
 
   // Some systems report an empty or unexpected MIME type, so the extension is
@@ -46,17 +50,23 @@ export function validateImageFile(file: File | null | undefined): ValidationResu
   if (!typeOk) {
     return {
       ok: false,
+      code: "type",
       error: `Unsupported file type. Please upload a JPG, JPEG, or PNG image.`,
     };
   }
 
   if (file.size === 0) {
-    return { ok: false, error: "That file appears to be empty. Please choose another image." };
+    return {
+      ok: false,
+      code: "empty",
+      error: "That file appears to be empty. Please choose another image.",
+    };
   }
 
   if (file.size > siteConfig.maxUploadBytes) {
     return {
       ok: false,
+      code: "size",
       error: `File is too large (${formatBytes(file.size)}). The maximum is ${formatBytes(
         siteConfig.maxUploadBytes,
       )}.`,

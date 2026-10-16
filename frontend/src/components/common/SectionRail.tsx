@@ -1,10 +1,11 @@
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useI18n, type L } from "@/i18n/context";
 import { scrollToSection, useScrollSpy } from "@/hooks/useScrollSpy";
 
 export interface RailItem {
   id: string;
-  label: string;
+  label: L;
 }
 
 /**
@@ -17,10 +18,11 @@ export interface RailItem {
 export function SectionRail({ items }: { items: readonly RailItem[] }) {
   const active = useScrollSpy(items.map((i) => i.id));
   const reduce = useReducedMotion();
+  const { ts, trs } = useI18n();
 
   return (
     <nav
-      aria-label="Page sections"
+      aria-label={ts("Page sections", "Bagian halaman")}
       className={cn(
         "no-print fixed right-3 top-1/2 z-30 hidden -translate-y-1/2 xl:block 2xl:right-6",
         "transition-opacity duration-500",
@@ -47,7 +49,7 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
                   )}
                 >
                   <span className="mr-1.5 text-subtle">{String(i + 1).padStart(2, "0")}</span>
-                  {item.label}
+                  {trs(item.label)}
                 </span>
                 <motion.span
                   className={cn(

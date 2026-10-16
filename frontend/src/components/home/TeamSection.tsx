@@ -5,9 +5,11 @@ import { SectionHeader, Reveal, Divider } from "@/components/common/Primitives";
 import { team, advisors, initialsOf, type TeamMember } from "@/data/team";
 import { siteConfig } from "@/config/siteConfig";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
 
 function Avatar({ member }: { member: TeamMember }) {
   const [failed, setFailed] = useState(false);
+  const { ts } = useI18n();
   const showImage = member.image && !failed;
 
   return (
@@ -15,7 +17,7 @@ function Avatar({ member }: { member: TeamMember }) {
       {showImage ? (
         <img
           src={member.image as string}
-          alt={`Portrait of ${member.name}`}
+          alt={ts(`Portrait of ${member.name}`, `Foto ${member.name}`)}
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
@@ -40,6 +42,7 @@ function Avatar({ member }: { member: TeamMember }) {
 
 function MemberCard({ member }: { member: TeamMember }) {
   const hasLinks = Boolean(member.linkedin || member.github);
+  const { t, ts, tr } = useI18n();
 
   return (
     <div
@@ -60,7 +63,7 @@ function MemberCard({ member }: { member: TeamMember }) {
           {member.name}
         </h3>
         <p className="mt-1.5 text-[13px] leading-snug text-muted-foreground">
-          {member.role}
+          {tr(member.role)}
         </p>
         <p className="mt-1 text-[11px] text-subtle">{member.institution}</p>
 
@@ -68,7 +71,7 @@ function MemberCard({ member }: { member: TeamMember }) {
           {member.placeholder ? (
             // Never invent a person. An unfilled slot says so.
             <span className="mono text-[9px] uppercase tracking-[0.14em] text-subtle">
-              Awaiting team details
+              {t("Awaiting team details", "Menunggu data anggota tim")}
             </span>
           ) : hasLinks ? (
             <div className="flex items-center gap-2">
@@ -77,7 +80,7 @@ function MemberCard({ member }: { member: TeamMember }) {
                   href={member.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`${member.name} on LinkedIn`}
+                  aria-label={ts(`${member.name} on LinkedIn`, `${member.name} di LinkedIn`)}
                   className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                 >
                   <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -88,7 +91,7 @@ function MemberCard({ member }: { member: TeamMember }) {
                   href={member.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`${member.name} on GitHub`}
+                  aria-label={ts(`${member.name} on GitHub`, `${member.name} di GitHub`)}
                   className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                 >
                   <Github className="h-3.5 w-3.5" aria-hidden="true" />
@@ -103,17 +106,24 @@ function MemberCard({ member }: { member: TeamMember }) {
 }
 
 export default function TeamSection() {
+  const { t, pick } = useI18n();
   return (
     <Section id="team">
       <SectionHeader
-        eyebrow="The Team"
+        eyebrow={t("The Team", "Tim Peneliti")}
         index="09"
-        title={
+        title={pick(
           <>
             Built for <em>{siteConfig.competition}</em>
-          </>
-        }
-        description={`Research, engineering, and evaluation for ${siteConfig.projectName} at ${siteConfig.institution}.`}
+          </>,
+          <>
+            Dibangun untuk <em>{siteConfig.competition}</em>
+          </>,
+        )}
+        description={t(
+          `Research, engineering, and evaluation for ${siteConfig.projectName} at ${siteConfig.institution}.`,
+          `Riset, rekayasa, dan evaluasi ${siteConfig.projectName} di ${siteConfig.institution}.`,
+        )}
         size="lg"
       />
 
@@ -127,7 +137,7 @@ export default function TeamSection() {
 
       {advisors.length > 0 && (
         <>
-          <Divider label="Faculty Advisor" className="mt-16" />
+          <Divider label={t("Faculty Advisor", "Dosen Pembimbing")} className="mt-16" />
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {advisors.map((a, i) => (
               <Reveal key={a.id} delay={i * 0.07}>

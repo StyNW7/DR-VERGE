@@ -4,8 +4,10 @@ import { LinkButton } from "@/components/common/Button";
 import { Reveal } from "@/components/common/Primitives";
 import { siteConfig } from "@/config/siteConfig";
 import { heroExample } from "@/data/samples";
+import { useI18n } from "@/i18n/context";
 
 export default function CtaSection() {
+  const { t, pick } = useI18n();
   return (
     <Section id="cta" className="overflow-hidden">
       <Reveal>
@@ -20,18 +22,25 @@ export default function CtaSection() {
             <div className="lg:col-span-7">
               <span className="mono inline-flex items-center gap-2 rounded-full border border-background/25 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
                 <ScanEye className="h-3 w-3" aria-hidden="true" />
-                Interactive Demo
+                {t("Interactive Demo", "Demo Interaktif")}
               </span>
 
               <h2 className="display mt-6 text-[clamp(2.5rem,5.4vw,4.5rem)] leading-[0.95]">
-                See DR-VERGE <em>in Action</em>
+                {pick(
+                  <>
+                    See DR-VERGE <em>in Action</em>
+                  </>,
+                  <>
+                    Lihat DR-VERGE <em>Beraksi</em>
+                  </>,
+                )}
               </h2>
 
               <p className="mt-6 max-w-lg text-base leading-relaxed text-background/70">
-                Load a sample eye or upload your own macula-centered and optic-disc-centered
-                pair, and explore the model's research output — the predicted ordinal grade,
-                the four cumulative threshold scores behind it, and the model configuration
-                that produced them.
+                {t(
+                  "Load a sample eye or upload your own macula-centered and optic-disc-centered pair, and explore the model's research output — the predicted ordinal grade, the four cumulative threshold scores behind it, and the model configuration that produced them.",
+                  "Muat sampel mata atau unggah pasangan citra berpusat makula dan berpusat diskus optik milik Anda, lalu telusuri keluaran riset model — *grade* ordinal yang diprediksi, empat skor ambang kumulatif yang mendasarinya, serta konfigurasi model yang menghasilkannya.",
+                )}
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -41,7 +50,7 @@ export default function CtaSection() {
                   className="group bg-background text-foreground hover:opacity-90"
                 >
                   <Upload className="h-4 w-4" aria-hidden="true" />
-                  Open Model Demo
+                  {t("Open Model Demo", "Buka Demo Model")}
                   <ArrowRight
                     className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
                     aria-hidden="true"
@@ -53,16 +62,18 @@ export default function CtaSection() {
                   variant="ghost"
                   className="border border-background/25 text-background hover:bg-background/10 hover:text-background"
                 >
-                  Read the Research
+                  {t("Read the Research", "Baca Penelitian")}
                 </LinkButton>
               </div>
 
               <p className="mt-8 max-w-lg text-[12px] leading-relaxed text-background/60">
                 <span className="font-medium text-background">
-                  For research and educational use only.
+                  {t("For research and educational use only.", "Hanya untuk penelitian dan edukasi.")}
                 </span>{" "}
-                {siteConfig.projectName} is not a clinical diagnostic system and must not
-                be used as a substitute for professional medical evaluation.
+                {t(
+                  `${siteConfig.projectName} is not a clinical diagnostic system and must not be used as a substitute for professional medical evaluation.`,
+                  `${siteConfig.projectName} bukan sistem diagnosis klinis dan tidak boleh digunakan sebagai pengganti evaluasi medis profesional.`,
+                )}
               </p>
             </div>
 

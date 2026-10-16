@@ -1,4 +1,4 @@
-import { Download, Github, ArrowRight, FileText } from "lucide-react";
+import { Download, Github, ArrowRight, FileText, Clock } from "lucide-react";
 import { PageContainer, Seo, Container, Section } from "@/components/layout/PageContainer";
 import { ExternalButton, LinkButton } from "@/components/common/Button";
 import { Badge, Reveal, Callout } from "@/components/common/Primitives";
@@ -18,39 +18,78 @@ import {
 import { paperMeta } from "@/data/researchContent";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 import { DISCLAIMER_CLINICAL, runProvenance } from "@/data/researchMetrics";
+import { useI18n } from "@/i18n/context";
 
-const provenance = [
-  {
-    label: "Source run",
-    value: runProvenance.label,
-    detail: runProvenance.runId,
-  },
-  {
-    label: "Integrity gates",
-    value: `${runProvenance.gatesPassed}/${runProvenance.gatesTotal}`,
-    detail: "All passed, zero errors",
-  },
-  {
-    label: "Self-audit",
-    value: `${runProvenance.auditedValues} values`,
-    detail: `Recomputed from predictions · ${runProvenance.auditMismatches} mismatches`,
-  },
-  {
-    label: "Statistics",
-    value: `${runProvenance.seedsPerCondition} seeds`,
-    detail: `B = ${runProvenance.bootstrapResamples.toLocaleString("en-US")} bootstrap · patient-clustered`,
-  },
-];
+/** The paper button. While the PDF is not published it reads as "coming soon"
+ *  in a quiet outline style, rather than as a greyed-out primary button. */
+function PaperButton({ size = "lg" as const }) {
+  const { t, ts } = useI18n();
+  const paperOk = isLinkConfigured(siteConfig.paperUrl);
+  return (
+    <ExternalButton
+      href={siteConfig.paperUrl}
+      enabled={paperOk}
+      size={size}
+      variant={paperOk ? "primary" : "outline"}
+      disabledTitle={ts(
+        "The paper link has not been configured yet.",
+        "Tautan makalah belum dikonfigurasi.",
+      )}
+    >
+      {paperOk ? (
+        <Download className="h-4 w-4" aria-hidden="true" />
+      ) : (
+        <Clock className="h-4 w-4" aria-hidden="true" />
+      )}
+      {paperOk
+        ? t("Download Paper", "Unduh Makalah")
+        : t("Paper — coming soon", "Makalah — segera hadir")}
+    </ExternalButton>
+  );
+}
 
 export default function ResearchPage() {
+  const { t, ts, tr, num } = useI18n();
   const paperOk = isLinkConfigured(siteConfig.paperUrl);
   const githubOk = isLinkConfigured(siteConfig.githubUrl);
+
+  const provenance = [
+    {
+      label: t("Source run", "Sumber *run*"),
+      value: tr(runProvenance.label),
+      detail: runProvenance.runId,
+    },
+    {
+      label: t("Integrity gates", "Gerbang integritas"),
+      value: `${runProvenance.gatesPassed}/${runProvenance.gatesTotal}`,
+      detail: t("All passed, zero errors", "Semua lolos, tanpa *error*"),
+    },
+    {
+      label: t("Self-audit", "Audit mandiri"),
+      value: t(`${runProvenance.auditedValues} values`, `${runProvenance.auditedValues} nilai`),
+      detail: t(
+        `Recomputed from predictions · ${runProvenance.auditMismatches} mismatches`,
+        `Dihitung ulang dari prediksi · ${runProvenance.auditMismatches} ketidakcocokan`,
+      ),
+    },
+    {
+      label: t("Statistics", "Statistik"),
+      value: t(`${runProvenance.seedsPerCondition} seeds`, `${runProvenance.seedsPerCondition} *seed*`),
+      detail: t(
+        `B = ${num(runProvenance.bootstrapResamples)} bootstrap · patient-clustered`,
+        `B = ${num(runProvenance.bootstrapResamples)} *bootstrap* · dikelompokkan per pasien`,
+      ),
+    },
+  ];
 
   return (
     <PageContainer>
       <Seo
-        title="Research & Paper"
-        description="DR-VERGE research: dual-view diabetic retinopathy grading through Complementarity-Shift Distillation and lightweight INT8 deployment. Research questions, method, results, and limitations."
+        title={ts("Research & Paper", "Penelitian & Makalah")}
+        description={ts(
+          "DR-VERGE research: dual-view diabetic retinopathy grading through Complementarity-Shift Distillation and lightweight INT8 deployment. Research questions, method, results, and limitations.",
+          "Penelitian DR-VERGE: grading retinopati diabetik dual-view melalui Complementarity-Shift Distillation dan deployment INT8 yang ringan. Pertanyaan penelitian, metode, hasil, dan keterbatasan.",
+        )}
       />
 
       {/* ================= HEADER ================= */}
@@ -63,7 +102,7 @@ export default function ResearchPage() {
         <Container className="relative">
           <div className="flex flex-wrap items-center gap-2.5">
             <Badge tone="outline" icon={FileText}>
-              {paperMeta.eyebrow}
+              {tr(paperMeta.eyebrow)}
             </Badge>
             <Badge tone="default">{paperMeta.competition}</Badge>
             <Badge tone="default">{paperMeta.field}</Badge>
@@ -74,39 +113,36 @@ export default function ResearchPage() {
           </h1>
 
           <p className="mt-7 max-w-3xl text-pretty text-lg font-medium leading-snug text-muted-foreground sm:text-2xl">
-            {paperMeta.subtitle}
+            {tr(paperMeta.subtitle)}
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <ExternalButton
-              href={siteConfig.paperUrl}
-              enabled={paperOk}
-              size="lg"
-              disabledTitle="The paper link has not been configured yet."
-            >
-              <Download className="h-4 w-4" aria-hidden="true" />
-              Download Paper
-            </ExternalButton>
-            <LinkButton to="/demo" size="lg" variant="outline">
-              Try Model
+            <LinkButton to="/demo" size="lg">
+              {t("Try the Model", "Coba Modelnya")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </LinkButton>
+            <PaperButton />
             <ExternalButton
               href={siteConfig.githubUrl}
               enabled={githubOk}
               size="lg"
               variant="outline"
-              disabledTitle="The repository link has not been configured yet."
+              disabledTitle={ts(
+                "The repository link has not been configured yet.",
+                "Tautan repositori belum dikonfigurasi.",
+              )}
             >
               <Github className="h-4 w-4" aria-hidden="true" />
-              View Repository
+              {t("View Repository", "Lihat Repositori")}
             </ExternalButton>
           </div>
 
           {!paperOk && (
             <p className="mt-5 text-[12px] text-subtle">
-              The paper is not yet published. The download link will activate once it is
-              available.
+              {t(
+                "The paper is not yet published. The download link will activate once it is available.",
+                "Makalah belum dipublikasikan. Tautan unduhan akan aktif setelah makalah tersedia.",
+              )}
             </p>
           )}
 
@@ -114,9 +150,9 @@ export default function ResearchPage() {
           <dl className="mt-14 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur lg:grid-cols-4">
             {provenance.map((p, i) => (
               <div
-                key={p.label}
+                key={i}
                 className={
-                  "flex flex-col gap-1.5 p-5 sm:p-6 " +
+                  "flex min-w-0 flex-col gap-1.5 p-5 sm:p-6 " +
                   (i % 2 === 1 ? "border-l border-border " : "") +
                   (i >= 2 ? "border-t border-border lg:border-t-0 " : "") +
                   (i === 2 ? "lg:border-l" : "")
@@ -128,7 +164,9 @@ export default function ResearchPage() {
                 <dd className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
                   {p.value}
                 </dd>
-                <dd className="text-[11px] leading-snug text-muted-foreground">{p.detail}</dd>
+                <dd className="break-words text-[11px] leading-snug text-muted-foreground">
+                  {p.detail}
+                </dd>
               </div>
             ))}
           </dl>
@@ -158,44 +196,40 @@ export default function ResearchPage() {
               aria-hidden="true"
             />
             <div className="relative mx-auto max-w-2xl text-center">
-              <span className="eyebrow">Full Paper</span>
+              <span className="eyebrow">{t("Full Paper", "Makalah Lengkap")}</span>
               <h2 className="display mt-5 text-display-md">
-                Read the <em>Full Paper</em>
+                {t("Read the", "Baca")} <em>{t("Full Paper", "Makalah Lengkap")}</em>
               </h2>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-                The complete write-up covers the locked evaluation protocol, the statistical
-                machinery behind every comparison, the ablations, and the full set of
-                results — including the ones that did not go the way we hoped.
+                {t(
+                  "The complete write-up covers the locked evaluation protocol, the statistical machinery behind every comparison, the ablations, and the full set of results — including the ones that did not go the way we hoped.",
+                  "Naskah lengkapnya mencakup protokol evaluasi yang dikunci, perangkat statistik di balik setiap perbandingan, ablasi, dan seluruh hasil — termasuk hasil yang tidak sesuai harapan kami.",
+                )}
               </p>
 
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <ExternalButton
-                  href={siteConfig.paperUrl}
-                  enabled={paperOk}
-                  size="lg"
-                  disabledTitle="The paper link has not been configured yet."
-                >
-                  <Download className="h-4 w-4" aria-hidden="true" />
-                  Download Paper
-                </ExternalButton>
+                <PaperButton />
                 <LinkButton to="/demo" size="lg" variant="outline">
-                  Open Model Demo
+                  {t("Open Model Demo", "Buka Demo Model")}
                 </LinkButton>
                 <ExternalButton
                   href={siteConfig.githubUrl}
                   enabled={githubOk}
                   size="lg"
                   variant="ghost"
-                  disabledTitle="The repository link has not been configured yet."
+                  disabledTitle={ts(
+                    "The repository link has not been configured yet.",
+                    "Tautan repositori belum dikonfigurasi.",
+                  )}
                 >
                   <Github className="h-4 w-4" aria-hidden="true" />
-                  View GitHub
+                  {t("View GitHub", "Lihat GitHub")}
                 </ExternalButton>
               </div>
 
               <div className="mt-12">
                 <Callout tone="medical" className="text-left">
-                  {DISCLAIMER_CLINICAL}
+                  {tr(DISCLAIMER_CLINICAL)}
                 </Callout>
               </div>
             </div>

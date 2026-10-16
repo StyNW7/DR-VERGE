@@ -6,6 +6,7 @@ import Layout from "@/layouts/root-layout";
 import ScrollToTop from "@/utility/ScrollToTop";
 import ScrollToTopFunction from "@/utility/ScrollToTopFunction";
 import { LoadingState } from "@/components/common/Primitives";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 import HomePage from "@/pages/HomePage";
 import NotFoundPage from "@/pages/Utility/NotFound404";
@@ -26,7 +27,7 @@ function AnimatedRoutes() {
           <Route
             path="demo"
             element={
-              <Suspense fallback={<LoadingState label="Loading model demo" />}>
+              <Suspense fallback={<LoadingState />}>
                 <DemoPage />
               </Suspense>
             }
@@ -34,7 +35,7 @@ function AnimatedRoutes() {
           <Route
             path="research"
             element={
-              <Suspense fallback={<LoadingState label="Loading research" />}>
+              <Suspense fallback={<LoadingState />}>
                 <ResearchPage />
               </Suspense>
             }
@@ -48,10 +49,12 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTopFunction />
-      <ScrollToTop />
-      <AnimatedRoutes />
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <ScrollToTopFunction />
+        <ScrollToTop />
+        <AnimatedRoutes />
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }

@@ -4,14 +4,15 @@ import { Container } from "@/components/layout/PageContainer";
 import { Reveal } from "@/components/common/Primitives";
 import { scrollToSection } from "@/hooks/useScrollSpy";
 import { cn } from "@/lib/utils";
+import { l, useI18n, type L } from "@/i18n/context";
 
 interface Step {
   number: string;
   icon: LucideIcon;
-  title: string;
-  body: string;
-  time: string;
-  cta: string;
+  title: L;
+  body: L;
+  time: L;
+  cta: L;
   /** Either an in-page section or a route. */
   section?: string;
   to?: string;
@@ -22,35 +23,45 @@ const steps: Step[] = [
   {
     number: "01",
     icon: BookOpenText,
-    title: "Understand the idea",
-    body: "Why one photograph is not enough, what a second view adds, and how DR-VERGE teaches that difference to a small model.",
-    time: "≈ 5 min read",
-    cta: "Start the story",
+    title: l("Understand the idea", "Pahami idenya"),
+    body: l(
+      "Why one photograph is not enough, what a second view adds, and how DR-VERGE teaches that difference to a small model.",
+      "Mengapa satu foto tidak cukup, apa yang ditambahkan oleh *view* kedua, dan bagaimana DR-VERGE mengajarkan perbedaan itu kepada model yang kecil.",
+    ),
+    time: l("≈ 5 min read", "≈ 5 menit baca"),
+    cta: l("Start the story", "Mulai membaca"),
     section: "problem",
   },
   {
     number: "02",
     icon: ScanEye,
-    title: "Try the model",
-    body: "Load a sample eye in one click — or upload your own pair — and watch the real model grade it right in your browser.",
-    time: "≈ 1 min",
-    cta: "Open the demo",
+    title: l("Try the model", "Coba modelnya"),
+    body: l(
+      "Load a sample eye in one click — or upload your own pair — and watch the real model grade it right in your browser.",
+      "Muat sampel mata dengan satu klik — atau unggah pasangan citra Anda sendiri — lalu lihat model asli menilainya langsung di *browser* Anda.",
+    ),
+    time: l("≈ 1 min", "≈ 1 menit"),
+    cta: l("Open the demo", "Buka demo"),
     to: "/demo",
     primary: true,
   },
   {
     number: "03",
     icon: Microscope,
-    title: "Check the evidence",
-    body: "Every number, confidence interval, external test and limitation, traced back to the locked evaluation run.",
-    time: "Full detail",
-    cta: "Read the research",
+    title: l("Check the evidence", "Periksa buktinya"),
+    body: l(
+      "Every number, confidence interval, external test and limitation, traced back to the locked evaluation run.",
+      "Setiap angka, interval kepercayaan, uji eksternal, dan keterbatasan, dapat ditelusuri kembali ke *run* evaluasi yang telah dikunci.",
+    ),
+    time: l("Full detail", "Detail lengkap"),
+    cta: l("Read the research", "Baca penelitiannya"),
     to: "/research",
   },
 ];
 
 function StepCard({ step }: { step: Step }) {
   const Icon = step.icon;
+  const { tr } = useI18n();
   const inner = (
     <>
       <div className="flex items-start justify-between">
@@ -74,14 +85,14 @@ function StepCard({ step }: { step: Step }) {
         </span>
       </div>
 
-      <h3 className="mt-8 text-xl font-bold tracking-tight">{step.title}</h3>
+      <h3 className="mt-8 text-xl font-bold tracking-tight">{tr(step.title)}</h3>
       <p
         className={cn(
           "mt-3 text-[14px] leading-relaxed",
           step.primary ? "text-background/70" : "text-muted-foreground",
         )}
       >
-        {step.body}
+        {tr(step.body)}
       </p>
 
       <div
@@ -96,10 +107,10 @@ function StepCard({ step }: { step: Step }) {
             step.primary ? "text-background/60" : "text-subtle",
           )}
         >
-          {step.time}
+          {tr(step.time)}
         </span>
         <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold">
-          {step.cta}
+          {tr(step.cta)}
           {step.section ? (
             <ArrowDown className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden="true" />
           ) : (
@@ -137,19 +148,24 @@ function StepCard({ step }: { step: Step }) {
  * research story begins.
  */
 export default function JourneySection() {
+  const { t } = useI18n();
   return (
     <section id="journey" className="relative scroll-mt-24 pb-20 sm:pb-24">
       <Container>
         <Reveal>
           <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <span className="eyebrow">Start here</span>
+              <span className="eyebrow">{t("Start here", "Mulai dari sini")}</span>
               <h2 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
-                Three ways to explore <em className="serif-accent font-normal">DR-VERGE</em>
+                {t("Three ways to explore", "Tiga cara menjelajahi")}{" "}
+                <em className="serif-accent font-normal">DR-VERGE</em>
               </h2>
             </div>
             <p className="max-w-sm text-[13px] leading-relaxed text-muted-foreground">
-              New here? Follow them in order — or jump straight to the demo.
+              {t(
+                "New here? Follow them in order — or jump straight to the demo.",
+                "Baru pertama kali? Ikuti secara berurutan — atau langsung menuju demo.",
+              )}
             </p>
           </div>
         </Reveal>

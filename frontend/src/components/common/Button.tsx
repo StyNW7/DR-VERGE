@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
@@ -106,15 +107,19 @@ export function ExternalButton({
   children,
   ariaLabel,
   enabled = true,
-  disabledTitle = "This link has not been configured yet.",
+  disabledTitle,
 }: ExternalButtonProps) {
+  const { ts } = useI18n();
   if (!enabled || !href) {
     return (
       <span
         role="link"
         aria-disabled="true"
-        title={disabledTitle}
-        className={cn(base, variants[variant], sizes[size], "opacity-40 cursor-not-allowed", className)}
+        title={
+          disabledTitle ??
+          ts("This link has not been configured yet.", "Tautan ini belum dikonfigurasi.")
+        }
+        className={cn(base, variants[variant], sizes[size], "cursor-not-allowed opacity-60 hover:bg-transparent", className)}
       >
         {children}
       </span>

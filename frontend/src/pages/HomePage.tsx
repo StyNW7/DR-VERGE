@@ -1,5 +1,6 @@
 import { PageContainer, Seo } from "@/components/layout/PageContainer";
 import { SectionRail } from "@/components/common/SectionRail";
+import { l, useI18n } from "@/i18n/context";
 import Hero from "@/components/home/Hero";
 import JourneySection from "@/components/home/JourneySection";
 import ProblemSection from "@/components/home/ProblemSection";
@@ -15,17 +16,17 @@ import CtaSection from "@/components/home/CtaSection";
 
 /** The chapters of the home page, in reading order. Ids match each section. */
 const chapters = [
-  { id: "problem", label: "Problem" },
-  { id: "two-views", label: "Two views" },
-  { id: "csd", label: "Method" },
-  { id: "findings", label: "Findings" },
-  { id: "rq1", label: "RQ1 · Transfer" },
-  { id: "rq2", label: "RQ2 · Efficiency" },
-  { id: "sdg", label: "SDG 3" },
-  { id: "pipeline", label: "Pipeline" },
-  { id: "team", label: "Team" },
-  { id: "cta", label: "Try it" },
-] as const;
+  { id: "problem", label: l("Problem", "Masalah") },
+  { id: "two-views", label: l("Two views", "Dua *view*") },
+  { id: "csd", label: l("Method", "Metode") },
+  { id: "findings", label: l("Findings", "Temuan") },
+  { id: "rq1", label: l("RQ1 · Transfer", "RQ1 · Transfer") },
+  { id: "rq2", label: l("RQ2 · Efficiency", "RQ2 · Efisiensi") },
+  { id: "sdg", label: l("SDG 3", "SDG 3") },
+  { id: "pipeline", label: l("Pipeline", "Tahapan") },
+  { id: "team", label: l("Team", "Tim") },
+  { id: "cta", label: l("Try it", "Coba") },
+];
 
 /**
  * The narrative order is the point of this page:
@@ -37,11 +38,15 @@ const chapters = [
  * opening the paper. The chapter rail on the right keeps them oriented.
  */
 export default function HomePage() {
+  const { ts } = useI18n();
   return (
     <PageContainer>
       <Seo
-        title="Dual-View Diabetic Retinopathy Research"
-        description="DR-VERGE is a lightweight dual-view AI research framework for ordinal diabetic retinopathy grading using Complementarity-Shift Distillation and INT8 quantization."
+        title={ts("Dual-View Diabetic Retinopathy Research", "Penelitian Retinopati Diabetik Dual-View")}
+        description={ts(
+          "DR-VERGE is a lightweight dual-view AI research framework for ordinal diabetic retinopathy grading using Complementarity-Shift Distillation and INT8 quantization.",
+          "DR-VERGE adalah kerangka penelitian AI dual-view yang ringan untuk grading ordinal retinopati diabetik menggunakan Complementarity-Shift Distillation dan kuantisasi INT8.",
+        )}
       />
       <SectionRail items={chapters} />
       <Hero />

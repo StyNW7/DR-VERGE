@@ -1,39 +1,52 @@
 import { Info, Check, Cpu, Layers, Binary, Timer, Boxes, ScanEye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { InferenceResult } from "@/services/inferenceApi";
-import { getGrade, ordinalThresholdLabels, GRADE_CONSULT_NOTE } from "@/data/drGrades";
+import {
+  getGrade,
+  gradeText,
+  ordinalThresholdLabels,
+  GRADE_CONSULT_NOTE_L,
+} from "@/data/drGrades";
 import { DISCLAIMER_SCORES } from "@/data/researchMetrics";
 import { OrdinalScale } from "@/components/common/Diagrams";
 import { Callout, ScoreBar, Badge } from "@/components/common/Primitives";
 import { clamp01, formatMs, formatScore, formatTimestamp } from "@/utils/formatting";
+import { useI18n } from "@/i18n/context";
+
+/** The grade name in the reader's language, falling back to the API's own name. */
+function useGradeName(result: InferenceResult): string {
+  const { lang } = useI18n();
+  const grade = getGrade(result.grade);
+  return grade ? gradeText(grade, lang).name : result.gradeName;
+}
 
 /* -------------------------------------------------------------------------- */
 /* Output hero                                                                 */
 /* -------------------------------------------------------------------------- */
 
 export function OutputHero({ result }: { result: InferenceResult }) {
+  const { t, lang } = useI18n();
   const grade = getGrade(result.grade);
+  const gradeName = useGradeName(result);
   const maxGrade = 4;
 
   return (
     <div className="print-block card-premium overflow-hidden">
       <div className="grid gap-px bg-border md:grid-cols-5">
         {/* The grade itself */}
-        <div className="flex flex-col justify-between bg-foreground p-8 text-background md:col-span-2 sm:p-10">
+        <div className="grain relative flex flex-col justify-between bg-foreground p-8 text-background md:col-span-2 sm:p-10">
           <div>
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
-              Predicted DR Grade
+              {t("Predicted DR Grade", "Prediksi *Grade* DR")}
             </span>
             <div className="display mt-5 text-[clamp(4.5rem,18vw,8rem)] leading-[0.82]">
               {grade?.display ?? String(result.grade)}
             </div>
           </div>
           <div className="mt-7">
-            <div className="text-xl font-bold tracking-tight sm:text-2xl">
-              {result.gradeName}
-            </div>
+            <div className="text-xl font-bold tracking-tight sm:text-2xl">{gradeName}</div>
             <div className="mono mt-2 text-[10px] uppercase tracking-[0.14em] opacity-60">
-              Grade {result.grade} of {maxGrade}
+              {t(`Grade ${result.grade} of ${maxGrade}`, `Grade ${result.grade} dari ${maxGrade}`)}
             </div>
           </div>
         </div>
@@ -41,10 +54,12 @@ export function OutputHero({ result }: { result: InferenceResult }) {
         {/* Ordinal position */}
         <div className="flex flex-col justify-center gap-8 bg-card p-8 md:col-span-3 sm:p-10">
           <div>
-            <span className="eyebrow">Ordinal Severity</span>
+            <span className="eyebrow">{t("Ordinal Severity", "Keparahan Ordinal")}</span>
             <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-              DR grades are ordered. The position on this scale carries meaning — an error
-              of one grade is not the same as an error of three.
+              {t(
+                "DR grades are ordered. The position on this scale carries meaning — an error of one grade is not the same as an error of three.",
+                "*Grade* DR bersifat berurutan. Posisi pada skala ini bermakna — kesalahan satu tingkat tidak sama dengan kesalahan tiga tingkat.",
+              )}
             </p>
           </div>
 
@@ -53,7 +68,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
           {grade && (
             <div className="border-t border-border pt-6">
               <p className="text-[13px] leading-relaxed text-muted-foreground">
-                {grade.detail}
+                {gradeText(grade, lang).detail}
               </p>
             </div>
           )}
@@ -68,12 +83,17 @@ export function OutputHero({ result }: { result: InferenceResult }) {
 /* -------------------------------------------------------------------------- */
 
 export function OrdinalThresholdScores({ result }: { result: InferenceResult }) {
+  const { t, tr, lang } = useI18n();
+  const title = t("Ordinal Threshold Scores", "Skor Ambang Ordinal");
+
   if (result.ordinalScores.length === 0) {
     return (
-      <SectionCard title="Ordinal Threshold Scores" icon={Layers}>
+      <SectionCard title={title} icon={Layers}>
         <EmptyNote>
-          The inference service did not return cumulative threshold scores for this
-          request.
+          {t(
+            "The inference service did not return cumulative threshold scores for this request.",
+            "Layanan inferensi tidak mengembalikan skor ambang kumulatif untuk permintaan ini.",
+          )}
         </EmptyNote>
       </SectionCard>
     );
@@ -81,9 +101,12 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
 
   return (
     <SectionCard
-      title="Ordinal Threshold Scores"
+      title={title}
       icon={Layers}
-      description="DR-VERGE models DR grading through four cumulative ordinal decision thresholds. The predicted grade is the number of thresholds the model passes."
+      description={t(
+        "DR-VERGE models DR grading through four cumulative ordinal decision thresholds. The predicted grade is the number of thresholds the model passes.",
+        "DR-VERGE memodelkan *grading* DR melalui empat ambang keputusan ordinal kumulatif. *Grade* yang diprediksi adalah jumlah ambang yang dilampaui model.",
+      )}
     >
       <div className="flex flex-col gap-5">
         {result.ordinalScores.map((score, i) => {
@@ -100,17 +123,17 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
                     {meta?.key ?? `P(Y > ${i})`}
                   </span>
                   <span className="text-[11px] text-muted-foreground">
-                    {meta?.meaning}
+                    {meta ? tr(meta.meaning) : null}
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   {passed && (
-                    <span className="mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
-                      passed
+                    <span className="mono rounded-full bg-foreground px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-background">
+                      {t("passed", "terlampaui")}
                     </span>
                   )}
                   <span className="mono text-sm font-semibold tabular-nums">
-                    {formatScore(score, 4)}
+                    {formatScore(score, 4, lang)}
                   </span>
                 </div>
               </div>
@@ -121,7 +144,7 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
       </div>
 
       <Callout tone="note" className="mt-7">
-        {DISCLAIMER_SCORES}
+        {tr(DISCLAIMER_SCORES)}
       </Callout>
     </SectionCard>
   );
@@ -132,16 +155,20 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
 /* -------------------------------------------------------------------------- */
 
 export function RelativeGradeScores({ result }: { result: InferenceResult }) {
+  const { t, lang } = useI18n();
   if (result.gradeScores.length === 0) return null;
 
   const max = Math.max(...result.gradeScores);
 
   return (
     <SectionCard
-      title="Relative Grade Scores"
+      title={t("Relative Grade Scores", "Skor Relatif per *Grade*")}
       icon={Boxes}
       // NOT "probability distribution" — the API has not declared calibration.
-      description="Relative score assigned to each of the five ordinal grades. These are model outputs, not calibrated probabilities."
+      description={t(
+        "Relative score assigned to each of the five ordinal grades. These are model outputs, not calibrated probabilities. The predicted grade comes from the threshold count, so it is not necessarily the grade with the largest score here.",
+        "Skor relatif untuk masing-masing dari lima *grade* ordinal. Skor ini adalah keluaran model, bukan probabilitas terkalibrasi. *Grade* yang diprediksi berasal dari jumlah ambang yang terlampaui, sehingga belum tentu sama dengan *grade* yang skornya paling besar di sini.",
+      )}
     >
       <div className="flex flex-col gap-4">
         {result.gradeScores.map((score, g) => {
@@ -159,7 +186,14 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
                   >
                     Grade {g}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">{info?.name}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {info ? gradeText(info, lang).name : ""}
+                  </span>
+                  {isPredicted && (
+                    <span className="mono rounded-full bg-foreground px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-background">
+                      {t("predicted", "prediksi")}
+                    </span>
+                  )}
                 </div>
                 <span
                   className={cn(
@@ -167,7 +201,7 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
                     isPredicted ? "font-bold" : "text-muted-foreground",
                   )}
                 >
-                  {formatScore(score, 4)}
+                  {formatScore(score, 4, lang)}
                 </span>
               </div>
               {/* Scaled to the largest score so the shape is readable even when
@@ -192,33 +226,31 @@ export function DualViewSummary({
   maculaName: string;
   discName: string;
 }) {
+  const { t } = useI18n();
   const rows = [
-    { label: "Macula View", value: maculaName, done: true },
-    { label: "Optic Disc View", value: discName, done: true },
-    { label: "Dual-View Fusion", value: "Completed", done: true },
+    { label: t("Macula View", "Citra Makula"), value: maculaName },
+    { label: t("Optic Disc View", "Citra Diskus Optik"), value: discName },
+    { label: t("Dual-View Fusion", "Fusi *Dual-View*"), value: t("Completed", "Selesai") },
   ];
 
   return (
-    <SectionCard title="Dual-View Input Summary" icon={ScanEye}>
-      <ul className="flex flex-col gap-px overflow-hidden rounded-lg border border-border bg-border">
-        {rows.map((r) => (
-          <li
-            key={r.label}
-            className="flex items-center justify-between gap-4 bg-card px-4 py-3.5"
-          >
+    <SectionCard title={t("Dual-View Input Summary", "Ringkasan Masukan *Dual-View*")} icon={ScanEye}>
+      <ul className="flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
+        {rows.map((r, i) => (
+          <li key={i} className="flex items-center justify-between gap-4 bg-card px-4 py-3.5">
             <span className="flex items-center gap-3 text-[13px] font-medium">
               <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
               {r.label}
             </span>
-            <span className="truncate text-[12px] text-muted-foreground" title={r.value}>
-              {r.value}
-            </span>
+            <span className="truncate text-[12px] text-muted-foreground">{r.value}</span>
           </li>
         ))}
       </ul>
       <p className="mt-5 text-[13px] leading-relaxed text-muted-foreground">
-        Both views are jointly processed by DR-VERGE. The final grade is produced from
-        their fused representation, not from either view alone.
+        {t(
+          "Both views are jointly processed by DR-VERGE. The final grade is produced from their fused representation, not from either view alone.",
+          "Kedua citra diproses bersama oleh DR-VERGE. *Grade* akhir dihasilkan dari representasi gabungan keduanya, bukan dari salah satu citra saja.",
+        )}
       </p>
     </SectionCard>
   );
@@ -229,39 +261,46 @@ export function DualViewSummary({
 /* -------------------------------------------------------------------------- */
 
 export function ModelInformation({ result }: { result: InferenceResult }) {
+  const { t, lang } = useI18n();
   const rows = [
-    { label: "Model", value: result.model.name, icon: Cpu },
-    { label: "Architecture", value: "Lightweight Dual-View Student", icon: Layers },
-    { label: "Task", value: "5-Class Ordinal DR Grading", icon: Boxes },
-    { label: "Input", value: "Macula + Optic Disc", icon: ScanEye },
-    { label: "Variant", value: result.model.variant ?? "—", icon: Binary },
-    { label: "Quantization", value: result.model.quantization ?? "—", icon: Binary },
+    { label: t("Model", "Model"), value: result.model.name, icon: Cpu },
     {
-      label: "Inference Runtime",
-      value: result.latencyMs !== null ? formatMs(result.latencyMs) : "—",
+      label: t("Architecture", "Arsitektur"),
+      value: t("Lightweight Dual-View Student", "*Lightweight Dual-View Student*"),
+      icon: Layers,
+    },
+    {
+      label: t("Task", "Tugas"),
+      value: t("5-Class Ordinal DR Grading", "*Grading* DR Ordinal 5 Kelas"),
+      icon: Boxes,
+    },
+    { label: t("Input", "Masukan"), value: t("Macula + Optic Disc", "Makula + Diskus Optik"), icon: ScanEye },
+    { label: t("Variant", "Varian"), value: result.model.variant ?? "—", icon: Binary },
+    { label: t("Quantization", "Kuantisasi"), value: result.model.quantization ?? "—", icon: Binary },
+    {
+      label: t("Inference Runtime", "Waktu Inferensi"),
+      value: result.latencyMs !== null ? formatMs(result.latencyMs, 2, lang) : "—",
       icon: Timer,
     },
-    { label: "Model Version", value: result.model.version ?? "—", icon: Info },
+    { label: t("Model Version", "Versi Model"), value: result.model.version ?? "—", icon: Info },
   ];
 
   return (
-    <SectionCard title="Model Information" icon={Cpu}>
-      <dl className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-        {rows.map((r) => (
-          <div key={r.label} className="bg-card px-4 py-3.5">
-            <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
-              {r.label}
-            </dt>
-            <dd className="mt-1 truncate text-[13px] font-medium" title={r.value}>
-              {r.value}
-            </dd>
+    <SectionCard title={t("Model Information", "Informasi Model")} icon={Cpu}>
+      <dl className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+        {rows.map((r, i) => (
+          <div key={i} className="bg-card px-4 py-3.5">
+            <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">{r.label}</dt>
+            <dd className="mt-1 truncate text-[13px] font-medium">{r.value}</dd>
           </div>
         ))}
       </dl>
 
       <div className="mono mt-5 flex flex-wrap gap-x-6 gap-y-1 text-[10px] uppercase tracking-[0.12em] text-subtle">
-        <span>Round trip {formatMs(result.clientElapsedMs, 0)}</span>
-        <span>{formatTimestamp(new Date(result.receivedAt))}</span>
+        <span>
+          {t("Round trip", "Waktu total")} {formatMs(result.clientElapsedMs, 0, lang)}
+        </span>
+        <span>{formatTimestamp(new Date(result.receivedAt), lang)}</span>
       </div>
     </SectionCard>
   );
@@ -272,27 +311,27 @@ export function ModelInformation({ result }: { result: InferenceResult }) {
 /* -------------------------------------------------------------------------- */
 
 export function ResultInterpretation({ result }: { result: InferenceResult }) {
+  const { t, tr, lang } = useI18n();
   const grade = getGrade(result.grade);
   if (!grade) return null;
+  const copy = gradeText(grade, lang);
 
   return (
-    <SectionCard title="Result Interpretation" icon={Info}>
+    <SectionCard title={t("Result Interpretation", "Interpretasi Hasil")} icon={Info}>
       <div className="flex flex-col gap-4">
         <div>
-          <Badge tone="solid">{grade.name}</Badge>
-          <p className="mt-4 text-[14px] leading-relaxed text-foreground">
-            {grade.description}
-          </p>
-          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-            {grade.detail}
-          </p>
+          <Badge tone="solid">{copy.name}</Badge>
+          <p className="mt-4 text-[14px] leading-relaxed text-foreground">{copy.description}</p>
+          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{copy.detail}</p>
         </div>
 
         {/* No treatment advice, no urgency instruction — only this. */}
-        <Callout tone="medical" title="Clinical interpretation">
-          {GRADE_CONSULT_NOTE} This output is a research artifact produced by a prototype
-          model and is not a diagnosis, a screening result, or a basis for any medical
-          decision.
+        <Callout tone="medical" title={t("Clinical interpretation", "Interpretasi klinis")}>
+          {tr(GRADE_CONSULT_NOTE_L)}{" "}
+          {t(
+            "This output is a research artifact produced by a prototype model and is not a diagnosis, a screening result, or a basis for any medical decision.",
+            "Keluaran ini adalah artefak penelitian yang dihasilkan oleh model prototipe dan bukan diagnosis, bukan hasil skrining, serta bukan dasar untuk keputusan medis apa pun.",
+          )}
         </Callout>
       </div>
     </SectionCard>
@@ -309,17 +348,19 @@ function SectionCard({
   icon: Icon,
   children,
 }: {
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   icon: React.ElementType;
   children: React.ReactNode;
 }) {
   return (
     <section className="print-block card-premium p-6 sm:p-8">
       <div className="mb-6 flex items-start gap-3">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface">
+          <Icon className="h-4 w-4 text-foreground/70" aria-hidden="true" />
+        </span>
         <div>
-          <h3 className="text-base font-bold tracking-tight">{title}</h3>
+          <h3 className="pt-1 text-base font-bold tracking-tight">{title}</h3>
           {description && (
             <p className="mt-2 max-w-prose text-[13px] leading-relaxed text-muted-foreground">
               {description}
@@ -334,7 +375,7 @@ function SectionCard({
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-[13px] text-muted-foreground">
+    <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-[13px] text-muted-foreground">
       {children}
     </p>
   );

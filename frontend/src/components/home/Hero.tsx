@@ -5,8 +5,9 @@ import { Container } from "@/components/layout/PageContainer";
 import { siteConfig, runsOnDevice } from "@/config/siteConfig";
 import { heroStats } from "@/data/researchMetrics";
 import { heroExample } from "@/data/samples";
-import { getGrade, ordinalThresholdLabels } from "@/data/drGrades";
+import { getGrade, gradeText, ordinalThresholdLabels } from "@/data/drGrades";
 import { scrollToSection } from "@/hooks/useScrollSpy";
+import { l, useI18n } from "@/i18n/context";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -14,11 +15,14 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const trust = [
   ...(runsOnDevice
     ? [
-        { icon: Cpu, label: "Runs in your browser" },
-        { icon: Lock, label: "Images never leave your device" },
+        { icon: Cpu, label: l("Runs in your browser", "Berjalan di *browser* Anda") },
+        { icon: Lock, label: l("Images never leave your device", "Citra tidak pernah keluar dari perangkat Anda") },
       ]
     : []),
-  { icon: FlaskConical, label: "Research prototype · not for clinical use" },
+  {
+    icon: FlaskConical,
+    label: l("Research prototype · not for clinical use", "Prototipe penelitian · bukan untuk penggunaan klinis"),
+  },
 ];
 
 /** One real fundus field, shown in grayscale so the page stays monochrome. */
@@ -26,11 +30,13 @@ function FieldTile({
   src,
   index,
   label,
+  alt,
   delay,
 }: {
   src: string;
   index: string;
   label: string;
+  alt: string;
   delay: number;
 }) {
   const reduce = useReducedMotion();
@@ -43,10 +49,10 @@ function FieldTile({
     >
       <img
         src={src}
-        alt={`${label} fundus photograph from the public DeepDRiD dataset, shown in grayscale`}
+        alt={alt}
         loading="eager"
         decoding="async"
-        className="h-full w-full scale-[1.04] object-cover grayscale contrast-[1.15] transition-transform duration-[1200ms] ease-editorial group-hover:scale-[1.1]"
+        className="h-full w-full scale-[1.04] object-cover grayscale contrast-[1.15] transition-transform [transition-duration:1200ms] ease-editorial group-hover:scale-[1.1]"
       />
       {/* Inner vignette keeps the label legible on any photograph. */}
       <div
@@ -68,6 +74,7 @@ function FieldTile({
  */
 function HeroVisual() {
   const reduce = useReducedMotion();
+  const { t, ts, lang, num } = useI18n();
   const scores = heroExample.cumulativeScores;
   const passed = scores.filter((s) => s > heroExample.decisionThreshold).length;
   const grade = getGrade(passed);
@@ -80,16 +87,34 @@ function HeroVisual() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/60" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-foreground" />
           </span>
-          Real model output
+          {t("Real model output", "Keluaran model asli")}
         </span>
         <span className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
-          Eye {heroExample.sampleId}
+          {t("Eye", "Mata")} {heroExample.sampleId}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-        <FieldTile src={heroExample.macula} index="01" label="Macula" delay={0.15} />
-        <FieldTile src={heroExample.disc} index="02" label="Optic disc" delay={0.25} />
+        <FieldTile
+          src={heroExample.macula}
+          index="01"
+          label={ts("Macula", "Makula")}
+          alt={ts(
+            "Macula-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
+            "Foto fundus berpusat makula dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
+          )}
+          delay={0.15}
+        />
+        <FieldTile
+          src={heroExample.disc}
+          index="02"
+          label={ts("Optic disc", "Diskus optik")}
+          alt={ts(
+            "Optic-disc-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
+            "Foto fundus berpusat diskus optik dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
+          )}
+          delay={0.25}
+        />
       </div>
 
       {/* Converging connectors */}
@@ -113,14 +138,14 @@ function HeroVisual() {
         <div className="relative flex items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="text-sm font-bold tracking-tight">
-              {siteConfig.projectName} student
+              {siteConfig.projectName} {t("student", "*student*")}
             </div>
             <div className="mono truncate text-[9px] uppercase tracking-[0.14em] opacity-60">
               Shared encoder · interaction fusion · CORAL
             </div>
           </div>
           <span className="mono shrink-0 rounded-full border border-background/20 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] opacity-80">
-            328K params
+            {t("328K params", "328K parameter")}
           </span>
         </div>
         {!reduce && (
@@ -142,10 +167,10 @@ function HeroVisual() {
       >
         <div className="mb-3 flex items-center justify-between">
           <span className="mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
-            Ordinal threshold scores
+            {t("Ordinal threshold scores", "Skor ambang ordinal")}
           </span>
           <span className="mono text-[9px] uppercase tracking-[0.14em] text-subtle">
-            pass at {heroExample.decisionThreshold.toFixed(1)}
+            {t("pass at", "lolos pada")} {num(heroExample.decisionThreshold, 1)}
           </span>
         </div>
         <ul className="flex flex-col gap-2">
@@ -170,25 +195,32 @@ function HeroVisual() {
                   <span className="absolute inset-y-0 left-1/2 w-px bg-background/80" aria-hidden="true" />
                 </span>
                 <span className="mono text-right text-[11px] tabular-nums text-muted-foreground">
-                  {s.toFixed(2)}
+                  {num(s, 2)}
                 </span>
               </li>
             );
           })}
         </ul>
-        <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
           <span className="text-[12px] text-muted-foreground">
-            {passed} of {scores.length} thresholds passed
+            {t(
+              `${passed} of ${scores.length} thresholds passed`,
+              `${passed} dari ${scores.length} ambang terlampaui`,
+            )}
           </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3 py-1 text-[12px] font-semibold text-background">
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-[12px] font-semibold text-background">
             Grade {passed}
-            <span className="font-normal opacity-70">· {grade?.name}</span>
+            <span className="font-normal opacity-70">· {grade ? gradeText(grade, lang).name : ""}</span>
           </span>
         </div>
       </motion.div>
 
       <p className="mono mt-3 px-1 text-center text-[9px] uppercase tracking-[0.14em] text-subtle">
-        {heroExample.credit} · shown in grayscale · research output, not a diagnosis
+        {heroExample.credit} ·{" "}
+        {t(
+          "shown in grayscale · research output, not a diagnosis",
+          "ditampilkan abu-abu · keluaran riset, bukan diagnosis",
+        )}
       </p>
     </div>
   );
@@ -196,6 +228,7 @@ function HeroVisual() {
 
 export default function Hero() {
   const reduce = useReducedMotion();
+  const { t, tr, n, pick, isId } = useI18n();
 
   const fade = (delay: number) =>
     reduce
@@ -233,34 +266,54 @@ export default function Hero() {
 
             <motion.h1
               {...fade(0.06)}
-              className="display text-[clamp(3rem,7.2vw,6.25rem)] leading-[0.92]"
+              className={cn(
+                "display leading-[0.92]",
+                // The Indonesian line is longer; it gets a size that keeps each
+                // phrase on one line at desktop widths.
+                isId ? "text-[clamp(2.6rem,5vw,4.75rem)]" : "text-[clamp(3rem,7.2vw,6.25rem)]",
+              )}
             >
-              Seeing More.
-              <br />
-              <span className="text-muted-foreground">
-                Grading <em className="text-foreground">Smarter.</em>
-              </span>
+              {pick(
+                <>
+                  Seeing More.
+                  <br />
+                  <span className="text-muted-foreground">
+                    Grading <em className="text-foreground">Smarter.</em>
+                  </span>
+                </>,
+                <>
+                  Melihat Lebih Luas.
+                  <br />
+                  <span className="text-muted-foreground">
+                    Menilai Lebih <em className="text-foreground">Cerdas.</em>
+                  </span>
+                </>,
+              )}
             </motion.h1>
 
             <motion.p
               {...fade(0.14)}
               className="mt-8 max-w-xl text-pretty text-lg font-medium leading-snug text-foreground sm:text-xl"
             >
-              Dual-view intelligence for lightweight diabetic retinopathy grading.
+              {t(
+                "Dual-view intelligence for lightweight diabetic retinopathy grading.",
+                "Kecerdasan *dual-view* untuk *grading* retinopati diabetik yang ringan.",
+              )}
             </motion.p>
 
             <motion.p
               {...fade(0.2)}
               className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground"
             >
-              {siteConfig.projectName} reads two photographs of the same eye — one centred
-              on the macula, one on the optic disc — and grades diabetic retinopathy on the
-              five-level ordinal scale, with a model small enough to run on an ordinary CPU.
+              {t(
+                `${siteConfig.projectName} reads two photographs of the same eye — one centred on the macula, one on the optic disc — and grades diabetic retinopathy on the five-level ordinal scale, with a model small enough to run on an ordinary CPU.`,
+                `${siteConfig.projectName} membaca dua foto dari mata yang sama — satu berpusat pada makula, satu berpusat pada diskus optik — lalu menilai tingkat retinopati diabetik pada skala ordinal lima tingkat, dengan model yang cukup kecil untuk dijalankan di CPU biasa.`,
+              )}
             </motion.p>
 
             <motion.div {...fade(0.26)} className="mt-9 flex flex-col gap-3 sm:flex-row">
               <LinkButton to="/demo" size="lg" className="group">
-                Try the Model
+                {t("Try the Model", "Coba Modelnya")}
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
                   aria-hidden="true"
@@ -268,18 +321,15 @@ export default function Hero() {
               </LinkButton>
               <LinkButton to="/research" size="lg" variant="outline">
                 <BookOpen className="h-4 w-4" aria-hidden="true" />
-                Explore the Research
+                {t("Explore the Research", "Jelajahi Penelitian")}
               </LinkButton>
             </motion.div>
 
-            <motion.ul
-              {...fade(0.34)}
-              className="mt-8 flex flex-wrap gap-x-6 gap-y-3"
-            >
+            <motion.ul {...fade(0.34)} className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
               {trust.map(({ icon: Icon, label }) => (
-                <li key={label} className="inline-flex items-center gap-2 text-[13px] text-muted-foreground">
-                  <Icon className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
-                  {label}
+                <li key={label.en} className="inline-flex items-center gap-2 text-[13px] text-muted-foreground">
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-foreground" aria-hidden="true" />
+                  {tr(label)}
                 </li>
               ))}
             </motion.ul>
@@ -300,7 +350,7 @@ export default function Hero() {
         >
           {heroStats.map((s, i) => (
             <div
-              key={s.label}
+              key={s.label.en}
               className={cn(
                 "flex flex-col gap-1 p-5 sm:p-7",
                 i % 2 === 1 && "border-l border-border",
@@ -309,13 +359,13 @@ export default function Hero() {
               )}
             >
               <dt className="order-2 text-[13px] font-medium text-foreground">
-                {s.label}
+                {tr(s.label)}
                 <span className="mt-0.5 block text-[11px] font-normal text-muted-foreground">
-                  {s.detail}
+                  {tr(s.detail)}
                 </span>
               </dt>
               <dd className="ink-gradient order-1 text-3xl font-bold tracking-[-0.04em] tabular-nums sm:text-4xl lg:text-5xl">
-                {s.value}
+                {n(s.value)}
               </dd>
             </div>
           ))}
@@ -334,7 +384,7 @@ export default function Hero() {
             <ArrowDown className="h-3.5 w-3.5 motion-safe:animate-bounce" aria-hidden="true" />
           </span>
           <span className="mono text-[10px] uppercase tracking-[0.18em]">
-            Scroll to explore the research
+            {t("Scroll to explore the research", "Gulir untuk menjelajahi penelitian")}
           </span>
         </motion.button>
       </Container>

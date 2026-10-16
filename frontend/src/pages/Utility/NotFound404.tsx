@@ -3,13 +3,18 @@ import { Home, ScanEye, FileText } from "lucide-react";
 import { LinkButton } from "@/components/common/Button";
 import { PageContainer, Seo, Container } from "@/components/layout/PageContainer";
 import { FundusIllustration } from "@/components/common/FundusIllustration";
+import { useI18n } from "@/i18n/context";
 
 export default function NotFoundPage() {
   const reduce = useReducedMotion();
+  const { t, ts } = useI18n();
 
   return (
     <PageContainer>
-      <Seo title="Page Not Found" description="This page could not be found." />
+      <Seo
+        title={ts("Page Not Found", "Halaman Tidak Ditemukan")}
+        description={ts("This page could not be found.", "Halaman ini tidak dapat ditemukan.")}
+      />
 
       <Container className="flex min-h-[70svh] flex-col items-center justify-center py-24 text-center">
         <motion.div
@@ -27,27 +32,31 @@ export default function NotFoundPage() {
             <span className="display text-display-xl leading-none">4</span>
           </div>
 
-          <span className="eyebrow mt-8">Error 404</span>
+          <span className="eyebrow mt-8">{t("Error 404", "Galat 404")}</span>
 
-          <h1 className="display mt-5 text-display-sm">Page Not Found</h1>
+          <h1 className="display mt-5 text-display-sm">
+            {t("Page Not Found", "Halaman Tidak Ditemukan")}
+          </h1>
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-            This page doesn't exist. It may have been moved, or the link that brought you
-            here may be out of date.
+            {t(
+              "This page doesn't exist. It may have been moved, or the link that brought you here may be out of date.",
+              "Halaman ini tidak ada. Halaman mungkin telah dipindahkan, atau tautan yang membawa Anda ke sini sudah tidak berlaku.",
+            )}
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <LinkButton to="/" size="lg">
               <Home className="h-4 w-4" aria-hidden="true" />
-              Back to Home
+              {t("Back to Home", "Kembali ke Beranda")}
             </LinkButton>
             <LinkButton to="/demo" size="lg" variant="outline">
               <ScanEye className="h-4 w-4" aria-hidden="true" />
-              Model Demo
+              {t("Model Demo", "Demo Model")}
             </LinkButton>
             <LinkButton to="/research" size="lg" variant="ghost">
               <FileText className="h-4 w-4" aria-hidden="true" />
-              Research
+              {t("Research", "Penelitian")}
             </LinkButton>
           </div>
         </motion.div>

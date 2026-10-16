@@ -6,10 +6,12 @@
  * no component change is needed. Nothing here is fabricated.
  */
 
+import { l, type L } from "@/i18n/context";
+
 export interface TeamMember {
   id: string;
   name: string;
-  role: string;
+  role: L;
   institution: string;
   /** Path under /public, or null to render monogram initials instead. */
   image: string | null;
@@ -23,7 +25,7 @@ export const team: TeamMember[] = [
   {
     id: "member-1",
     name: "Stanley Nathanael Wijaya",
-    role: "Team Leader · AI & Model Development",
+    role: l("Team Leader · AI & Model Development", "Ketua Tim · Pengembangan AI & Model"),
     institution: "BINUS University",
     image: "/Images/Stanley.jpg",
     linkedin: "https://www.linkedin.com/in/stanley-nathanael-wijaya/",
@@ -32,7 +34,7 @@ export const team: TeamMember[] = [
   {
     id: "member-2",
     name: "Seline Loewel",
-    role: "Research & Experimentation",
+    role: l("Research & Experimentation", "Riset & Eksperimen"),
     institution: "BINUS University",
     image: "/Images/Seline.jpeg",
     linkedin: null,
@@ -41,7 +43,7 @@ export const team: TeamMember[] = [
   {
     id: "member-3",
     name: "Ahmad Hamra",
-    role: "Research & Documentation",
+    role: l("Research & Documentation", "Riset & Dokumentasi"),
     institution: "BINUS University",
     image: "/Images/Hamra.jpeg",
     linkedin: null,
@@ -53,7 +55,7 @@ export const advisors: TeamMember[] = [
   {
     id: "advisor-1",
     name: "Nikita Ananda Putri Masaling",
-    role: "Research Advisor",
+    role: l("Research Advisor", "Dosen Pembimbing"),
     institution: "BINUS University",
     image: "/Images/Nikita.jpg",
     linkedin: null,

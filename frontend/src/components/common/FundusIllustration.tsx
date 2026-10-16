@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
 
 /**
  * Schematic retinal fundus, drawn as SVG.
@@ -25,6 +26,7 @@ export function FundusIllustration({
   animated?: boolean;
 }) {
   const isMacula = variant === "macula";
+  const { ts } = useI18n();
 
   // Anatomy positions in a 200x200 viewBox.
   const disc = isMacula ? { x: 138, y: 96 } : { x: 100, y: 100 };
@@ -38,8 +40,14 @@ export function FundusIllustration({
       role="img"
       aria-label={
         isMacula
-          ? "Schematic diagram of a macula-centered retinal fundus view"
-          : "Schematic diagram of an optic-disc-centered retinal fundus view"
+          ? ts(
+              "Schematic diagram of a macula-centered retinal fundus view",
+              "Diagram skematik citra fundus retina berpusat makula",
+            )
+          : ts(
+              "Schematic diagram of an optic-disc-centered retinal fundus view",
+              "Diagram skematik citra fundus retina berpusat diskus optik",
+            )
       }
     >
       <defs>
@@ -160,10 +168,10 @@ export function FundusIllustration({
       {showLabels && (
         <g className="mono" fontSize="7" fill="currentColor" fillOpacity="0.75">
           <text x={macula.x} y={macula.y + 40} textAnchor="middle" letterSpacing="1">
-            MACULA
+            {ts("MACULA", "MAKULA")}
           </text>
           <text x={disc.x} y={disc.y - 24} textAnchor="middle" letterSpacing="1">
-            OPTIC DISC
+            {ts("OPTIC DISC", "DISKUS OPTIK")}
           </text>
         </g>
       )}
@@ -179,12 +187,16 @@ export function FundusIllustration({
  * non-overlap is the entire premise of the method.
  */
 export function DualFieldDiagram({ className }: { className?: string }) {
+  const { ts } = useI18n();
   return (
     <svg
       viewBox="0 0 320 200"
       className={cn("h-full w-full", className)}
       role="img"
-      aria-label="Diagram showing the overlapping fields of view of the macula-centered and optic-disc-centered captures"
+      aria-label={ts(
+        "Diagram showing the overlapping fields of view of the macula-centered and optic-disc-centered captures",
+        "Diagram yang menunjukkan area pandang yang saling tumpang-tindih antara citra berpusat makula dan citra berpusat diskus optik",
+      )}
     >
       <defs>
         <clipPath id="dfd-left">
@@ -223,19 +235,19 @@ export function DualFieldDiagram({ className }: { className?: string }) {
 
       <g className="mono" fontSize="8" fill="currentColor" letterSpacing="1.2">
         <text x="66" y="100" textAnchor="middle" fillOpacity="0.7">
-          MACULA
+          {ts("MACULA", "AREA")}
         </text>
         <text x="66" y="112" textAnchor="middle" fillOpacity="0.45">
-          FIELD
+          {ts("FIELD", "MAKULA")}
         </text>
         <text x="262" y="100" textAnchor="middle" fillOpacity="0.7">
-          DISC
+          {ts("DISC", "AREA")}
         </text>
         <text x="262" y="112" textAnchor="middle" fillOpacity="0.45">
-          FIELD
+          {ts("FIELD", "DISKUS")}
         </text>
         <text x="162" y="186" textAnchor="middle" fillOpacity="0.55">
-          SHARED + COMPLEMENTARY EVIDENCE
+          {ts("SHARED + COMPLEMENTARY EVIDENCE", "BUKTI BERSAMA + PELENGKAP")}
         </text>
       </g>
     </svg>

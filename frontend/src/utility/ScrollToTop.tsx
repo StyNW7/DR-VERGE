@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
 
 /** Back-to-top control, monochrome and hidden from print. */
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
   // The demo has its own sticky action bar in that corner.
   const hidden = useLocation().pathname.startsWith("/demo");
+  const { ts } = useI18n();
 
   useEffect(() => {
     const handleScroll = () => setIsVisible(window.scrollY > 600);
@@ -20,7 +22,7 @@ const ScrollToTopButton = () => {
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Scroll back to top"
+      aria-label={ts("Scroll back to top", "Kembali ke atas")}
       // Kept mounted but inert when hidden, so it fades rather than popping.
       tabIndex={isVisible && !hidden ? 0 : -1}
       aria-hidden={!isVisible || hidden}

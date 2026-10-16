@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   Upload,
   X,
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { formatBytes } from "@/utils/formatting";
 import { acceptAttribute, type UploadedImage } from "@/utils/fileValidation";
 import { FundusIllustration } from "@/components/common/FundusIllustration";
+import { useI18n } from "@/i18n/context";
 
 /**
  * One of the two upload slots.
@@ -34,7 +35,7 @@ export function UploadDropzone({
 }: {
   index: string;
   label: string;
-  hint: string;
+  hint: React.ReactNode;
   variant: "macula" | "disc";
   value: UploadedImage | null;
   error: string | null;
@@ -44,6 +45,7 @@ export function UploadDropzone({
   onZoom: () => void;
 }) {
   const [dragging, setDragging] = useState(false);
+  const { t, ts, lang } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const errorId = `${inputId}-error`;
@@ -84,7 +86,7 @@ export function UploadDropzone({
         {value && (
           <span className="mono inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
             <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
-            Received
+            {t("Received", "Diterima")}
           </span>
         )}
       </div>
@@ -110,7 +112,10 @@ export function UploadDropzone({
           <div className="relative aspect-[4/3] w-full bg-black">
             <img
               src={value.previewUrl}
-              alt={`Uploaded ${label.toLowerCase()} fundus image: ${value.file.name}`}
+              alt={ts(
+                `Uploaded ${label.toLowerCase()} fundus image: ${value.file.name}`,
+                `Citra fundus ${label.toLowerCase()} yang diunggah: ${value.file.name}`,
+              )}
               className="h-full w-full object-contain"
             />
             {/* Hover / focus-within actions */}
@@ -121,7 +126,7 @@ export function UploadDropzone({
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground"
               >
                 <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
-                Zoom
+                {t("Zoom", "Perbesar")}
               </button>
               <button
                 type="button"
@@ -130,7 +135,7 @@ export function UploadDropzone({
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground disabled:opacity-40"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                Replace
+                {t("Replace", "Ganti")}
               </button>
               <button
                 type="button"
@@ -139,7 +144,7 @@ export function UploadDropzone({
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
-                Remove
+                {t("Remove", "Hapus")}
               </button>
             </div>
           </div>
@@ -147,20 +152,20 @@ export function UploadDropzone({
           {/* File metadata */}
           <dl className="grid grid-cols-3 gap-px border-t border-border bg-border text-[11px]">
             <div className="bg-card px-3 py-2.5">
-              <dt className="text-subtle">File</dt>
+              <dt className="text-subtle">{t("File", "Berkas")}</dt>
               <dd className="mt-0.5 truncate font-medium" title={value.file.name}>
                 {value.file.name}
               </dd>
             </div>
             <div className="bg-card px-3 py-2.5">
-              <dt className="text-subtle">Resolution</dt>
+              <dt className="text-subtle">{t("Resolution", "Resolusi")}</dt>
               <dd className="mono mt-0.5 font-medium">
                 {value.meta ? `${value.meta.width}×${value.meta.height}` : "—"}
               </dd>
             </div>
             <div className="bg-card px-3 py-2.5">
-              <dt className="text-subtle">Size</dt>
-              <dd className="mono mt-0.5 font-medium">{formatBytes(value.file.size)}</dd>
+              <dt className="text-subtle">{t("Size", "Ukuran")}</dt>
+              <dd className="mono mt-0.5 font-medium">{formatBytes(value.file.size, lang)}</dd>
             </div>
           </dl>
         </div>
@@ -195,7 +200,9 @@ export function UploadDropzone({
               <Upload className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="text-sm font-semibold">
-              {dragging ? "Drop the image here" : "Drag and drop, or click to browse"}
+              {dragging
+                ? t("Drop the image here", "Lepaskan citra di sini")
+                : t("Drag and drop, or click to browse", "Seret dan lepas, atau klik untuk memilih")}
             </div>
             <p className="max-w-[26ch] text-[11px] leading-relaxed text-muted-foreground">
               {hint}
@@ -233,6 +240,18 @@ export function ZoomModal({
   label: string;
   onClose: () => void;
 }) {
+  const { t, ts, lang } = useI18n();
+
+  // Escape closes the preview, as any dialog should.
+  useEffect(() => {
+    if (!image) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [image, onClose]);
+
   if (!image) return null;
 
   return (
@@ -240,7 +259,7 @@ export function ZoomModal({
       className="fixed inset-0 z-[60] flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm sm:p-8"
       role="dialog"
       aria-modal="true"
-      aria-label={`${label} preview`}
+      aria-label={ts(`${label} preview`, `Pratinjau ${label}`)}
       onClick={onClose}
     >
       <div
@@ -260,7 +279,7 @@ export function ZoomModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close preview"
+            aria-label={ts("Close preview", "Tutup pratinjau")}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border transition-colors hover:border-foreground"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -270,16 +289,18 @@ export function ZoomModal({
         <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-surface p-4">
           <img
             src={image.previewUrl}
-            alt={`Full size preview of ${image.file.name}`}
+            alt={ts(`Full size preview of ${image.file.name}`, `Pratinjau ukuran penuh ${image.file.name}`)}
             className="max-h-[70vh] w-auto max-w-full object-contain"
           />
         </div>
 
         <div className="mono flex flex-wrap gap-x-6 gap-y-1 border-t border-border px-5 py-3 text-[11px] text-muted-foreground">
           <span>
-            {image.meta ? `${image.meta.width} × ${image.meta.height} px` : "Resolution —"}
+            {image.meta
+              ? `${image.meta.width} × ${image.meta.height} px`
+              : `${t("Resolution", "Resolusi")} —`}
           </span>
-          <span>{formatBytes(image.file.size)}</span>
+          <span>{formatBytes(image.file.size, lang)}</span>
         </div>
       </div>
     </div>

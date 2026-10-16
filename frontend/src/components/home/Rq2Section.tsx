@@ -4,6 +4,7 @@ import { Section } from "@/components/layout/PageContainer";
 import { SectionHeader, Reveal, Callout, Badge } from "@/components/common/Primitives";
 import { modelStats, efficiencyResults, rq2Verdict } from "@/data/researchMetrics";
 import { formatCompact } from "@/utils/formatting";
+import { useI18n } from "@/i18n/context";
 import { cn } from "@/lib/utils";
 
 /** Animated proportional comparison bar. */
@@ -16,8 +17,8 @@ function CompareBar({
   emphasis = false,
   delay = 0,
 }: {
-  label: string;
-  sublabel: string;
+  label: React.ReactNode;
+  sublabel: React.ReactNode;
   value: number;
   max: number;
   display: string;
@@ -40,9 +41,9 @@ function CompareBar({
         </div>
         <span className="mono shrink-0 text-sm font-semibold">{display}</span>
       </div>
-      <div className="h-8 w-full overflow-hidden rounded-md bg-muted">
+      <div className="h-8 w-full overflow-hidden rounded-lg bg-muted">
         <motion.div
-          className={cn("h-full rounded-md", emphasis ? "bg-foreground" : "bg-foreground/25")}
+          className={cn("h-full rounded-lg", emphasis ? "bg-foreground" : "bg-foreground/25")}
           initial={reduce ? { width: `${pct}%` } : { width: 0 }}
           whileInView={{ width: `${pct}%` }}
           viewport={{ once: true, margin: "-80px" }}
@@ -54,45 +55,52 @@ function CompareBar({
 }
 
 export default function Rq2Section() {
+  const { t, tr, pick, num, lang } = useI18n();
   const maxLatency = Math.max(...efficiencyResults.map((r) => r.latencyMs));
 
   return (
     <Section id="rq2">
       <SectionHeader
-        eyebrow="RQ2 · Efficiency"
+        eyebrow={t("RQ2 · Efficiency", "RQ2 · Efisiensi")}
         index="06"
-        title={
+        title={pick(
           <>
             Designed to Be <em>Lightweight</em>
-          </>
-        }
-        description="The student is two orders of magnitude smaller than the teacher, and INT8 quantization cuts its CPU inference cost again."
+          </>,
+          <>
+            Dirancang agar <em>Ringan</em>
+          </>,
+        )}
+        description={t(
+          "The student is two orders of magnitude smaller than the teacher, and INT8 quantization cuts its CPU inference cost again.",
+          "*Student* berukuran dua orde besaran lebih kecil daripada *teacher*, dan kuantisasi INT8 memangkas lagi biaya inferensinya di CPU.",
+        )}
         size="lg"
       />
 
-      <div className="mt-14 grid gap-5 lg:grid-cols-12">
+      <div className="mt-14 grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* Parameters */}
         <Reveal className="lg:col-span-5">
-          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
+          <div className="card-premium flex h-full flex-col p-7 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
-              <span className="eyebrow">Model size</span>
+              <span className="eyebrow">{t("Model size", "Ukuran model")}</span>
               <HardDrive className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
             </div>
 
             <div className="flex flex-col gap-6">
               <CompareBar
-                label="Teacher"
-                sublabel="ResNet-50 dual-view"
+                label={t("Teacher", "*Teacher*")}
+                sublabel={t("ResNet-50 dual-view", "ResNet-50 *dual-view*")}
                 value={modelStats.teacherParams}
                 max={modelStats.teacherParams}
-                display={formatCompact(modelStats.teacherParams)}
+                display={formatCompact(modelStats.teacherParams, lang)}
               />
               <CompareBar
-                label="Student"
+                label={t("Student", "*Student*")}
                 sublabel="DR-VERGE"
                 value={modelStats.studentParams}
                 max={modelStats.teacherParams}
-                display={formatCompact(modelStats.studentParams)}
+                display={formatCompact(modelStats.studentParams, lang)}
                 emphasis
                 delay={0.15}
               />
@@ -103,9 +111,18 @@ export default function Rq2Section() {
                 {modelStats.compressionFactor}×
               </span>
               <span className="text-sm leading-tight text-muted-foreground">
-                fewer parameters
-                <br />
-                than the teacher
+                {pick(
+                  <>
+                    fewer parameters
+                    <br />
+                    than the teacher
+                  </>,
+                  <>
+                    parameter lebih sedikit
+                    <br />
+                    dibandingkan <i>teacher</i>
+                  </>,
+                )}
               </span>
             </div>
           </div>
@@ -113,9 +130,11 @@ export default function Rq2Section() {
 
         {/* Latency */}
         <Reveal delay={0.08} className="lg:col-span-7">
-          <div className="flex h-full flex-col card-premium p-7 sm:p-8">
+          <div className="card-premium flex h-full flex-col p-7 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
-              <span className="eyebrow">Single-thread CPU latency</span>
+              <span className="eyebrow">
+                {t("Single-thread CPU latency", "Latensi CPU *single-thread*")}
+              </span>
               <Zap className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
             </div>
 
@@ -127,7 +146,7 @@ export default function Rq2Section() {
                   sublabel={r.precision}
                   value={r.latencyMs}
                   max={maxLatency}
-                  display={`${r.latencyMs.toFixed(2)} ms`}
+                  display={`${num(r.latencyMs, 2)} ms`}
                   emphasis={r.isSelected}
                   delay={i * 0.08}
                 />
@@ -137,24 +156,26 @@ export default function Rq2Section() {
             <div className="mt-auto grid grid-cols-2 gap-4 border-t border-border pt-7 sm:grid-cols-3">
               <div>
                 <div className="mono text-2xl font-bold">
-                  {modelStats.studentFp32LatencyMs.toFixed(2)}
+                  {num(modelStats.studentFp32LatencyMs, 2)}
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground">FP32 student, ms</div>
+                <div className="mt-1 text-[11px] text-muted-foreground">
+                  {t("FP32 student, ms", "*Student* FP32, ms")}
+                </div>
               </div>
               <div>
                 <div className="mono text-2xl font-bold">
-                  {modelStats.selectedDeploymentLatencyMs.toFixed(2)}
+                  {num(modelStats.selectedDeploymentLatencyMs, 2)}
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
-                  Selected INT8, ms
+                  {t("Selected INT8, ms", "INT8 terpilih, ms")}
                 </div>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <div className="mono text-2xl font-bold">
-                  {modelStats.selectedQwkRetentionPct}%
+                  {num(modelStats.selectedQwkRetentionPct, 1)}%
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
-                  INT8 QWK retention
+                  {t("INT8 QWK retention", "Retensi QWK INT8")}
                 </div>
               </div>
             </div>
@@ -163,18 +184,18 @@ export default function Rq2Section() {
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
           <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9 lg:col-span-2">
             <Badge tone="outline" className="border-background/30 text-background">
-              Finding
+              {t("Finding", "Temuan")}
             </Badge>
             <p className="mt-5 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
-              {rq2Verdict.headline}
+              {tr(rq2Verdict.headline)}
             </p>
           </div>
           {/* The disclaimer that stops the section reading as "INT8 is better". */}
-          <Callout tone="caution" title="What this does not say">
-            {rq2Verdict.caution}
+          <Callout tone="caution" title={t("What this does not say", "Yang tidak dinyatakan di sini")}>
+            {tr(rq2Verdict.caution)}
           </Callout>
         </div>
       </Reveal>

@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Info, AlertTriangle, ShieldAlert, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
 
 /* -------------------------------------------------------------------------- */
 /* Badge                                                                       */
@@ -37,7 +38,7 @@ export function Badge({
       )}
     >
       {Icon && <Icon className="h-3 w-3" aria-hidden="true" />}
-      {children}
+      <span>{children}</span>
     </span>
   );
 }
@@ -46,7 +47,7 @@ export function Badge({
 /* Divider                                                                     */
 /* -------------------------------------------------------------------------- */
 
-export function Divider({ className, label }: { className?: string; label?: string }) {
+export function Divider({ className, label }: { className?: string; label?: React.ReactNode }) {
   if (label) {
     return (
       <div className={cn("flex items-center gap-4", className)}>
@@ -111,7 +112,7 @@ export function SectionHeader({
   size = "md",
   index,
 }: {
-  eyebrow?: string;
+  eyebrow?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   align?: "left" | "center";
@@ -175,8 +176,8 @@ export function MetricCard({
   emphasis = false,
 }: {
   value: string;
-  label: string;
-  detail?: string;
+  label: React.ReactNode;
+  detail?: React.ReactNode;
   className?: string;
   emphasis?: boolean;
 }) {
@@ -262,7 +263,7 @@ export function Callout({
   className,
 }: {
   tone?: CalloutTone;
-  title?: string;
+  title?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -326,7 +327,8 @@ export function Skeleton({
   );
 }
 
-export function LoadingState({ label = "Loading" }: { label?: string }) {
+export function LoadingState({ label }: { label?: string }) {
+  const { ts } = useI18n();
   return (
     <div
       className="flex min-h-[60vh] flex-col items-center justify-center gap-6"
@@ -337,7 +339,7 @@ export function LoadingState({ label = "Loading" }: { label?: string }) {
         <span className="absolute inset-0 rounded-full border border-border" />
         <span className="absolute inset-0 animate-spin rounded-full border-t-2 border-foreground" />
       </div>
-      <span className="eyebrow">{label}</span>
+      <span className="eyebrow">{label ?? ts("Loading", "Memuat")}</span>
     </div>
   );
 }

@@ -1,4 +1,20 @@
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/context";
+import { drGrades, gradeText } from "@/data/drGrades";
+
+/** SVG has no <i>; `*term*` markers become italic tspans instead. */
+function svgRich(text: string) {
+  if (!text.includes("*")) return text;
+  return text.split(/\*([^*]+)\*/g).map((part, i) =>
+    i % 2 === 1 ? (
+      <tspan key={i} fontStyle="italic">
+        {part}
+      </tspan>
+    ) : (
+      part
+    ),
+  );
+}
 
 /**
  * Monochrome method diagrams.
@@ -13,12 +29,16 @@ import { cn } from "@/lib/utils";
 /* -------------------------------------------------------------------------- */
 
 export function ArchitectureDiagram({ className }: { className?: string }) {
+  const { ts, pick } = useI18n();
   return (
     <svg
       viewBox="0 0 900 300"
       className={cn("h-full w-full", className)}
       role="img"
-      aria-label="DR-VERGE architecture: macula and optic-disc views pass through a shared encoder into interaction fusion and a CORAL ordinal head"
+      aria-label={ts(
+        "DR-VERGE architecture: macula and optic-disc views pass through a shared encoder into interaction fusion and a CORAL ordinal head",
+        "Arsitektur DR-VERGE: citra makula dan diskus optik melewati shared encoder menuju interaction fusion dan head ordinal CORAL",
+      )}
     >
       <defs>
         <marker
@@ -49,8 +69,8 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
 
       {/* Inputs */}
       {[
-        { y: 56, label: "MACULA VIEW", sub: "384 x 384" },
-        { y: 164, label: "OPTIC DISC VIEW", sub: "384 x 384" },
+        { y: 56, label: pick("MACULA VIEW", "CITRA MAKULA"), sub: "384 x 384" },
+        { y: 164, label: pick("OPTIC DISC VIEW", "CITRA DISKUS OPTIK"), sub: "384 x 384" },
       ].map((b) => (
         <g key={b.label}>
           <rect
@@ -194,12 +214,18 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
 /* -------------------------------------------------------------------------- */
 
 export function ShiftDiagram({ className }: { className?: string }) {
+  const { ts, pick } = useI18n();
+  const single = pick("single view", "*single view*");
+  const averaged = pick("averaged baseline", "*baseline* rata-rata");
   return (
     <svg
       viewBox="0 0 900 340"
       className={cn("h-full w-full", className)}
       role="img"
-      aria-label="Diagram of Complementarity-Shift Distillation: the teacher's dual-view prediction minus its aggregated single-view prediction produces a shift that is transferred to the student"
+      aria-label={ts(
+        "Diagram of Complementarity-Shift Distillation: the teacher's dual-view prediction minus its aggregated single-view prediction produces a shift that is transferred to the student",
+        "Diagram Complementarity-Shift Distillation: prediksi dual-view milik teacher dikurangi agregasi prediksi single-view menghasilkan pergeseran yang ditransfer ke student",
+      )}
     >
       <defs>
         <marker
@@ -220,15 +246,23 @@ export function ShiftDiagram({ className }: { className?: string }) {
         TEACHER
       </text>
 
-      <Block x={24} y={48} w={150} h={64} title="p_macula" sub="single view" />
+      <Block x={24} y={48} w={150} h={64} title="p_macula" sub={single} />
       <Operator x={186} y={80} symbol="+" />
-      <Block x={214} y={48} w={150} h={64} title="p_disc" sub="single view" />
+      <Block x={214} y={48} w={150} h={64} title="p_disc" sub={single} />
       <Operator x={376} y={80} symbol="=" />
-      <Block x={404} y={48} w={166} h={64} title="p_agg" sub="averaged baseline" />
+      <Block x={404} y={48} w={166} h={64} title="p_agg" sub={averaged} />
 
-      <Block x={24} y={146} w={340} h={64} title="p_dual" sub="both views fused" filled />
+      <Block
+        x={24}
+        y={146}
+        w={340}
+        h={64}
+        title="p_dual"
+        sub={pick("both views fused", "kedua *view* difusikan")}
+        filled
+      />
       <Operator x={376} y={178} symbol="−" />
-      <Block x={404} y={146} w={166} h={64} title="p_agg" sub="averaged baseline" />
+      <Block x={404} y={146} w={166} h={64} title="p_agg" sub={averaged} />
 
       {/* Δ, the quantity the whole method is about */}
       <g stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" fill="none" markerEnd="url(#shift-arrow)">
@@ -253,7 +287,7 @@ export function ShiftDiagram({ className }: { className?: string }) {
         </tspan>
       </text>
       <text className="mono" x="765" y="196" textAnchor="middle" fontSize="10" fill="currentColor" fillOpacity="0.6">
-        complementarity shift
+        {svgRich(pick("complementarity shift", "*complementarity shift*"))}
       </text>
 
       {/* --- transfer --- */}
@@ -303,10 +337,17 @@ export function ShiftDiagram({ className }: { className?: string }) {
         fillOpacity="0.7"
         style={{ mixBlendMode: "difference" }}
       >
-        student reproduces the shift
+        {svgRich(pick("student reproduces the shift", "*student* mereproduksi pergeseran"))}
       </text>
 
-      <Block x={24} y={266} w={340} h={60} title="~328K parameters" sub="lightweight dual-view student" />
+      <Block
+        x={24}
+        y={266}
+        w={340}
+        h={60}
+        title={pick("~328K parameters", "~328K parameter")}
+        sub={pick("lightweight dual-view student", "*lightweight dual-view student*")}
+      />
     </svg>
   );
 }
@@ -362,7 +403,7 @@ function Block({
           fill="currentColor"
           fillOpacity="0.5"
         >
-          {sub}
+          {svgRich(sub)}
         </text>
       )}
     </g>
@@ -405,20 +446,16 @@ export function OrdinalScale({
   className?: string;
   compact?: boolean;
 }) {
-  const grades = [
-    { g: 0, label: "No DR" },
-    { g: 1, label: "Mild" },
-    { g: 2, label: "Moderate" },
-    { g: 3, label: "Severe" },
-    { g: 4, label: "Proliferative" },
-  ];
+  const { lang } = useI18n();
+  const grades = drGrades.map((g) => ({ g: g.grade, label: gradeText(g, lang).shortName }));
 
   return (
     <div className={cn("w-full", className)}>
       <div className="relative">
-        {/* Track */}
+        {/* Track — from the first dot's centre to the last one's (10% / 90%
+            of five equal columns), so it never sticks out past the scale. */}
         <div
-          className="absolute left-0 right-0 top-[15px] h-px bg-border"
+          className="absolute left-[10%] right-[10%] top-[15px] h-px bg-border"
           aria-hidden="true"
         />
         <ol className="relative flex justify-between">

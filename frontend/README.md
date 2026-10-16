@@ -111,6 +111,32 @@ that malformed bodies produce a readable message rather than a crash.
 
 ---
 
+## Two languages — Bahasa Indonesia and English
+
+The whole site exists in **Bahasa Indonesia (default)** and **English**, switched with the
+`ID | EN` control in the navbar. The choice is remembered (`localStorage: dr-verge-lang`),
+applied before first paint, and reflected in `<html lang>` for screen readers.
+
+- **Copy is written side by side**, so the two versions cannot drift apart in meaning:
+  inline in components as `t("English", "Indonesia")`, or as `l("English", "Indonesia")`
+  pairs in `src/data/`. The toolkit lives in `src/i18n/context.ts` (`useI18n()`).
+- **English technical terms kept in Indonesian text are italicised**, as in the paper:
+  write them as `*teacher*`, `*deployment*`, `*grading*`… and they render as `<i>`.
+  Abbreviations and proper names (QWK, CSD, INT8, DRTiD, ResNet-50) stay upright.
+- **Numbers follow the language**: `0.7364` / `10,000` in English, `0,7364` / `10.000` in
+  Indonesian, and confidence intervals as `95% CI [a, b]` / `IK 95% [a; b]` (the `;`
+  avoids clashing with the decimal comma).
+- The Indonesian abstract is the paper's own Intisari; grade names follow common
+  clinical Indonesian (Tanpa DR, NPDR Ringan/Sedang/Berat, DR Proliferatif).
+- Services (`inferenceApi`, `onnxModel`, `fileValidation`) stay in English because the
+  verification scripts test their messages; the UI maps them to Indonesian by message or
+  error code.
+
+Switching language cross-fades the page (View Transitions API) without resetting state —
+a demo result stays on screen. Switching theme reveals the new theme as a circle growing
+from the toggle; browsers without View Transitions get a colour cross-fade, and
+`prefers-reduced-motion` switches instantly.
+
 ## Structure
 
 ```
@@ -126,6 +152,7 @@ src/
 ├── data/            researchMetrics · drGrades · team · researchContent
 ├── services/        inferenceApi (routing + contract) · onnxModel (in-browser inference)
 ├── hooks/           useInference · useSamples · useScrollSpy
+├── i18n/            context (useI18n, l, rich, number formats) · LanguageProvider
 ├── utils/           fileValidation · formatting
 └── config/          siteConfig
 ```
@@ -153,6 +180,11 @@ colourful Tailwind utility (`bg-red-500`, `text-blue-600`, …) appears anywhere
 | Muted text | `#737373` | `#A3A3A3` |
 
 Light and dark are exact inversions, so a component written once reads correctly in both.
+Text greys are tuned for contrast (muted ≈ 6:1, subtle ≈ 4.6:1 on white).
+
+**One deliberate exception:** the official **SDG 3 icon** (`Sdg3Logo`) is shown in its
+official green `#4C9F38`, because that colour is how the goal is recognised. It is drawn
+inline as SVG and its title follows the language ("Kehidupan Sehat dan Sejahtera").
 Emphasis is carried by **fill and weight**, never by hue — charts distinguish the proposed
 method from baselines with fill opacity, and the "medical" callout uses a heavier left
 rule rather than a red box. Theme is applied before first paint by an inline script, so
