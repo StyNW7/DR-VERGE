@@ -21,9 +21,10 @@ function Avatar({ member }: { member: TeamMember }) {
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
-          // Grayscale by default, colour on hover: keeps the page monochrome
-          // while still letting a real photo be seen properly.
-          className="h-full w-full object-cover grayscale transition-all duration-500 ease-editorial group-hover:grayscale-0 group-hover:scale-[1.03]"
+          // Monochrome: grayscale, colour on hover, so the page stays
+          // monochrome while a real photo can still be seen properly.
+          // Colourful: always in colour.
+          className="h-full w-full object-cover grayscale transition-all duration-500 ease-editorial group-hover:grayscale-0 group-hover:scale-[1.03] colorful:grayscale-0"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
@@ -48,7 +49,7 @@ function MemberCard({ member }: { member: TeamMember }) {
     <div
       className={cn(
         "group flex h-full flex-col card-premium p-5 transition-colors duration-300",
-        member.placeholder ? "border-dashed" : "hover:border-foreground/40",
+        member.placeholder ? "border-dashed" : "hover:border-foreground/40 colorful:card-lift",
       )}
     >
       <Avatar member={member} />
@@ -62,7 +63,7 @@ function MemberCard({ member }: { member: TeamMember }) {
         >
           {member.name}
         </h3>
-        <p className="mt-1.5 text-[13px] leading-snug text-muted-foreground">
+        <p className="mt-1.5 text-[13px] leading-snug text-muted-foreground colorful:font-medium colorful:text-brand">
           {tr(member.role)}
         </p>
         <p className="mt-1 text-[11px] text-subtle">{member.institution}</p>
@@ -81,7 +82,7 @@ function MemberCard({ member }: { member: TeamMember }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={ts(`${member.name} on LinkedIn`, `${member.name} di LinkedIn`)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground colorful:hover:border-brand colorful:hover:bg-brand-soft colorful:hover:text-brand"
                 >
                   <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
                 </a>
@@ -92,7 +93,7 @@ function MemberCard({ member }: { member: TeamMember }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={ts(`${member.name} on GitHub`, `${member.name} di GitHub`)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground colorful:hover:border-brand colorful:hover:bg-brand-soft colorful:hover:text-brand"
                 >
                   <Github className="h-3.5 w-3.5" aria-hidden="true" />
                 </a>

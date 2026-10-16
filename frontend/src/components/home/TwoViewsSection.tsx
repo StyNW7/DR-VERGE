@@ -20,10 +20,16 @@ interface ViewInfo {
 function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc" }) {
   const { tr } = useI18n();
   return (
-    <div className="group card-premium card-lift flex h-full flex-col p-6 sm:p-8">
+    <div
+      className={
+        "group card-premium card-lift flex h-full flex-col p-6 sm:p-8 colorful:border-t-[3px] colorful:border-t-acc-solid " +
+        // Macula is coral and optic disc amber everywhere on the site.
+        (variant === "macula" ? "accent-coral" : "accent-amber")
+      }
+    >
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <span className="mono text-[11px] tracking-[0.16em] text-subtle">
+          <span className="mono text-[11px] tracking-[0.16em] text-subtle colorful:inline-flex colorful:rounded-full colorful:bg-acc-soft colorful:px-2.5 colorful:py-0.5 colorful:font-semibold colorful:text-acc">
             {view.number}
           </span>
           <h3 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">
@@ -32,7 +38,7 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
         </div>
       </div>
 
-      <div className="mb-6 aspect-square w-full max-w-[260px] self-center text-foreground">
+      <div className="mb-6 aspect-square w-full max-w-[260px] self-center text-foreground colorful:text-acc-solid">
         <FundusIllustration variant={variant} showLabels />
       </div>
 
@@ -41,7 +47,7 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
       <ul className="mt-6 flex flex-col gap-2.5 border-t border-border pt-5">
         {view.captures.map((c) => (
           <li key={c.en} className="flex items-center gap-2.5 text-[13px] text-foreground">
-            <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-acc" aria-hidden="true" />
             {tr(c)}
           </li>
         ))}
@@ -107,7 +113,7 @@ export default function TwoViewsSection() {
 
       {/* Visual equation */}
       <Reveal delay={0.14}>
-        <div className="mt-6 grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-10">
+        <div className="mt-6 grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-10">
           <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
             {t("The evidence path", "Alur bukti")}
           </span>
@@ -132,8 +138,8 @@ function EquationTerm({ label, emphasis = false }: { label: React.ReactNode; emp
       className={
         "flex flex-1 items-center justify-center rounded-xl border px-4 py-4 text-center text-[13px] font-medium leading-tight sm:text-sm " +
         (emphasis
-          ? "border-background bg-background text-foreground"
-          : "border-background/25 text-background")
+          ? "border-background bg-background text-foreground colorful:font-bold colorful:shadow-lg"
+          : "border-background/25 text-background colorful:bg-white/10 colorful:backdrop-blur")
       }
     >
       {label}

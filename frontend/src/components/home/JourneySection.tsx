@@ -17,6 +17,8 @@ interface Step {
   section?: string;
   to?: string;
   primary?: boolean;
+  /** Accent in the colourful palette. */
+  accent: string;
 }
 
 const steps: Step[] = [
@@ -31,6 +33,7 @@ const steps: Step[] = [
     time: l("≈ 5 min read", "≈ 5 menit baca"),
     cta: l("Start the story", "Mulai membaca"),
     section: "problem",
+    accent: "accent-coral",
   },
   {
     number: "02",
@@ -44,6 +47,7 @@ const steps: Step[] = [
     cta: l("Open the demo", "Buka demo"),
     to: "/demo",
     primary: true,
+    accent: "accent-blue",
   },
   {
     number: "03",
@@ -56,6 +60,7 @@ const steps: Step[] = [
     time: l("Full detail", "Detail lengkap"),
     cta: l("Read the research", "Baca penelitiannya"),
     to: "/research",
+    accent: "accent-amber",
   },
 ];
 
@@ -70,7 +75,7 @@ function StepCard({ step }: { step: Step }) {
             "flex h-11 w-11 items-center justify-center rounded-xl border",
             step.primary
               ? "border-background/20 bg-background/10"
-              : "border-border bg-surface",
+              : "border-border bg-surface colorful:border-acc-line colorful:bg-acc-soft colorful:text-acc",
           )}
         >
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -78,7 +83,7 @@ function StepCard({ step }: { step: Step }) {
         <span
           className={cn(
             "mono text-[11px] tracking-[0.16em]",
-            step.primary ? "text-background/50" : "text-subtle",
+            step.primary ? "text-background/50" : "text-subtle colorful:font-semibold colorful:text-acc",
           )}
         >
           {step.number}
@@ -109,7 +114,12 @@ function StepCard({ step }: { step: Step }) {
         >
           {tr(step.time)}
         </span>
-        <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold">
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 text-[13px] font-semibold",
+            !step.primary && "colorful:text-acc",
+          )}
+        >
           {tr(step.cta)}
           {step.section ? (
             <ArrowDown className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden="true" />
@@ -123,9 +133,10 @@ function StepCard({ step }: { step: Step }) {
 
   const cls = cn(
     "group flex h-full min-h-[280px] flex-col rounded-2xl p-7 text-left sm:p-8",
+    step.accent,
     step.primary
-      ? "grain relative overflow-hidden bg-foreground text-background shadow-xl transition-transform duration-300 ease-editorial hover:-translate-y-0.5"
-      : "card-premium card-lift",
+      ? "grain inverse relative overflow-hidden shadow-xl transition-transform duration-300 ease-editorial hover:-translate-y-0.5"
+      : "card-premium card-lift colorful:border-t-[3px] colorful:border-t-acc-solid",
   );
 
   if (step.to) {

@@ -7,9 +7,9 @@ import { useI18n } from "@/i18n/context";
 /**
  * SDG 3 section.
  *
- * The section itself stays on the site's inverted monochrome ground; the
- * official SDG 3 icon is the only coloured element, shown at its true colour
- * because that colour is part of how the goal is recognised.
+ * Monochrome: the site's inverted ground, with the official SDG 3 icon as the
+ * only coloured element (its colour is part of how the goal is recognised).
+ * Colourful: a deep navy-to-blue ground (`inverse-deep`).
  */
 export default function SdgSection() {
   const { t, tr } = useI18n();
@@ -46,7 +46,7 @@ export default function SdgSection() {
 
             <div className="mt-10 grid gap-px overflow-hidden rounded-2xl bg-background/20 sm:grid-cols-2">
               {sdgContent.points.map((p) => (
-                <div key={p.title.en} className="bg-foreground p-6">
+                <div key={p.title.en} className="bg-foreground p-6 colorful:bg-[hsl(222_62%_19%/0.92)]">
                   <h3 className="text-sm font-bold">{tr(p.title)}</h3>
                   <p className="mt-2 text-[13px] leading-relaxed opacity-65">{tr(p.body)}</p>
                 </div>
@@ -54,8 +54,8 @@ export default function SdgSection() {
             </div>
 
             {/* Inverted callout — the section runs on the dark ground. */}
-            <div className="mt-8 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5">
-              <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em]">
+            <div className="mt-8 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5 colorful:border-l-amber-solid colorful:bg-white/[0.04]">
+              <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
                 {t("Scope of this claim", "Cakupan klaim ini")}
               </div>
               <p className="text-[13px] leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>

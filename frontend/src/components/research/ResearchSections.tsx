@@ -176,7 +176,7 @@ export function ResearchQuestionsSection() {
           <Reveal key={rq.id} delay={i * 0.08}>
             <div className="card-premium flex h-full flex-col p-7 sm:p-9">
               <div className="flex items-baseline justify-between gap-4">
-                <span className="display text-5xl sm:text-6xl">{rq.label}</span>
+                <span className="display text-5xl sm:text-6xl colorful:text-brand-gradient">{rq.label}</span>
                 <span className="mono text-right text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                   {tr(rq.topic)}
                 </span>
@@ -241,7 +241,7 @@ export function ResearchGapSection() {
           <span className="eyebrow">{t("Existing approaches", "Pendekatan yang sudah ada")}</span>
           <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
             {researchGap.existing.map((e) => (
-              <div key={e.title.en} className="bg-card p-5">
+              <div key={e.title.en} className="bg-card p-5 colorful:hover:bg-brand-soft/60">
                 <h3 className="text-[13px] font-bold">{tr(e.title)}</h3>
                 <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
                   {tr(e.body)}
@@ -252,7 +252,7 @@ export function ResearchGapSection() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="grain relative flex h-full flex-col overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-8">
+          <div className="grain inverse relative flex h-full flex-col overflow-hidden rounded-2xl p-7 sm:p-8">
             <Quote className="h-5 w-5 opacity-40" aria-hidden="true" />
             <p className="mt-6 text-xl font-semibold leading-snug tracking-tight">
               {tr(researchGap.question)}
@@ -475,7 +475,7 @@ export function Rq1ResultsSection() {
 
         {/* RIGHT: predictive QWK */}
         <Reveal delay={0.08}>
-          <div className="flex h-full flex-col rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-8">
+          <div className="flex h-full flex-col rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-8 colorful:border-amber-solid/60 colorful:bg-amber-soft/40">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h3 className="text-lg font-bold tracking-tight">
                 {t("Predictive QWK", "QWK Prediktif")}
@@ -494,7 +494,7 @@ export function Rq1ResultsSection() {
                 <div key={c.pair.en} className="flex flex-col gap-1 bg-card px-5 py-4">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-[13px] font-medium">{tr(c.pair)}</span>
-                    <span className="mono whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                    <span className="mono whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-amber">
                       {tr(c.outcome)}
                     </span>
                   </div>
@@ -650,11 +650,13 @@ function StatBlock({
       className={
         "flex flex-col justify-center rounded-2xl border p-6 " +
         (emphasis
-          ? "grain relative overflow-hidden border-foreground bg-foreground text-background"
+          ? "grain inverse relative overflow-hidden border-transparent"
           : "card-premium")
       }
     >
-      <div className="mono text-2xl font-bold tracking-tight">{value}</div>
+      <div className={"mono text-2xl font-bold tracking-tight " + (emphasis ? "" : "colorful:text-brand")}>
+        {value}
+      </div>
       <div className="mt-3 text-[13px] font-medium">{label}</div>
       <div
         className={
@@ -726,7 +728,7 @@ export function ExternalValidationSection() {
                   key={r.model.en}
                   className={
                     "flex items-center justify-between gap-4 px-5 py-3.5 " +
-                    (r.isSelected ? "bg-foreground text-background" : "bg-card")
+                    (r.isSelected ? "inverse" : "bg-card")
                   }
                 >
                   <span className="text-[13px] font-medium">{tr(r.model)}</span>
@@ -853,13 +855,13 @@ export function LimitationsSection() {
                   : "")
               }
             >
-              <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground">
+              <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div>
                 <h3 className="flex items-start gap-2 text-[14px] font-bold leading-tight">
                   <AlertTriangle
-                    className="mt-px h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                    className="mt-px h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-amber"
                     aria-hidden="true"
                   />
                   <span>{tr(lim.title)}</span>
@@ -907,7 +909,7 @@ export function SdgImpactSection() {
             {pillars.map((p) => (
               <span
                 key={p.en}
-                className="mono rounded-full border border-background/30 px-4 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+                className="mono rounded-full border border-background/30 px-4 py-1.5 text-[10px] uppercase tracking-[0.14em] colorful:bg-white/10 colorful:font-semibold"
               >
                 {tr(p)}
               </span>
@@ -915,8 +917,8 @@ export function SdgImpactSection() {
           </div>
 
           {/* "Potential contribution", never "proven impact". */}
-          <div className="mt-9 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5">
-            <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em]">
+          <div className="mt-9 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5 colorful:border-l-amber-solid colorful:bg-white/[0.04]">
+            <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
               {t(
                 "Potential contribution, not proven impact",
                 "Potensi kontribusi, bukan dampak yang telah terbukti",
@@ -966,7 +968,7 @@ export function ReadingOrder() {
   return (
     <div className="no-print sticky top-[4.25rem] z-30 sm:top-[4.75rem]">
       <div className="mx-auto max-w-[1200px] px-3 sm:px-6 lg:px-8">
-        <div className="glass flex items-center gap-3 rounded-full border border-border py-1.5 pl-4 pr-1.5 shadow-[0_10px_30px_-18px_hsl(var(--shadow-color)/0.4)]">
+        <div className="glass flex items-center gap-3 rounded-full border border-border py-1.5 pl-4 pr-1.5 shadow-[0_10px_30px_-18px_hsl(var(--shadow-color)/0.4)] colorful:border-brand-line">
           <span className="mono hidden shrink-0 text-[10px] uppercase tracking-[0.16em] text-subtle sm:block">
             {activeIndex >= 0
               ? `${String(activeIndex + 1).padStart(2, "0")} / ${String(tocSteps.length).padStart(2, "0")}`
@@ -989,13 +991,15 @@ export function ReadingOrder() {
                   aria-current={isActive ? "true" : undefined}
                   className={
                     "relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors " +
-                    (isActive ? "text-background" : "text-muted-foreground hover:text-foreground")
+                    (isActive
+                      ? "text-background colorful:text-white"
+                      : "text-muted-foreground hover:text-foreground colorful:hover:text-brand")
                   }
                 >
                   {isActive && (
                     <motion.span
                       layoutId="research-toc-pill"
-                      className="absolute inset-0 rounded-full bg-foreground"
+                      className="brand-fill absolute inset-0 rounded-full"
                       transition={{ type: "spring", stiffness: 420, damping: 34 }}
                       aria-hidden="true"
                     />

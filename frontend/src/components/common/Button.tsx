@@ -14,14 +14,20 @@ const base =
   "focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40";
 
 const variants: Record<Variant, string> = {
-  // Inverted fill: black on light, white on dark. The core monochrome CTA.
+  // Monochrome: inverted fill, black on light and white on dark.
+  // Colourful: the brand gradient, lifted by a soft blue glow on hover.
   primary:
-    "bg-foreground text-background hover:opacity-85 active:scale-[0.98] shadow-sm",
+    "brand-fill hover:opacity-85 active:scale-[0.98] shadow-sm " +
+    "colorful:shadow-[0_8px_22px_-10px_hsl(var(--brand-to)/0.75)] colorful:hover:opacity-100 " +
+    "colorful:hover:-translate-y-px colorful:hover:shadow-[0_14px_30px_-12px_hsl(var(--brand-to)/0.85)]",
   secondary:
-    "bg-surface-2 text-foreground border border-border hover:border-foreground/40 hover:bg-muted active:scale-[0.98]",
+    "bg-surface-2 text-foreground border border-border hover:border-foreground/40 hover:bg-muted active:scale-[0.98] " +
+    "colorful:hover:border-brand-line colorful:hover:bg-brand-soft",
   outline:
-    "border border-border text-foreground hover:border-foreground hover:bg-muted active:scale-[0.98]",
-  ghost: "text-muted-foreground hover:text-foreground hover:bg-muted",
+    "border border-border text-foreground hover:border-foreground hover:bg-muted active:scale-[0.98] " +
+    "colorful:border-brand-line colorful:bg-card/70 colorful:text-brand colorful:hover:border-brand colorful:hover:bg-brand-soft",
+  ghost:
+    "text-muted-foreground hover:text-foreground hover:bg-muted colorful:hover:bg-brand-soft colorful:hover:text-brand",
 };
 
 const sizes: Record<Size, string> = {

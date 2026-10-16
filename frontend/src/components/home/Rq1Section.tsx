@@ -63,7 +63,7 @@ function MechanismPanel({ metricKey }: { metricKey: MechanismMetricKey }) {
       />
 
       {csdIsBest && (
-        <div className="mono mt-auto border-t border-border pt-4 text-[10px] uppercase tracking-[0.14em] text-foreground">
+        <div className="mono mt-auto border-t border-border pt-4 text-[10px] uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
           {t("CSD best on this metric", "CSD terbaik pada metrik ini")}
         </div>
       )}
@@ -106,7 +106,7 @@ export default function Rq1Section() {
       <Reveal delay={0.1}>
         <div className="mt-5 card-premium flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
           <div className="flex shrink-0 items-baseline gap-2">
-            <span className="mono text-3xl font-bold tracking-tight">
+            <span className="mono text-3xl font-bold tracking-tight colorful:text-brand-gradient">
               {mechanismReplication.wins}/{mechanismReplication.measurements}
             </span>
             <span className="mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -123,7 +123,7 @@ export default function Rq1Section() {
           presenting only the first half would misrepresent the result. */}
       <Reveal delay={0.1}>
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9">
+          <div className="grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-9">
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
               {t("The mechanism finding", "Temuan mekanisme")}
             </span>
@@ -132,8 +132,8 @@ export default function Rq1Section() {
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-9">
-            <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <div className="rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-9 colorful:border-amber-solid/60 colorful:bg-amber-soft/50">
+            <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground colorful:font-semibold colorful:text-amber">
               {t("The predictive finding", "Temuan prediktif")}
             </span>
             <p className="mt-4 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
@@ -145,7 +145,7 @@ export default function Rq1Section() {
                 <div key={c.pair.en} className="flex flex-col gap-1">
                   <div className="flex items-center justify-between gap-3 text-[13px]">
                     <span className="text-muted-foreground">{tr(c.pair)}</span>
-                    <span className="mono inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-foreground">
+                    <span className="mono inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-foreground colorful:font-semibold colorful:text-amber">
                       <Minus className="h-3 w-3" aria-hidden="true" />
                       {tr(c.outcome)}
                     </span>
@@ -169,8 +169,8 @@ export default function Rq1Section() {
       {/* Neither half is the finding on its own — this line is what they mean
           together, and it is the sentence the paper leads with. */}
       <Reveal delay={0.12}>
-        <div className="mt-5 rounded-2xl border border-border bg-card/60 p-7 sm:p-9">
-          <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <div className="mt-5 rounded-2xl border border-border bg-card/60 p-7 sm:p-9 colorful:border-brand-line colorful:bg-card colorful:border-l-4 colorful:border-l-brand">
+          <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground colorful:font-semibold colorful:text-brand">
             {t("What the two findings mean together", "Makna kedua temuan bila dilihat bersama")}
           </span>
           <p className="mt-4 max-w-4xl text-[15px] leading-relaxed text-foreground">

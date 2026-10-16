@@ -11,7 +11,7 @@ export default function CtaSection() {
   return (
     <Section id="cta" className="overflow-hidden">
       <Reveal>
-        <div className="grain relative overflow-hidden rounded-[32px] bg-foreground text-background shadow-2xl">
+        <div className="grain inverse relative overflow-hidden rounded-[32px] shadow-2xl">
           {/* Inverted grid paper, faded towards the copy. */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,hsl(var(--background))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--background))_1px,transparent_1px)] [background-size:56px_56px] fade-mask-radial"
@@ -47,7 +47,7 @@ export default function CtaSection() {
                 <LinkButton
                   to="/demo"
                   size="lg"
-                  className="group bg-background text-foreground hover:opacity-90"
+                  className="group bg-background bg-none text-foreground hover:opacity-90 colorful:shadow-[0_12px_28px_-12px_hsl(222_80%_15%/0.6)]"
                 >
                   <Upload className="h-4 w-4" aria-hidden="true" />
                   {t("Open Model Demo", "Buka Demo Model")}
@@ -60,7 +60,7 @@ export default function CtaSection() {
                   to="/research"
                   size="lg"
                   variant="ghost"
-                  className="border border-background/25 text-background hover:bg-background/10 hover:text-background"
+                  className="border border-background/25 text-background hover:bg-background/10 hover:text-background colorful:hover:bg-white/10 colorful:hover:text-white"
                 >
                   {t("Read the Research", "Baca Penelitian")}
                 </LinkButton>
@@ -92,7 +92,7 @@ export default function CtaSection() {
                       alt=""
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full scale-105 object-cover grayscale contrast-125"
+                      className="h-full w-full scale-105 object-cover grayscale contrast-125 colorful:grayscale-0 colorful:contrast-100"
                     />
                   </div>
                 ))}

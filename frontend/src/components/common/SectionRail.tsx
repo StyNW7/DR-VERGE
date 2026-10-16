@@ -44,7 +44,7 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
                   className={cn(
                     "mono whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] transition-all duration-300",
                     isActive
-                      ? "glass translate-x-1 border border-border text-foreground opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 2xl:translate-x-0 2xl:opacity-100"
+                      ? "glass translate-x-1 border border-border text-foreground colorful:border-brand-line colorful:text-brand opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 2xl:translate-x-0 2xl:opacity-100"
                       : "translate-x-1 text-muted-foreground opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-hover/rail:opacity-60",
                   )}
                 >
@@ -54,7 +54,9 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
                 <motion.span
                   className={cn(
                     "block h-[2px] rounded-full",
-                    isActive ? "bg-foreground" : "bg-foreground/25 group-hover:bg-foreground/60",
+                    isActive
+                      ? "brand-fill"
+                      : "bg-foreground/25 group-hover:bg-foreground/60 colorful:bg-brand/30 colorful:group-hover:bg-brand/70",
                   )}
                   animate={{ width: isActive ? 28 : 12 }}
                   transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -75,7 +77,7 @@ export function ReadingProgress() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.3 });
   return (
     <motion.div
-      className="no-print fixed inset-x-0 top-0 z-[55] h-[2px] origin-left bg-foreground"
+      className="no-print fixed inset-x-0 top-0 z-[55] h-[2px] origin-left bg-foreground colorful:h-[3px] colorful:bg-[linear-gradient(90deg,hsl(var(--brand-glow)),hsl(var(--brand-to)),hsl(var(--coral-solid)))]"
       style={{ scaleX }}
       aria-hidden="true"
     />

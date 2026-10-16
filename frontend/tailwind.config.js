@@ -48,6 +48,43 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Semantic accents. Grey in the monochrome palette, hued in colourful.
+        brand: {
+          DEFAULT: "hsl(var(--brand) / <alpha-value>)",
+          from: "hsl(var(--brand-from) / <alpha-value>)",
+          to: "hsl(var(--brand-to) / <alpha-value>)",
+          glow: "hsl(var(--brand-glow) / <alpha-value>)",
+          foreground: "hsl(var(--brand-foreground) / <alpha-value>)",
+          soft: "hsl(var(--brand-soft) / <alpha-value>)",
+          line: "hsl(var(--brand-line) / <alpha-value>)",
+        },
+        coral: {
+          DEFAULT: "hsl(var(--coral) / <alpha-value>)",
+          solid: "hsl(var(--coral-solid) / <alpha-value>)",
+          soft: "hsl(var(--coral-soft) / <alpha-value>)",
+          line: "hsl(var(--coral-line) / <alpha-value>)",
+        },
+        amber: {
+          DEFAULT: "hsl(var(--amber) / <alpha-value>)",
+          solid: "hsl(var(--amber-solid) / <alpha-value>)",
+          soft: "hsl(var(--amber-soft) / <alpha-value>)",
+          line: "hsl(var(--amber-line) / <alpha-value>)",
+        },
+        // The accent chosen by an `.accent-*` parent.
+        acc: {
+          DEFAULT: "hsl(var(--acc) / <alpha-value>)",
+          solid: "hsl(var(--acc-solid) / <alpha-value>)",
+          fg: "hsl(var(--acc-fg) / <alpha-value>)",
+          soft: "hsl(var(--acc-soft) / <alpha-value>)",
+          line: "hsl(var(--acc-line) / <alpha-value>)",
+        },
+        grade: {
+          0: "hsl(var(--grade-0) / <alpha-value>)",
+          1: "hsl(var(--grade-1) / <alpha-value>)",
+          2: "hsl(var(--grade-2) / <alpha-value>)",
+          3: "hsl(var(--grade-3) / <alpha-value>)",
+          4: "hsl(var(--grade-4) / <alpha-value>)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -114,5 +151,16 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // `colorful:` applies a class only in the colourful palette (html.colorful),
+    // so a component can add hue without changing its monochrome look at all.
+    // `.colorful` and `.dark` sit on the same element, so the combined case has
+    // its own variant (`colorful:dark:` would look for one inside the other).
+    function ({ addVariant }) {
+      addVariant("colorful", ".colorful &");
+      addVariant("colorful-dark", ".colorful.dark &");
+      addVariant("mono", "html:not(.colorful) &");
+    },
+  ],
 };

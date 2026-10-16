@@ -12,6 +12,7 @@ import { OrdinalScale } from "@/components/common/Diagrams";
 import { Callout, ScoreBar, Badge } from "@/components/common/Primitives";
 import { clamp01, formatMs, formatScore, formatTimestamp } from "@/utils/formatting";
 import { useI18n } from "@/i18n/context";
+import { gradeTone } from "@/lib/gradeTone";
 
 /** The grade name in the reader's language, falling back to the API's own name. */
 function useGradeName(result: InferenceResult): string {
@@ -34,7 +35,19 @@ export function OutputHero({ result }: { result: InferenceResult }) {
     <div className="print-block card-premium overflow-hidden">
       <div className="grid gap-px bg-border md:grid-cols-5">
         {/* The grade itself */}
-        <div className="grain relative flex flex-col justify-between bg-foreground p-8 text-background md:col-span-2 sm:p-10">
+        <div
+          className={cn(
+            "grain inverse relative flex flex-col justify-between p-8 md:col-span-2 sm:p-10",
+          )}
+        >
+          {/* Colourful palette: a severity-coloured band names the grade at a glance. */}
+          <span
+            className={cn(
+              "absolute inset-x-0 top-0 hidden h-1.5 colorful:block",
+              gradeTone(result.grade).dot,
+            )}
+            aria-hidden="true"
+          />
           <div>
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
               {t("Predicted DR Grade", "Prediksi *Grade* DR")}
@@ -128,7 +141,7 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
                 </div>
                 <div className="flex items-center gap-2.5">
                   {passed && (
-                    <span className="mono rounded-full bg-foreground px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-background">
+                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-[9px] uppercase tracking-[0.14em]">
                       {t("passed", "terlampaui")}
                     </span>
                   )}
@@ -179,6 +192,10 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
               <div className="mb-2 flex items-baseline justify-between gap-4">
                 <div className="flex items-baseline gap-3">
                   <span
+                    className={cn("hidden h-2.5 w-2.5 self-center rounded-full colorful:block", gradeTone(g).dot)}
+                    aria-hidden="true"
+                  />
+                  <span
                     className={cn(
                       "mono text-sm",
                       isPredicted ? "font-bold text-foreground" : "text-muted-foreground",
@@ -190,7 +207,7 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
                     {info ? gradeText(info, lang).name : ""}
                   </span>
                   {isPredicted && (
-                    <span className="mono rounded-full bg-foreground px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-background">
+                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-[9px] uppercase tracking-[0.14em]">
                       {t("predicted", "prediksi")}
                     </span>
                   )}
@@ -239,7 +256,7 @@ export function DualViewSummary({
         {rows.map((r, i) => (
           <li key={i} className="flex items-center justify-between gap-4 bg-card px-4 py-3.5">
             <span className="flex items-center gap-3 text-[13px] font-medium">
-              <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-brand" aria-hidden="true" />
               {r.label}
             </span>
             <span className="truncate text-[12px] text-muted-foreground">{r.value}</span>
@@ -290,7 +307,7 @@ export function ModelInformation({ result }: { result: InferenceResult }) {
       <dl className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
         {rows.map((r, i) => (
           <div key={i} className="bg-card px-4 py-3.5">
-            <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">{r.label}</dt>
+            <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle colorful:text-brand">{r.label}</dt>
             <dd className="mt-1 truncate text-[13px] font-medium">{r.value}</dd>
           </div>
         ))}
@@ -320,7 +337,9 @@ export function ResultInterpretation({ result }: { result: InferenceResult }) {
     <SectionCard title={t("Result Interpretation", "Interpretasi Hasil")} icon={Info}>
       <div className="flex flex-col gap-4">
         <div>
-          <Badge tone="solid">{copy.name}</Badge>
+          <Badge tone="solid" className={gradeTone(grade.grade).fill}>
+            {copy.name}
+          </Badge>
           <p className="mt-4 text-[14px] leading-relaxed text-foreground">{copy.description}</p>
           <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{copy.detail}</p>
         </div>
@@ -356,8 +375,8 @@ function SectionCard({
   return (
     <section className="print-block card-premium p-6 sm:p-8">
       <div className="mb-6 flex items-start gap-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface">
-          <Icon className="h-4 w-4 text-foreground/70" aria-hidden="true" />
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface colorful:border-brand-line colorful:bg-brand-soft">
+          <Icon className="h-4 w-4 text-foreground/70 colorful:text-brand" aria-hidden="true" />
         </span>
         <div>
           <h3 className="pt-1 text-base font-bold tracking-tight">{title}</h3>

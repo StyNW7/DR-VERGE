@@ -446,7 +446,7 @@ export default function DemoPage() {
           <div
             className={cn(
               "glass flex flex-col items-stretch gap-4 rounded-2xl border p-3 shadow-[0_18px_50px_-20px_hsl(var(--shadow-color)/0.45)] transition-colors duration-300 sm:flex-row sm:items-center sm:justify-between sm:p-3 sm:pl-5",
-              bothReady ? "border-foreground/30" : "border-border",
+              bothReady ? "border-foreground/30 colorful:border-brand" : "border-border",
             )}
           >
             <div className="flex items-center gap-3">
@@ -457,7 +457,7 @@ export default function DemoPage() {
                     key={i}
                     className={cn(
                       "h-1.5 w-6 rounded-full transition-colors duration-300",
-                      i < readyCount ? "bg-foreground" : "bg-foreground/15",
+                      i < readyCount ? "brand-fill" : "bg-foreground/15 colorful:bg-brand/15",
                     )}
                   />
                 ))}

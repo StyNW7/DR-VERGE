@@ -78,13 +78,21 @@ export function UploadDropzone({
       {/* Slot header */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="mono flex h-6 w-6 items-center justify-center rounded-full border border-border text-[10px] text-foreground">{index}</span>
-          <span className="mono text-[11px] uppercase tracking-[0.14em] text-foreground">
+          <span
+            className={cn(
+              "mono flex h-6 w-6 items-center justify-center rounded-full border border-border text-[10px] text-foreground",
+              "colorful:border-transparent colorful:bg-acc-solid colorful:font-semibold colorful:text-acc-fg",
+              variant === "macula" ? "accent-coral" : "accent-amber",
+            )}
+          >
+            {index}
+          </span>
+          <span className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
             {label}
           </span>
         </div>
         {value && (
-          <span className="mono inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <span className="mono inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-brand">
             <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
             {t("Received", "Diterima")}
           </span>
@@ -184,19 +192,25 @@ export function UploadDropzone({
             "group relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed p-6 text-center transition-all duration-300 ease-editorial",
             "disabled:cursor-not-allowed disabled:opacity-50",
             dragging
-              ? "border-foreground bg-muted scale-[0.99]"
+              ? "border-foreground bg-muted scale-[0.99] colorful:border-brand colorful:bg-brand-soft"
               : error
-                ? "border-foreground/60 bg-card"
-                : "border-border bg-card hover:border-foreground/50 hover:bg-surface",
+                ? "border-foreground/60 bg-card colorful:border-coral-solid/70 colorful:bg-coral-soft"
+                : "border-border bg-card hover:border-foreground/50 hover:bg-surface colorful:border-brand-line colorful:hover:border-brand colorful:hover:bg-brand-soft/70",
           )}
         >
           <div className="dot-bg fade-mask-radial pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
-          <div className="relative h-20 w-20 opacity-25 transition-all duration-500 group-hover:scale-105 group-hover:opacity-40">
+          <div
+            className={cn(
+              "relative h-20 w-20 opacity-25 transition-all duration-500 group-hover:scale-105 group-hover:opacity-40",
+              "colorful:text-acc-solid colorful:opacity-60 colorful:group-hover:opacity-90",
+              variant === "macula" ? "accent-coral" : "accent-amber",
+            )}
+          >
             <FundusIllustration variant={variant} />
           </div>
 
           <div className="relative flex flex-col items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform duration-300 group-hover:-translate-y-0.5">
+            <span className="brand-fill flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-transform duration-300 group-hover:-translate-y-0.5">
               <Upload className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="text-sm font-semibold">
@@ -220,7 +234,7 @@ export function UploadDropzone({
         <p
           id={errorId}
           role="alert"
-          className="mt-2.5 inline-flex items-start gap-2 text-[12px] leading-relaxed text-foreground"
+          className="mt-2.5 inline-flex items-start gap-2 text-[12px] leading-relaxed text-foreground colorful:font-medium colorful:text-coral"
         >
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {error}

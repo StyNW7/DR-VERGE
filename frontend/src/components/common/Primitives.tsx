@@ -10,12 +10,16 @@ import { useI18n } from "@/i18n/context";
 type BadgeTone = "default" | "solid" | "outline" | "warn";
 
 const badgeTones: Record<BadgeTone, string> = {
-  default: "bg-muted text-muted-foreground border-transparent",
-  solid: "bg-foreground text-background border-transparent",
-  outline: "bg-transparent text-foreground border-border",
-  // "warn" stays monochrome: emphasis comes from a heavier border and weight,
-  // never from colour. The site has no semantic palette by design.
-  warn: "bg-transparent text-foreground border-foreground border-dashed font-semibold",
+  default:
+    "bg-muted text-muted-foreground border-transparent colorful:bg-brand-soft colorful:text-brand",
+  solid: "brand-fill border-transparent",
+  outline:
+    "bg-transparent text-foreground border-border colorful:border-brand-line colorful:text-brand",
+  // In monochrome, "warn" gets its emphasis from a heavier dashed border and
+  // weight. The colourful palette adds the amber accent on top of that.
+  warn:
+    "bg-transparent text-foreground border-foreground border-dashed font-semibold " +
+    "colorful:border-amber-line colorful:bg-amber-soft colorful:text-amber",
 };
 
 export function Badge({
@@ -133,11 +137,12 @@ export function SectionHeader({
         <div
           className={cn(
             "inline-flex items-center gap-2.5 rounded-full border border-border bg-card/60 py-1 pl-1 pr-3.5 shadow-sm backdrop-blur",
+            "colorful:border-brand-line colorful:bg-brand-soft/80",
             align === "center" ? "self-center" : "self-start",
           )}
         >
-          <span className="mono flex h-6 min-w-6 items-center justify-center rounded-full bg-foreground px-1.5 text-[10px] font-semibold text-background">
-            {index ?? <span className="h-1.5 w-1.5 rounded-full bg-background" />}
+          <span className="brand-fill mono flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold">
+            {index ?? <span className="h-1.5 w-1.5 rounded-full bg-current" />}
           </span>
           <span className="eyebrow text-foreground/80">{eyebrow}</span>
         </div>
@@ -186,7 +191,7 @@ export function MetricCard({
       className={cn(
         "group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all duration-300 ease-editorial sm:p-7",
         emphasis
-          ? "grain border-foreground bg-foreground text-background shadow-xl"
+          ? "grain inverse border-transparent shadow-xl"
           : "card-premium card-lift",
         className,
       )}
@@ -249,12 +254,21 @@ const calloutIcons: Record<CalloutTone, React.ElementType> = {
   research: FlaskConical,
 };
 
+/** Accent per tone in the colourful palette: blue for information, amber for
+ *  caution, coral for the medical disclaimer. */
+const calloutAccents: Record<CalloutTone, string> = {
+  note: "accent-blue",
+  caution: "accent-amber",
+  medical: "accent-coral",
+  research: "accent-blue",
+};
+
 /**
  * The site's standard disclaimer block.
  *
- * All tones are monochrome; "medical" is distinguished by a heavier left rule
- * rather than by colour, because the design system has no semantic palette and
- * a red box would be the only coloured element on the page.
+ * In monochrome every tone is grey and "medical" is distinguished by a heavier
+ * left rule rather than by colour. The colourful palette tints each tone with
+ * its accent (`calloutAccents`) and keeps the same left rule for "medical".
  */
 export function Callout({
   tone = "note",
@@ -272,19 +286,21 @@ export function Callout({
     <div
       className={cn(
         "flex gap-3 rounded-xl border bg-surface/80 p-4 sm:gap-4 sm:p-5",
+        "colorful:border-acc-line colorful:bg-acc-soft",
+        calloutAccents[tone],
         tone === "medical"
-          ? "border-border border-l-[3px] border-l-foreground"
+          ? "border-border border-l-[3px] border-l-foreground colorful:border-l-acc-solid"
           : "border-border",
         className,
       )}
       role="note"
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-card">
-        <Icon className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" />
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-card colorful:border-transparent colorful:bg-acc-solid colorful:shadow-sm">
+        <Icon className="h-3.5 w-3.5 text-foreground/70 colorful:text-acc-fg" aria-hidden="true" />
       </span>
       <div className="min-w-0">
         {title && (
-          <div className="mono mb-1 pt-1 text-[10px] uppercase tracking-[0.16em] text-foreground">
+          <div className="mono mb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-acc">
             {title}
           </div>
         )}
@@ -337,7 +353,7 @@ export function LoadingState({ label }: { label?: string }) {
     >
       <div className="relative h-12 w-12">
         <span className="absolute inset-0 rounded-full border border-border" />
-        <span className="absolute inset-0 animate-spin rounded-full border-t-2 border-foreground" />
+        <span className="absolute inset-0 animate-spin rounded-full border-t-2 border-foreground colorful:border-brand" />
       </div>
       <span className="eyebrow">{label ?? ts("Loading", "Memuat")}</span>
     </div>
@@ -345,7 +361,7 @@ export function LoadingState({ label }: { label?: string }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ScoreBar — the monochrome horizontal bar used for all model scores          */
+/* ScoreBar — the horizontal bar used for all model scores                     */
 /* -------------------------------------------------------------------------- */
 
 export function ScoreBar({
@@ -369,7 +385,7 @@ export function ScoreBar({
       <div
         className={cn(
           "h-full rounded-full transition-[width] duration-700 ease-editorial",
-          emphasis ? "bg-foreground" : "bg-foreground/45",
+          emphasis ? "brand-fill" : "bg-foreground/45 colorful:bg-brand/30",
         )}
         style={{ width: `${pct}%` }}
       />

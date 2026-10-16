@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Menu, X, FileText, ArrowUpRight, Moon, Sun, ArrowRight, Languages } from "lucide-react";
+import { Menu, X, FileText, ArrowUpRight, Moon, Sun, ArrowRight, Languages, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme, type Palette } from "@/components/theme-provider";
 import { LinkButton } from "@/components/common/Button";
 import { ReadingProgress } from "@/components/common/SectionRail";
 import { useI18n, useLang, type Lang } from "@/i18n/context";
@@ -70,7 +70,7 @@ function ThemeToggle() {
           : ts("Switch to dark theme", "Beralih ke tema gelap")
       }
       title={isDark ? ts("Light theme", "Tema terang") : ts("Dark theme", "Tema gelap")}
-      className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
+      className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground colorful:hover:border-brand-line colorful:hover:text-brand"
     >
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
@@ -89,6 +89,177 @@ function ThemeToggle() {
         </motion.span>
       </AnimatePresence>
     </button>
+  );
+}
+
+/** The two swatches that stand for the palettes. */
+function PaletteSwatch({ palette, className }: { palette: Palette; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "block shrink-0 rounded-full ring-1 ring-inset ring-black/10 dark:ring-white/20",
+        palette === "mono"
+          ? "bg-[linear-gradient(135deg,#0a0a0a_0%,#0a0a0a_50%,#ffffff_50%,#ffffff_100%)]"
+          : "bg-[conic-gradient(from_210deg,#0ea5e9,#2563eb,#1d4ed8,#e63946,#f59e0b,#38bdf8,#0ea5e9)]",
+        className,
+      )}
+    />
+  );
+}
+
+const paletteOptions: {
+  value: Palette;
+  label: { en: string; id: string };
+  hint: { en: string; id: string };
+}[] = [
+  {
+    value: "mono",
+    label: { en: "Mono", id: "Mono" },
+    hint: { en: "Black & white, editorial", id: "Hitam-putih, editorial" },
+  },
+  {
+    value: "color",
+    label: { en: "Colorful", id: "Colorful" },
+    hint: { en: "Blue-led, high visibility", id: "Dominan biru, lebih jelas" },
+  },
+];
+
+/** Origin of the circular reveal: the centre of the control that was pressed. */
+function originOf(el: HTMLElement) {
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+}
+
+/**
+ * Monochrome / colourful switch. Like the light/dark toggle, the new palette
+ * is revealed as a circle growing from the button that was pressed.
+ */
+function PaletteToggle({ layoutId, className }: { layoutId: string; className?: string }) {
+  const { palette, setPalette } = useTheme();
+  const { ts, trs } = useI18n();
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={ts("Colour theme", "Tema warna")}
+      className={cn(
+        "relative h-9 shrink-0 items-center gap-0.5 rounded-full border border-border bg-card/60 p-1",
+        className,
+      )}
+    >
+      {paletteOptions.map((o) => {
+        const active = o.value === palette;
+        const label = trs(o.label);
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={`${ts("Colour theme", "Tema warna")}: ${label}`}
+            title={`${label} · ${trs(o.hint)}`}
+            onClick={(e) => {
+              if (!active) transitionTheme(() => setPalette(o.value), originOf(e.currentTarget));
+            }}
+            className={cn(
+              "relative flex h-7 items-center gap-1.5 rounded-full px-1.5 text-[11px] font-semibold transition-colors duration-200 xl:px-2.5",
+              active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {active && (
+              <motion.span
+                layoutId={layoutId}
+                className="absolute inset-0 rounded-full bg-muted ring-1 ring-border colorful:bg-brand-soft colorful:ring-brand-line"
+                transition={{ type: "spring", stiffness: 480, damping: 36 }}
+                aria-hidden="true"
+              />
+            )}
+            <PaletteSwatch palette={o.value} className="relative h-4 w-4" />
+            <span className="relative hidden xl:inline">{label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Mobile sheet: both appearance controls, with room to say what they do. */
+function AppearancePanel() {
+  const { palette, setPalette, setTheme } = useTheme();
+  const isDark = useIsDark();
+  const { t, ts, trs } = useI18n();
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="eyebrow mb-3">{t("Appearance", "Tampilan")}</div>
+      <div role="radiogroup" aria-label={ts("Colour theme", "Tema warna")} className="grid grid-cols-2 gap-2">
+        {paletteOptions.map((o) => {
+          const active = o.value === palette;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={(e) => {
+                if (!active) transitionTheme(() => setPalette(o.value), originOf(e.currentTarget));
+              }}
+              className={cn(
+                "relative flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                active
+                  ? "border-foreground bg-surface colorful:border-brand colorful:bg-brand-soft"
+                  : "border-border hover:border-foreground/40",
+              )}
+            >
+              <PaletteSwatch palette={o.value} className="h-8 w-8" />
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{trs(o.label)}</span>
+                <span className="block text-[11px] leading-snug text-muted-foreground">
+                  {trs(o.hint)}
+                </span>
+              </span>
+              {active && (
+                <Check
+                  className="absolute right-2 top-2 h-3.5 w-3.5 text-foreground colorful:text-brand"
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div
+        role="radiogroup"
+        aria-label={ts("Light or dark", "Terang atau gelap")}
+        className="mt-2 grid grid-cols-2 gap-2"
+      >
+        {(["light", "dark"] as const).map((mode) => {
+          const active = (mode === "dark") === isDark;
+          const Icon = mode === "dark" ? Moon : Sun;
+          return (
+            <button
+              key={mode}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={(e) => {
+                if (!active) transitionTheme(() => setTheme(mode), originOf(e.currentTarget));
+              }}
+              className={cn(
+                "flex h-10 items-center justify-center gap-2 rounded-xl border text-[13px] font-medium transition-colors",
+                active
+                  ? "border-foreground bg-surface text-foreground colorful:border-brand colorful:bg-brand-soft colorful:text-brand"
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Icon className="h-4 w-4" aria-hidden="true" />
+              {mode === "dark" ? t("Dark", "Gelap") : t("Light", "Terang")}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -126,13 +297,13 @@ function LanguageToggle({ layoutId, className }: { layoutId: string; className?:
             }}
             className={cn(
               "mono relative h-7 rounded-full px-2.5 text-[11px] font-semibold tracking-[0.08em] transition-colors duration-200",
-              active ? "text-background" : "text-muted-foreground hover:text-foreground",
+              active ? "text-background colorful:text-white" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {active && (
               <motion.span
                 layoutId={layoutId}
-                className="absolute inset-0 rounded-full bg-foreground"
+                className="brand-fill absolute inset-0 rounded-full"
                 transition={{ type: "spring", stiffness: 480, damping: 36 }}
                 aria-hidden="true"
               />
@@ -208,7 +379,7 @@ export default function Navbar() {
             className="flex shrink-0 items-center gap-2.5 rounded-full pr-2 transition-opacity hover:opacity-80"
             aria-label={ts(`${siteConfig.projectName} home`, `Beranda ${siteConfig.projectName}`)}
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background">
+            <span className="brand-fill flex h-9 w-9 items-center justify-center rounded-full colorful:shadow-[0_6px_16px_-6px_hsl(var(--brand-to)/0.7)]">
               <Logo className="h-5 w-5" />
             </span>
             <span className="flex flex-col leading-none">
@@ -236,7 +407,9 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   cn(
                     "relative whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors duration-200",
-                    isActive ? "text-background" : "text-muted-foreground hover:text-foreground",
+                    isActive
+                      ? "text-background colorful:text-white"
+                      : "text-muted-foreground hover:text-foreground colorful:hover:text-brand",
                   )
                 }
               >
@@ -245,7 +418,7 @@ export default function Navbar() {
                     {isActive && (
                       <motion.span
                         layoutId="nav-active-pill"
-                        className="absolute inset-0 rounded-full bg-foreground"
+                        className="brand-fill absolute inset-0 rounded-full colorful:shadow-[0_4px_14px_-4px_hsl(var(--brand-to)/0.6)]"
                         transition={{ type: "spring", stiffness: 420, damping: 34 }}
                         aria-hidden="true"
                       />
@@ -270,6 +443,7 @@ export default function Navbar() {
 
           <div className="flex shrink-0 items-center gap-2">
             <LanguageToggle layoutId="lang-pill-desktop" />
+            <PaletteToggle layoutId="palette-pill-desktop" className="hidden sm:flex" />
             <ThemeToggle />
             <LinkButton to="/demo" size="sm" className="group hidden lg:inline-flex">
               {t("Try DR-VERGE", "Coba DR-VERGE")}
@@ -301,7 +475,7 @@ export default function Navbar() {
         {open && (
           <motion.div
             id="mobile-nav"
-            className="no-print fixed inset-0 z-40 flex flex-col bg-background pt-20 md:hidden"
+            className="no-print fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background pt-20 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -321,7 +495,7 @@ export default function Navbar() {
                     className={({ isActive }) =>
                       cn(
                         "flex items-center justify-between gap-4 border-b border-border py-5 transition-colors",
-                        isActive ? "text-foreground" : "text-muted-foreground",
+                        isActive ? "text-foreground colorful:text-brand" : "text-muted-foreground",
                       )
                     }
                   >
@@ -355,6 +529,9 @@ export default function Navbar() {
                 </a>
               )}
 
+              <div className="mt-6">
+                <AppearancePanel />
+              </div>
             </div>
 
             <div className="mt-auto p-5 pb-10">

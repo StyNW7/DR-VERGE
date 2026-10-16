@@ -39,11 +39,13 @@ function CompareBar({
             {sublabel}
           </span>
         </div>
-        <span className="mono shrink-0 text-sm font-semibold">{display}</span>
+        <span className={cn("mono shrink-0 text-sm font-semibold", emphasis && "colorful:text-brand")}>
+          {display}
+        </span>
       </div>
-      <div className="h-8 w-full overflow-hidden rounded-lg bg-muted">
+      <div className="h-8 w-full overflow-hidden rounded-lg bg-muted colorful:bg-brand-soft">
         <motion.div
-          className={cn("h-full rounded-lg", emphasis ? "bg-foreground" : "bg-foreground/25")}
+          className={cn("h-full rounded-lg", emphasis ? "brand-fill" : "bg-foreground/25 colorful:bg-[hsl(var(--chart-2))]")}
           initial={reduce ? { width: `${pct}%` } : { width: 0 }}
           whileInView={{ width: `${pct}%` }}
           viewport={{ once: true, margin: "-80px" }}
@@ -84,7 +86,7 @@ export default function Rq2Section() {
           <div className="card-premium flex h-full flex-col p-7 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
               <span className="eyebrow">{t("Model size", "Ukuran model")}</span>
-              <HardDrive className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <HardDrive className="h-4 w-4 text-muted-foreground colorful:text-brand" aria-hidden="true" />
             </div>
 
             <div className="flex flex-col gap-6">
@@ -107,7 +109,7 @@ export default function Rq2Section() {
             </div>
 
             <div className="mt-auto flex items-baseline gap-3 border-t border-border pt-7">
-              <span className="mono text-4xl font-bold tracking-tight">
+              <span className="mono text-4xl font-bold tracking-tight colorful:text-brand-gradient">
                 {modelStats.compressionFactor}×
               </span>
               <span className="text-sm leading-tight text-muted-foreground">
@@ -135,7 +137,7 @@ export default function Rq2Section() {
               <span className="eyebrow">
                 {t("Single-thread CPU latency", "Latensi CPU *single-thread*")}
               </span>
-              <Zap className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <Zap className="h-4 w-4 text-muted-foreground colorful:text-amber" aria-hidden="true" />
             </div>
 
             <div className="flex flex-col gap-5">
@@ -155,7 +157,7 @@ export default function Rq2Section() {
 
             <div className="mt-auto grid grid-cols-2 gap-4 border-t border-border pt-7 sm:grid-cols-3">
               <div>
-                <div className="mono text-2xl font-bold">
+                <div className="mono text-2xl font-bold colorful:text-coral">
                   {num(modelStats.studentFp32LatencyMs, 2)}
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
@@ -163,7 +165,7 @@ export default function Rq2Section() {
                 </div>
               </div>
               <div>
-                <div className="mono text-2xl font-bold">
+                <div className="mono text-2xl font-bold colorful:text-brand">
                   {num(modelStats.selectedDeploymentLatencyMs, 2)}
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
@@ -171,7 +173,7 @@ export default function Rq2Section() {
                 </div>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <div className="mono text-2xl font-bold">
+                <div className="mono text-2xl font-bold colorful:text-amber">
                   {num(modelStats.selectedQwkRetentionPct, 1)}%
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground">
@@ -185,8 +187,11 @@ export default function Rq2Section() {
 
       <Reveal delay={0.1}>
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9 lg:col-span-2">
-            <Badge tone="outline" className="border-background/30 text-background">
+          <div className="grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-9 lg:col-span-2">
+            <Badge
+              tone="outline"
+              className="border-background/30 text-background colorful:border-white/40 colorful:bg-white/10 colorful:text-white"
+            >
               {t("Finding", "Temuan")}
             </Badge>
             <p className="mt-5 text-lg font-semibold leading-snug tracking-tight sm:text-xl">

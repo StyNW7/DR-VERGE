@@ -41,14 +41,14 @@ export default function CsdSection() {
                         className={
                           "mono flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] " +
                           (i === csdExplanation.steps.length - 1
-                            ? "bg-foreground text-background"
-                            : "border border-border")
+                            ? "brand-fill"
+                            : "border border-border colorful:border-brand-line colorful:bg-brand-soft colorful:font-semibold colorful:text-brand")
                         }
                       >
                         {i + 1}
                       </span>
                       {i < csdExplanation.steps.length - 1 && (
-                        <span className="my-1 w-px flex-1 bg-border" aria-hidden="true" />
+                        <span className="my-1 w-px flex-1 bg-border colorful:w-0.5 colorful:bg-brand-line" aria-hidden="true" />
                       )}
                     </div>
                     <div className="pb-7">
@@ -74,8 +74,8 @@ export default function CsdSection() {
             <div className="flex flex-col gap-3">
               {csdExplanation.formulas.map((f, i) => (
                 <div key={i}>
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-xl border border-border bg-surface px-4 py-3.5">
-                    <span className="mono text-base font-semibold text-foreground">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-xl border border-border bg-surface px-4 py-3.5 colorful:border-brand-line colorful:bg-brand-soft/70">
+                    <span className="mono text-base font-semibold text-foreground colorful:text-brand">
                       {f.lhs}
                       {f.superscript && (
                         <sup className="text-[10px] opacity-70">{f.superscript}</sup>
@@ -89,7 +89,7 @@ export default function CsdSection() {
                   </div>
                   {i < csdExplanation.formulas.length - 1 && (
                     <div className="flex justify-center py-1">
-                      <ArrowDown className="h-3 w-3 text-subtle" aria-hidden="true" />
+                      <ArrowDown className="h-3 w-3 text-subtle colorful:text-brand" aria-hidden="true" />
                     </div>
                   )}
                 </div>
@@ -122,7 +122,7 @@ export default function CsdSection() {
       {/* The claim, stated precisely */}
       <Reveal delay={0.12}>
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="grain relative overflow-hidden rounded-2xl bg-foreground p-7 text-background sm:p-9">
+          <div className="grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-9">
             <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
               {t("What CSD does", "Apa yang dilakukan CSD")}
             </span>

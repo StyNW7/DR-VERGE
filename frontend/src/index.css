@@ -92,6 +92,222 @@
     --shadow-color: 0 0% 0%;
     --shadow-strength: 0.5;
   }
+
+  /* --------------------------------------------------------------------------
+     Semantic accent tokens.
+
+     Components reach for "brand", "coral", "amber" and the five grade colours
+     through these names. In the monochrome palette every one of them resolves
+     back to the existing ink / page greys, so a component that uses them looks
+     exactly as it did before; only the colourful palette gives them a hue.
+     ------------------------------------------------------------------------ */
+  :root {
+    --brand: var(--foreground);
+    --brand-from: var(--foreground);
+    --brand-to: var(--foreground);
+    --brand-glow: var(--foreground);
+    --brand-foreground: var(--background);
+    --brand-soft: var(--muted);
+    --brand-line: var(--border);
+
+    --coral: var(--foreground);
+    --coral-solid: var(--foreground);
+    --coral-soft: var(--muted);
+    --coral-line: var(--border);
+
+    --amber: var(--foreground);
+    --amber-solid: var(--foreground);
+    --amber-soft: var(--muted);
+    --amber-line: var(--border);
+
+    /* Severity scale for the five ordinal grades (solid + text on solid). */
+    --grade-0: var(--foreground);
+    --grade-1: var(--foreground);
+    --grade-2: var(--foreground);
+    --grade-3: var(--foreground);
+    --grade-4: var(--foreground);
+    --grade-0-fg: var(--background);
+    --grade-1-fg: var(--background);
+    --grade-2-fg: var(--background);
+    --grade-3-fg: var(--background);
+    --grade-4-fg: var(--background);
+
+    /* Charts: the emphasised series and the comparison series. */
+    --chart-1: var(--foreground);
+    --chart-2: var(--foreground);
+    --chart-2-alpha: 0.28;
+  }
+
+  /* ==========================================================================
+     COLOURFUL PALETTE — `html.colorful`, combined with `.dark` or not.
+
+     Blue is the identity: a sky-to-royal gradient for every filled emphasis
+     surface, a deep ink blue for text accents. Coral and amber are the two
+     supporting accents, used for warnings, the severity ramp and numbered
+     highlights — never for body copy. Every pairing below was checked against
+     WCAG AA: body text ≥ 7:1, accent text ≥ 5.4:1 on its own tint, white on
+     the gradient ≥ 4.5:1.
+     ======================================================================== */
+  .colorful {
+    --background: 210 50% 99%; /* cool white */
+    --foreground: 222 47% 14%; /* deep navy ink, 16:1 */
+
+    --surface: 206 80% 97%; /* light-blue section wash */
+    --surface-2: 207 70% 94.5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 14%;
+
+    --primary: 213 85% 41%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 207 70% 95%;
+    --secondary-foreground: 222 47% 14%;
+
+    --muted: 210 45% 95%;
+    --muted-foreground: 218 25% 35%; /* 7.5:1 */
+    --subtle-foreground: 217 18% 43%; /* 5.4:1 */
+
+    --accent: 206 85% 95%;
+    --accent-foreground: 214 80% 30%;
+
+    --destructive: 354 72% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 213 45% 88%;
+    --border-strong: 213 40% 77%;
+    --input: 213 45% 88%;
+    --ring: 212 92% 45%;
+
+    --shadow-color: 215 70% 28%;
+    --shadow-strength: 0.1;
+
+    --brand: 213 85% 41%; /* text accent, 5.9:1 */
+    --brand-from: 199 90% 35%; /* sky */
+    --brand-to: 224 80% 50%; /* royal */
+    --brand-glow: 195 95% 62%; /* light-blue highlight, decorative only */
+    --brand-foreground: 0 0% 100%;
+    --brand-soft: 205 100% 96%;
+    --brand-line: 205 85% 85%;
+
+    --coral: 354 70% 44%;
+    --coral-solid: 354 76% 50%;
+    --coral-soft: 355 100% 97%;
+    --coral-line: 355 85% 89%;
+
+    --amber: 27 90% 33%;
+    --amber-solid: 28 92% 44%;
+    --amber-soft: 43 100% 95%;
+    --amber-line: 40 90% 80%;
+
+    --grade-0: 199 88% 37%;
+    --grade-1: 43 95% 48%;
+    --grade-2: 30 94% 50%;
+    --grade-3: 14 85% 48%;
+    --grade-4: 354 76% 47%;
+    --grade-0-fg: 0 0% 100%;
+    --grade-1-fg: 222 47% 14%;
+    --grade-2-fg: 222 47% 14%;
+    --grade-3-fg: 0 0% 100%;
+    --grade-4-fg: 0 0% 100%;
+
+    --chart-1: 213 85% 45%;
+    --chart-2: 205 45% 62%;
+    --chart-2-alpha: 0.55;
+  }
+
+  .colorful.dark {
+    --background: 223 50% 6%; /* midnight navy */
+    --foreground: 210 40% 96%;
+
+    --surface: 222 45% 9%;
+    --surface-2: 221 40% 12%;
+
+    --card: 222 42% 10%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 42% 10%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 199 95% 68%;
+    --primary-foreground: 223 50% 8%;
+    --secondary: 221 40% 13%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 221 38% 14%;
+    --muted-foreground: 215 25% 72%; /* 9.4:1 */
+    --subtle-foreground: 216 18% 60%; /* 6.4:1 */
+
+    --accent: 216 45% 15%;
+    --accent-foreground: 199 95% 75%;
+
+    --destructive: 354 85% 66%;
+    --destructive-foreground: 223 50% 8%;
+
+    --border: 220 35% 19%;
+    --border-strong: 219 30% 28%;
+    --input: 220 35% 19%;
+    --ring: 199 92% 62%;
+
+    --shadow-color: 225 70% 2%;
+    --shadow-strength: 0.55;
+
+    --brand: 199 95% 68%; /* 10.5:1 */
+    --brand-from: 199 90% 36%;
+    --brand-to: 223 82% 54%;
+    --brand-glow: 195 95% 62%;
+    --brand-foreground: 0 0% 100%;
+    --brand-soft: 212 60% 14%;
+    --brand-line: 210 55% 28%;
+
+    --coral: 354 95% 76%;
+    --coral-solid: 354 78% 54%;
+    --coral-soft: 352 45% 14%;
+    --coral-line: 352 45% 28%;
+
+    --amber: 40 96% 66%;
+    --amber-solid: 30 94% 48%;
+    --amber-soft: 33 50% 12%;
+    --amber-line: 33 45% 26%;
+
+    --chart-1: 199 95% 62%;
+    --chart-2: 215 30% 55%;
+    --chart-2-alpha: 0.5;
+  }
+
+  /* Card-set accents: a parent picks one, and its children colour themselves
+     with `acc`, `acc-soft`, `acc-line` and `acc-fg`. In monochrome they
+     resolve to the usual greys. */
+  .accent-blue,
+  .accent-coral,
+  .accent-amber {
+    --acc: var(--foreground);
+    --acc-solid: var(--foreground);
+    --acc-fg: var(--background);
+    --acc-soft: var(--muted);
+    --acc-line: var(--border);
+  }
+  .colorful .accent-blue {
+    --acc: var(--brand);
+    --acc-solid: var(--brand-to);
+    --acc-fg: 0 0% 100%;
+    --acc-soft: var(--brand-soft);
+    --acc-line: var(--brand-line);
+  }
+  .colorful .accent-coral {
+    --acc: var(--coral);
+    --acc-solid: var(--coral-solid);
+    --acc-fg: 0 0% 100%;
+    --acc-soft: var(--coral-soft);
+    --acc-line: var(--coral-line);
+  }
+  .colorful .accent-amber {
+    --acc: var(--amber);
+    --acc-solid: var(--amber-solid);
+    --acc-fg: 0 0% 100%;
+    --acc-soft: var(--amber-soft);
+    --acc-line: var(--amber-line);
+  }
 }
 
 @layer base {
@@ -119,7 +335,6 @@
     background: hsl(var(--foreground));
     color: hsl(var(--background));
   }
-
   /* A visible focus ring is the only way keyboard navigation is usable. It is
      deliberately high-contrast rather than subtle. */
   :focus-visible {
@@ -296,11 +511,207 @@
     display: none;
   }
 
-  /* Research figures are grayscale PNGs on a white matplotlib canvas. In dark
-     mode the canvas would be a glaring white slab, so it is inverted — which for
-     a grayscale image is lossless and reads as a native dark chart. */
+  /* Research figures are matplotlib PNGs on a white canvas. Monochrome shows
+     them in grayscale (the palette has no hue); in dark mode the white canvas
+     would be a glaring slab, so it is inverted — lossless for a grayscale
+     image. The colourful palette keeps their real colours, and in dark mode
+     pairs the inversion with a 180° hue turn so blue bars stay blue. */
   .figure-invert {
-    @apply dark:invert;
+    filter: grayscale(1);
+  }
+  .dark .figure-invert {
+    filter: grayscale(1) invert(1);
+  }
+  .colorful .figure-invert {
+    filter: none;
+  }
+  .colorful.dark .figure-invert {
+    filter: invert(0.92) hue-rotate(180deg) saturate(1.15);
+  }
+
+  /* ------------------------------------------------------------------------
+     Brand fills and type.
+     ---------------------------------------------------------------------- */
+
+  /* The filled emphasis surface. Monochrome: solid ink. Colourful: the
+     sky-to-royal gradient with a soft light-blue highlight in one corner. */
+  .brand-fill {
+    background-color: hsl(var(--brand-to));
+    background-image:
+      radial-gradient(120% 140% at 100% 0%, hsl(var(--brand-glow) / 0.35) 0%, transparent 45%),
+      linear-gradient(135deg, hsl(var(--brand-from)) 0%, hsl(var(--brand-to)) 100%);
+    color: hsl(var(--brand-foreground));
+  }
+  :root:not(.colorful) .brand-fill {
+    background-image: none;
+  }
+
+  /* Gradient text for wordmarks and key numerals. */
+  .text-brand-gradient {
+    background-image: linear-gradient(
+      100deg,
+      hsl(var(--brand-from)) 0%,
+      hsl(var(--brand-to)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ------------------------------------------------------------------------
+     Inverse panel — the site's strongest emphasis block.
+
+     Monochrome: the page inverted (ink ground, page-coloured text).
+     Colourful: the brand gradient with white text. The page tokens are
+     re-declared locally so every `text-background/…`, `border-background/…`
+     and `bg-background` inside the panel resolves to white (and
+     `text-foreground` to navy, for a white chip sitting on the gradient).
+     ---------------------------------------------------------------------- */
+  .inverse {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+  .colorful .inverse {
+    --background: 0 0% 100%;
+    --foreground: 222 60% 22%;
+    background-color: hsl(var(--brand-to));
+    background-image:
+      radial-gradient(90% 120% at 100% 0%, hsl(var(--brand-glow) / 0.38) 0%, transparent 50%),
+      radial-gradient(70% 90% at 0% 100%, hsl(224 85% 35% / 0.55) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(var(--brand-from)) 0%, hsl(var(--brand-to)) 100%);
+    color: hsl(0 0% 100%);
+    box-shadow: 0 24px 60px -28px hsl(var(--brand-to) / 0.7);
+  }
+  /* Contrast floor on the gradient: low-alpha white is fine on black but too
+     faint on mid-blue, so secondary text inside a colourful inverse panel is
+     raised to a readable minimum. */
+  .colorful .inverse :is(.opacity-50, .opacity-60, .opacity-65, .opacity-70, .opacity-80) {
+    opacity: 0.9;
+  }
+  .colorful .inverse :is(
+      .text-background\/50,
+      .text-background\/60,
+      .text-background\/65,
+      .text-background\/70
+    ) {
+    color: hsl(0 0% 100% / 0.9);
+  }
+  /* Display accents on the gradient turn warm yellow, as in the deck. */
+  .colorful .inverse .display em,
+  .colorful .inverse .serif-accent {
+    background-image: linear-gradient(100deg, hsl(48 100% 72%), hsl(40 100% 80%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* A deep-navy section (SDG) in the colourful palette. */
+  .colorful .inverse-deep {
+    background-image:
+      radial-gradient(60% 80% at 100% 0%, hsl(199 90% 45% / 0.35) 0%, transparent 60%),
+      radial-gradient(50% 70% at 0% 100%, hsl(354 80% 55% / 0.16) 0%, transparent 60%),
+      linear-gradient(160deg, hsl(222 70% 16%) 0%, hsl(218 75% 24%) 100%);
+    box-shadow: none;
+  }
+}
+
+/* ============================================================================
+   COLOURFUL PALETTE — shared-class refinements.
+
+   Everything here is scoped to `.colorful`, so the monochrome palette is not
+   touched by a single rule below.
+   ========================================================================== */
+@layer components {
+  .colorful body {
+    background-image:
+      radial-gradient(80rem 40rem at 85% -10%, hsl(var(--brand-glow) / 0.14), transparent 60%),
+      radial-gradient(60rem 30rem at -10% 10%, hsl(var(--brand-to) / 0.08), transparent 60%);
+    background-repeat: no-repeat;
+  }
+  .colorful.dark body {
+    background-image:
+      radial-gradient(80rem 40rem at 85% -10%, hsl(var(--brand-to) / 0.22), transparent 60%),
+      radial-gradient(60rem 30rem at -10% 10%, hsl(var(--brand-glow) / 0.08), transparent 60%);
+  }
+
+  .colorful ::selection {
+    background: hsl(var(--brand-to));
+    color: #fff;
+  }
+
+  .colorful .eyebrow {
+    color: hsl(var(--brand));
+    font-weight: 600;
+  }
+
+  /* Serif accents inside display headings carry the brand gradient. The
+     italic is kept; the colour is what changes. */
+  .colorful .display em,
+  .colorful .serif-accent {
+    background-image: linear-gradient(100deg, hsl(var(--brand-from)), hsl(var(--brand-to)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* italic glyphs overhang their box; padding keeps the clip from cutting them */
+    padding-right: 0.08em;
+    margin-right: -0.08em;
+  }
+  .colorful.dark .display em,
+  .colorful.dark .serif-accent {
+    background-image: linear-gradient(100deg, hsl(195 95% 68%), hsl(220 95% 74%));
+  }
+
+  .colorful .ink-gradient {
+    background-image: linear-gradient(
+      120deg,
+      hsl(var(--brand-from)) 0%,
+      hsl(var(--brand-to)) 100%
+    );
+  }
+  .colorful.dark .ink-gradient {
+    background-image: linear-gradient(120deg, hsl(195 95% 70%) 0%, hsl(220 95% 76%) 100%);
+  }
+
+  .colorful .card-premium {
+    box-shadow:
+      0 1px 0 0 hsl(0 0% 100% / 0.6) inset,
+      0 1px 2px hsl(var(--shadow-color) / calc(var(--shadow-strength) * 0.6)),
+      0 12px 32px -16px hsl(var(--shadow-color) / var(--shadow-strength));
+  }
+  .colorful.dark .card-premium {
+    box-shadow:
+      0 1px 0 0 hsl(0 0% 100% / 0.04) inset,
+      0 12px 32px -16px hsl(var(--shadow-color) / var(--shadow-strength));
+  }
+  .colorful .card-lift:hover {
+    border-color: hsl(var(--brand-line));
+    box-shadow:
+      0 1px 0 0 hsl(0 0% 100% / 0.6) inset,
+      0 2px 4px hsl(var(--shadow-color) / calc(var(--shadow-strength) * 0.6)),
+      0 22px 44px -18px hsl(var(--brand-to) / 0.28);
+  }
+
+  .colorful .spotlight {
+    background:
+      radial-gradient(55% 45% at 70% 0%, hsl(var(--brand-glow) / 0.22) 0%, transparent 70%),
+      radial-gradient(40% 35% at 10% 20%, hsl(var(--coral-solid) / 0.07) 0%, transparent 70%);
+  }
+
+  .colorful .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--brand-line) / 0.55) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--brand-line) / 0.55) 1px, transparent 1px);
+  }
+  .colorful .dot-bg {
+    background-image: radial-gradient(hsl(var(--brand) / 0.22) 1px, transparent 1px);
+  }
+
+  .colorful .grain::after {
+    opacity: 0.025;
+  }
+
+  .colorful :focus-visible {
+    outline-color: hsl(var(--ring));
   }
 }
 
@@ -369,6 +780,12 @@ html.theme-fade *::after {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
+}
+.colorful ::-webkit-scrollbar-thumb {
+  background: hsl(var(--brand-line));
+}
+.colorful ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--brand));
 }
 
 /* ============================================================================

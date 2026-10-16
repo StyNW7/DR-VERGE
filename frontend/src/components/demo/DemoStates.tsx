@@ -61,8 +61,8 @@ export function ProcessingState({
         {/* Indeterminate ring — no percentage, because none is measured. */}
         <div className="relative h-16 w-16">
           <span className="absolute inset-0 rounded-full border border-border" />
-          <span className="absolute inset-0 animate-spin rounded-full border-t-2 border-foreground" />
-          <span className="absolute inset-3 rounded-full bg-foreground/5 animate-pulse-sweep" />
+          <span className="absolute inset-0 animate-spin rounded-full border-t-2 border-foreground colorful:border-brand" />
+          <span className="absolute inset-3 rounded-full bg-foreground/5 animate-pulse-sweep colorful:bg-brand/20" />
         </div>
 
         <h3 className="mt-8 text-lg font-bold tracking-tight">
@@ -84,7 +84,7 @@ export function ProcessingState({
                 <motion.div
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-300",
-                    active && "bg-muted",
+                    active && "bg-muted colorful:bg-brand-soft",
                   )}
                   initial={reduce ? false : { opacity: 0.4 }}
                   animate={{ opacity: done || active ? 1 : 0.4 }}
@@ -92,10 +92,10 @@ export function ProcessingState({
                 >
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center">
                     {done ? (
-                      <Check className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
+                      <Check className="h-3.5 w-3.5 text-foreground colorful:text-brand" aria-hidden="true" />
                     ) : active ? (
                       <Loader2
-                        className="h-3.5 w-3.5 animate-spin text-foreground"
+                        className="h-3.5 w-3.5 animate-spin text-foreground colorful:text-brand"
                         aria-hidden="true"
                       />
                     ) : (
@@ -208,12 +208,12 @@ export function ErrorState({
 
   return (
     <div
-      className="rounded-2xl border-2 border-dashed border-foreground/40 bg-card p-8 sm:p-12"
+      className="rounded-2xl border-2 border-dashed border-foreground/40 bg-card p-8 sm:p-12 colorful:border-coral-line colorful:bg-coral-soft/60"
       role="alert"
     >
       <div className="mx-auto flex max-w-md flex-col items-center text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-border">
-          <Icon className="h-5 w-5 text-foreground" aria-hidden="true" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-border colorful:border-transparent colorful:bg-coral-solid">
+          <Icon className="h-5 w-5 text-foreground colorful:text-white" aria-hidden="true" />
         </div>
 
         <h3 className="mt-7 text-lg font-bold tracking-tight">{tr(errorTitles[error.kind])}</h3>
@@ -259,17 +259,17 @@ export function DemoModeBanner({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={cn(
-        "flex gap-3 rounded-xl border-2 border-dashed border-foreground bg-surface",
+        "flex gap-3 rounded-xl border-2 border-dashed border-foreground bg-surface colorful:border-amber-solid/70 colorful:bg-amber-soft",
         compact ? "p-3.5" : "p-4 sm:p-5",
       )}
       role="status"
     >
       <FlaskConical
-        className="mt-0.5 h-4 w-4 shrink-0 text-foreground"
+        className="mt-0.5 h-4 w-4 shrink-0 text-foreground colorful:text-amber"
         aria-hidden="true"
       />
       <div className="min-w-0">
-        <div className="mono text-[10px] uppercase tracking-[0.16em] text-foreground">
+        <div className="mono text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-amber">
           {t("Demo Mode · Simulated Output", "Mode Demo · Keluaran Simulasi")}
         </div>
         <p

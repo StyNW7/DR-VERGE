@@ -45,7 +45,7 @@ export function SamplePicker({
     <div className="card-premium overflow-hidden">
       <div className="flex flex-col gap-3 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="flex items-start gap-3.5">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background">
+          <span className="brand-fill flex h-10 w-10 shrink-0 items-center justify-center rounded-xl colorful:shadow-[0_8px_18px_-8px_hsl(var(--brand-to)/0.7)]">
             <Sparkles className="h-4 w-4" aria-hidden="true" />
           </span>
           <div>
@@ -61,7 +61,7 @@ export function SamplePicker({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
-          <span className="mono inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <span className="mono inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
             <EyeOff className="h-3 w-3" aria-hidden="true" />
             {t("Grade hidden until analysed", "*Grade* disembunyikan hingga dianalisis")}
           </span>
@@ -107,8 +107,8 @@ export function SamplePicker({
                     "group relative w-32 shrink-0 snap-start overflow-hidden rounded-xl border bg-card text-left transition-all duration-300 ease-editorial",
                     "disabled:cursor-not-allowed",
                     active
-                      ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                      : "border-border hover:-translate-y-0.5 hover:border-foreground/40",
+                      ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background colorful:border-brand colorful:ring-brand"
+                      : "border-border hover:-translate-y-0.5 hover:border-foreground/40 colorful:hover:border-brand-line colorful:hover:shadow-[0_12px_24px_-14px_hsl(var(--brand-to)/0.6)]",
                   )}
                 >
                   <div className="relative aspect-square overflow-hidden bg-black">
@@ -119,7 +119,9 @@ export function SamplePicker({
                       decoding="async"
                       className={cn(
                         "h-full w-full object-cover transition-all duration-500 ease-editorial",
-                        active ? "grayscale-0" : "grayscale group-hover:scale-105 group-hover:grayscale-0",
+                        active
+                          ? "grayscale-0"
+                          : "grayscale group-hover:scale-105 group-hover:grayscale-0 colorful:grayscale-0",
                       )}
                     />
                     {(active || pending) && (
@@ -134,7 +136,9 @@ export function SamplePicker({
                     )}
                   </div>
                   <div className="flex items-center justify-between gap-2 px-2.5 py-2">
-                    <span className="mono text-[11px] font-semibold">{s.sample_id}</span>
+                    <span className={cn("mono text-[11px] font-semibold", active && "colorful:text-brand")}>
+                      {s.sample_id}
+                    </span>
                     <span className="mono text-[9px] uppercase tracking-[0.12em] text-subtle">
                       {side}
                     </span>
@@ -175,7 +179,9 @@ export function ReferenceCheck({
             {t("Reference grade", "*Grade* referensi")} · {sample.sample_id}
           </span>
           <div>
-            <div className="display text-5xl">{ref?.display ?? sample.ground_truth_grade}</div>
+            <div className="display text-5xl colorful:text-brand-gradient">
+              {ref?.display ?? sample.ground_truth_grade}
+            </div>
             <div className="mt-2 text-sm font-semibold">
               {ref ? gradeText(ref, lang).name : sample.ground_truth_name}
             </div>
@@ -191,7 +197,9 @@ export function ReferenceCheck({
             <span
               className={cn(
                 "flex h-11 w-11 shrink-0 items-center justify-center rounded-full",
-                match ? "bg-foreground text-background" : "border-2 border-dashed border-foreground",
+                match
+                  ? "brand-fill"
+                  : "border-2 border-dashed border-foreground colorful:border-amber-solid colorful:bg-amber-soft colorful:text-amber",
               )}
             >
               {match ? (
@@ -217,8 +225,8 @@ export function ReferenceCheck({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 bg-surface p-6 sm:p-8">
-          <span className="mono text-[10px] uppercase tracking-[0.16em] text-foreground">
+        <div className="flex flex-col gap-3 bg-surface p-6 sm:p-8 colorful:bg-amber-soft">
+          <span className="mono text-[10px] uppercase tracking-[0.16em] text-foreground colorful:font-semibold colorful:text-amber">
             {t("Read this before celebrating", "Baca ini sebelum menyimpulkan")}
           </span>
           <p className="text-[12px] leading-relaxed text-muted-foreground">

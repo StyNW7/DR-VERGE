@@ -34,7 +34,7 @@ export const team: TeamMember[] = [
   {
     id: "member-2",
     name: "Seline Loewel",
-    role: l("Research & Experimentation", "Riset & Eksperimen"),
+    role: l("Research Paper Writing", "Menulis Paper Riset"),
     institution: "BINUS University",
     image: "/Images/Seline.jpeg",
     linkedin: null,
@@ -43,7 +43,7 @@ export const team: TeamMember[] = [
   {
     id: "member-3",
     name: "Ahmad Hamra",
-    role: l("Research & Documentation", "Riset & Dokumentasi"),
+    role: l("Research & Video Documentation", "Riset & Dokumentasi Video"),
     institution: "BINUS University",
     image: "/Images/Hamra.jpeg",
     linkedin: null,

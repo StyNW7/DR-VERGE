@@ -20,15 +20,18 @@ const tickFormat = (lang: Lang) => (v: unknown) =>
     : String(v ?? "");
 
 /**
- * Recharts wrapped in the site's monochrome system.
+ * Recharts wrapped in the site's design system.
  *
  * Colours are CSS variables rather than literals, so every chart follows the
- * light/dark theme without a second render path. Emphasis is carried by fill
- * opacity — the proposed method is solid, the baselines are translucent — which
- * is the only encoding available when the palette has no hue.
+ * light/dark theme and the mono/colourful palette without a second render
+ * path. The proposed method is drawn in `--chart-1` (solid ink in monochrome,
+ * brand blue in colourful); baselines in a translucent `--chart-2`, so the
+ * comparison still reads when the palette has no hue.
  */
 
 const FG = "hsl(var(--foreground))";
+const EMPHASIS = "hsl(var(--chart-1))";
+const BASELINE = "hsl(var(--chart-2) / var(--chart-2-alpha))";
 const BORDER = "hsl(var(--border))";
 const MUTED = "hsl(var(--muted-foreground))";
 
@@ -148,12 +151,7 @@ export function MonoBarChart({
           />
           <Bar dataKey="value" radius={isHorizontalBars ? [0, 4, 4, 0] : [4, 4, 0, 0]}>
             {data.map((d, i) => (
-              <Cell
-                key={i}
-                fill={FG}
-                // The single encoding available without hue.
-                fillOpacity={d.emphasis ? 1 : 0.28}
-              />
+              <Cell key={i} fill={d.emphasis ? EMPHASIS : BASELINE} />
             ))}
             {showValues && (
               <LabelList

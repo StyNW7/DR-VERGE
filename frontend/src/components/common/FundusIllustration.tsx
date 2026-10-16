@@ -166,7 +166,7 @@ export function FundusIllustration({
       />
 
       {showLabels && (
-        <g className="mono" fontSize="7" fill="currentColor" fillOpacity="0.75">
+        <g className="mono colorful:fill-foreground" fontSize="7" fill="currentColor" fillOpacity="0.75">
           <text x={macula.x} y={macula.y + 40} textAnchor="middle" letterSpacing="1">
             {ts("MACULA", "MAKULA")}
           </text>
@@ -206,7 +206,7 @@ export function DualFieldDiagram({ className }: { className?: string }) {
 
       {/* Shared territory: the intersection of the two fields. */}
       <g clipPath="url(#dfd-left)">
-        <circle cx="196" cy="100" r="72" fill="currentColor" fillOpacity="0.16" />
+        <circle cx="196" cy="100" r="72" fill="currentColor" fillOpacity="0.16" className="colorful:fill-brand" />
       </g>
 
       <circle
@@ -217,6 +217,7 @@ export function DualFieldDiagram({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="1.4"
         strokeOpacity="0.75"
+        className="colorful:stroke-coral-solid"
       />
       <circle
         cx="196"
@@ -227,26 +228,27 @@ export function DualFieldDiagram({ className }: { className?: string }) {
         strokeWidth="1.4"
         strokeOpacity="0.75"
         strokeDasharray="5 4"
+        className="colorful:stroke-amber-solid"
       />
 
       {/* Anatomy anchors */}
-      <circle cx="128" cy="100" r="5" fill="currentColor" fillOpacity="0.8" />
-      <ellipse cx="196" cy="100" rx="7" ry="8" fill="currentColor" fillOpacity="0.5" />
+      <circle cx="128" cy="100" r="5" fill="currentColor" fillOpacity="0.8" className="colorful:fill-coral-solid" />
+      <ellipse cx="196" cy="100" rx="7" ry="8" fill="currentColor" fillOpacity="0.5" className="colorful:fill-amber-solid" />
 
       <g className="mono" fontSize="8" fill="currentColor" letterSpacing="1.2">
-        <text x="66" y="100" textAnchor="middle" fillOpacity="0.7">
+        <text x="66" y="100" textAnchor="middle" fillOpacity="0.7" className="colorful:fill-coral colorful:font-semibold">
           {ts("MACULA", "AREA")}
         </text>
-        <text x="66" y="112" textAnchor="middle" fillOpacity="0.45">
+        <text x="66" y="112" textAnchor="middle" fillOpacity="0.45" className="colorful:fill-coral">
           {ts("FIELD", "MAKULA")}
         </text>
-        <text x="262" y="100" textAnchor="middle" fillOpacity="0.7">
+        <text x="262" y="100" textAnchor="middle" fillOpacity="0.7" className="colorful:fill-amber colorful:font-semibold">
           {ts("DISC", "AREA")}
         </text>
-        <text x="262" y="112" textAnchor="middle" fillOpacity="0.45">
+        <text x="262" y="112" textAnchor="middle" fillOpacity="0.45" className="colorful:fill-amber">
           {ts("FIELD", "DISKUS")}
         </text>
-        <text x="162" y="186" textAnchor="middle" fillOpacity="0.55">
+        <text x="162" y="186" textAnchor="middle" fillOpacity="0.55" className="colorful:fill-brand">
           {ts("SHARED + COMPLEMENTARY EVIDENCE", "BUKTI BERSAMA + PELENGKAP")}
         </text>
       </g>

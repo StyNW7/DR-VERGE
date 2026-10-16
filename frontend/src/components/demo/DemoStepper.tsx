@@ -33,9 +33,9 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
             className={cn(
               "relative overflow-hidden rounded-2xl border p-3 transition-colors duration-500 sm:p-4",
               isCurrent
-                ? "border-foreground bg-card shadow-lg"
+                ? "border-foreground bg-card shadow-lg colorful:border-brand colorful:shadow-[0_14px_30px_-16px_hsl(var(--brand-to)/0.55)]"
                 : isDone
-                  ? "border-border bg-card"
+                  ? "border-border bg-card colorful:border-brand-line colorful:bg-brand-soft/60"
                   : "border-dashed border-border bg-transparent",
             )}
           >
@@ -44,7 +44,7 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
                 className={cn(
                   "mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors duration-500",
                   isDone || isCurrent
-                    ? "bg-foreground text-background"
+                    ? "brand-fill"
                     : "border border-border text-muted-foreground",
                 )}
               >
@@ -67,7 +67,7 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
             {isCurrent && !reduce && (
               <motion.span
                 layoutId="demo-step-glow"
-                className="absolute inset-x-0 bottom-0 h-[2px] bg-foreground"
+                className="brand-fill absolute inset-x-0 bottom-0 h-[2px] colorful:h-[3px]"
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 aria-hidden="true"
               />

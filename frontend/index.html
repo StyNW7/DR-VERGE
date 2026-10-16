@@ -65,11 +65,15 @@
             ((!stored || stored === "system") &&
               window.matchMedia("(prefers-color-scheme: dark)").matches);
           if (dark) document.documentElement.classList.add("dark");
+          // Colour palette: "color" (default) or the original "mono".
+          if (localStorage.getItem("dr-verge-palette") !== "mono")
+            document.documentElement.classList.add("colorful");
           // Same for the language, so the first paint is already correct.
           var lang = localStorage.getItem("dr-verge-lang");
           document.documentElement.lang = lang === "en" ? "en" : "id";
         } catch (e) {
-          /* localStorage unavailable — fall back to the CSS default */
+          /* localStorage unavailable — fall back to the default palette */
+          document.documentElement.classList.add("colorful");
         }
       })();
     </script>

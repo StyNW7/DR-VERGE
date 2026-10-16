@@ -40,7 +40,7 @@ export default function Footer() {
               )}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <span className="mono rounded-full bg-foreground px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-background">
+              <span className="brand-fill mono rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
                 {siteConfig.competition}
               </span>
               <span className="mono rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -60,7 +60,7 @@ export default function Footer() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground colorful:hover:text-brand"
                   >
                     {tr(link.label)}
                   </Link>
@@ -83,7 +83,7 @@ export default function Footer() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground colorful:hover:text-brand"
                       >
                         <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                         {tr(link.label)}
@@ -115,7 +115,7 @@ export default function Footer() {
 
         {/* Oversized wordmark: the page's closing gesture. Decorative only. */}
         <div
-          className="ink-gradient pointer-events-none mt-16 select-none text-center text-[clamp(4rem,17vw,15rem)] font-extrabold leading-[0.8] tracking-[-0.06em] opacity-[0.12]"
+          className="ink-gradient pointer-events-none mt-16 select-none text-center text-[clamp(4rem,17vw,15rem)] font-extrabold leading-[0.8] tracking-[-0.06em] opacity-[0.12] colorful:opacity-[0.22]"
           aria-hidden="true"
         >
           {siteConfig.projectName}

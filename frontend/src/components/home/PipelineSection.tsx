@@ -85,18 +85,18 @@ export default function PipelineSection() {
                 role="listitem"
                 className={
                   "group relative flex h-full flex-col gap-4 p-6 transition-colors duration-300 " +
-                  (isCsd ? "bg-foreground text-background" : "bg-card hover:bg-surface")
+                  (isCsd ? "inverse" : "bg-card hover:bg-surface colorful:hover:bg-brand-soft")
                 }
               >
                 <div className="flex items-center justify-between">
                   <Icon
-                    className={"h-5 w-5 " + (isCsd ? "text-background" : "text-foreground")}
+                    className={"h-5 w-5 " + (isCsd ? "text-background" : "text-foreground colorful:text-brand")}
                     aria-hidden="true"
                   />
                   <span
                     className={
                       "mono text-[11px] tracking-[0.16em] " +
-                      (isCsd ? "text-background/50" : "text-subtle")
+                      (isCsd ? "text-background/50" : "text-subtle colorful:font-semibold")
                     }
                   >
                     {s.step}
@@ -112,7 +112,7 @@ export default function PipelineSection() {
                   {tr(s.body)}
                 </p>
                 {isCsd && (
-                  <span className="mono mt-auto self-start rounded-full border border-background/25 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em]">
+                  <span className="mono mt-auto self-start rounded-full border border-background/25 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] colorful:border-transparent colorful:bg-[hsl(45_100%_72%)] colorful:font-semibold colorful:text-[hsl(222_60%_18%)]">
                     {t("Contribution", "Kontribusi")}
                   </span>
                 )}

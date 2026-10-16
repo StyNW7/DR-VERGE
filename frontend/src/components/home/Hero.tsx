@@ -9,6 +9,8 @@ import { getGrade, gradeText, ordinalThresholdLabels } from "@/data/drGrades";
 import { scrollToSection } from "@/hooks/useScrollSpy";
 import { l, useI18n } from "@/i18n/context";
 import { cn } from "@/lib/utils";
+import { gradeTone } from "@/lib/gradeTone";
+import { useIsColorful } from "@/components/theme-provider";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -25,7 +27,11 @@ const trust = [
   },
 ];
 
-/** One real fundus field, shown in grayscale so the page stays monochrome. */
+/** Accents for the four headline numbers in the colourful palette. */
+const statAccents = ["accent-blue", "accent-coral", "accent-amber", "accent-blue"];
+
+/** One real fundus field: grayscale in the monochrome palette, true colour in
+ *  the colourful one. */
 function FieldTile({
   src,
   index,
@@ -52,7 +58,7 @@ function FieldTile({
         alt={alt}
         loading="eager"
         decoding="async"
-        className="h-full w-full scale-[1.04] object-cover grayscale contrast-[1.15] transition-transform [transition-duration:1200ms] ease-editorial group-hover:scale-[1.1]"
+        className="h-full w-full scale-[1.04] object-cover grayscale contrast-[1.15] transition-transform [transition-duration:1200ms] ease-editorial group-hover:scale-[1.1] colorful:grayscale-0 colorful:contrast-[1.05] colorful:saturate-[1.1]"
       />
       {/* Inner vignette keeps the label legible on any photograph. */}
       <div
@@ -75,6 +81,7 @@ function FieldTile({
 function HeroVisual() {
   const reduce = useReducedMotion();
   const { t, ts, lang, num } = useI18n();
+  const colorful = useIsColorful();
   const scores = heroExample.cumulativeScores;
   const passed = scores.filter((s) => s > heroExample.decisionThreshold).length;
   const grade = getGrade(passed);
@@ -84,8 +91,8 @@ function HeroVisual() {
       <div className="mb-3 flex items-center justify-between px-1">
         <span className="mono inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-foreground" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/60 colorful:bg-coral-solid/60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-foreground colorful:bg-coral-solid" />
           </span>
           {t("Real model output", "Keluaran model asli")}
         </span>
@@ -99,20 +106,34 @@ function HeroVisual() {
           src={heroExample.macula}
           index="01"
           label={ts("Macula", "Makula")}
-          alt={ts(
-            "Macula-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
-            "Foto fundus berpusat makula dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
-          )}
+          alt={
+            colorful
+              ? ts(
+                  "Macula-centred fundus photograph from the public DeepDRiD dataset",
+                  "Foto fundus berpusat makula dari dataset publik DeepDRiD",
+                )
+              : ts(
+                  "Macula-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
+                  "Foto fundus berpusat makula dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
+                )
+          }
           delay={0.15}
         />
         <FieldTile
           src={heroExample.disc}
           index="02"
           label={ts("Optic disc", "Diskus optik")}
-          alt={ts(
-            "Optic-disc-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
-            "Foto fundus berpusat diskus optik dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
-          )}
+          alt={
+            colorful
+              ? ts(
+                  "Optic-disc-centred fundus photograph from the public DeepDRiD dataset",
+                  "Foto fundus berpusat diskus optik dari dataset publik DeepDRiD",
+                )
+              : ts(
+                  "Optic-disc-centred fundus photograph from the public DeepDRiD dataset, shown in grayscale",
+                  "Foto fundus berpusat diskus optik dari dataset publik DeepDRiD, ditampilkan dalam skala abu-abu",
+                )
+          }
           delay={0.25}
         />
       </div>
@@ -120,7 +141,7 @@ function HeroVisual() {
       {/* Converging connectors */}
       <svg
         viewBox="0 0 400 44"
-        className="h-9 w-full text-foreground/25 sm:h-11"
+        className="h-9 w-full text-foreground/25 sm:h-11 colorful:text-brand/60"
         aria-hidden="true"
         preserveAspectRatio="none"
       >
@@ -133,7 +154,7 @@ function HeroVisual() {
         initial={reduce ? false : { opacity: 0, scale: 0.97 }}
         animate={reduce ? undefined : { opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
-        className="grain relative overflow-hidden rounded-2xl bg-foreground px-4 py-3.5 text-background"
+        className="grain inverse relative overflow-hidden rounded-2xl px-4 py-3.5"
       >
         <div className="relative flex items-center justify-between gap-4">
           <div className="min-w-0">
@@ -163,7 +184,7 @@ function HeroVisual() {
         initial={reduce ? false : { opacity: 0, y: 12 }}
         animate={reduce ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.55, ease: EASE }}
-        className="mt-2.5 rounded-2xl border border-border bg-surface/70 p-4"
+        className="mt-2.5 rounded-2xl border border-border bg-surface/70 p-4 colorful:border-brand-line/70 colorful:bg-brand-soft/60"
       >
         <div className="mb-3 flex items-center justify-between">
           <span className="mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -178,14 +199,19 @@ function HeroVisual() {
             const isPassed = s > heroExample.decisionThreshold;
             return (
               <li key={i} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3">
-                <span className={cn("mono text-[11px]", isPassed ? "text-foreground" : "text-muted-foreground")}>
+                <span
+                  className={cn(
+                    "mono text-[11px]",
+                    isPassed ? "text-foreground colorful:font-semibold colorful:text-brand" : "text-muted-foreground",
+                  )}
+                >
                   {ordinalThresholdLabels[i]?.key ?? `P(Y > ${i})`}
                 </span>
-                <span className="relative h-1.5 overflow-hidden rounded-full bg-foreground/10">
+                <span className="relative h-1.5 overflow-hidden rounded-full bg-foreground/10 colorful:bg-brand/10">
                   <motion.span
                     className={cn(
                       "absolute inset-y-0 left-0 rounded-full",
-                      isPassed ? "bg-foreground" : "bg-foreground/35",
+                      isPassed ? "brand-fill" : "bg-foreground/35 colorful:bg-brand/30",
                     )}
                     initial={reduce ? { width: `${s * 100}%` } : { width: 0 }}
                     animate={{ width: `${s * 100}%` }}
@@ -208,7 +234,12 @@ function HeroVisual() {
               `${passed} dari ${scores.length} ambang terlampaui`,
             )}
           </span>
-          <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-[12px] font-semibold text-background">
+          <span
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-[12px] font-semibold text-background",
+              gradeTone(passed).fill,
+            )}
+          >
             Grade {passed}
             <span className="font-normal opacity-70">· {grade ? gradeText(grade, lang).name : ""}</span>
           </span>
@@ -217,10 +248,12 @@ function HeroVisual() {
 
       <p className="mono mt-3 px-1 text-center text-[9px] uppercase tracking-[0.14em] text-subtle">
         {heroExample.credit} ·{" "}
-        {t(
-          "shown in grayscale · research output, not a diagnosis",
-          "ditampilkan abu-abu · keluaran riset, bukan diagnosis",
-        )}
+        {colorful
+          ? t("research output, not a diagnosis", "keluaran riset, bukan diagnosis")
+          : t(
+              "shown in grayscale · research output, not a diagnosis",
+              "ditampilkan abu-abu · keluaran riset, bukan diagnosis",
+            )}
       </p>
     </div>
   );
@@ -254,9 +287,9 @@ export default function Hero() {
           <div className="lg:col-span-7">
             <motion.div
               {...fade(0)}
-              className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-card/70 py-1 pl-1 pr-4 shadow-sm backdrop-blur"
+              className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-card/70 py-1 pl-1 pr-4 shadow-sm backdrop-blur colorful:border-brand-line"
             >
-              <span className="mono rounded-full bg-foreground px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-background">
+              <span className="brand-fill mono rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">
                 {siteConfig.competition}
               </span>
               <span className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -328,7 +361,7 @@ export default function Hero() {
             <motion.ul {...fade(0.34)} className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
               {trust.map(({ icon: Icon, label }) => (
                 <li key={label.en} className="inline-flex items-center gap-2 text-[13px] text-muted-foreground">
-                  <Icon className="h-3.5 w-3.5 shrink-0 text-foreground" aria-hidden="true" />
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-foreground colorful:text-brand" aria-hidden="true" />
                   {tr(label)}
                 </li>
               ))}
@@ -346,13 +379,14 @@ export default function Hero() {
         {/* Headline numbers */}
         <motion.dl
           {...fade(0.45)}
-          className="mt-16 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur lg:mt-20 lg:grid-cols-4"
+          className="mt-16 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur lg:mt-20 lg:grid-cols-4 colorful:bg-card/85 colorful:shadow-[0_18px_40px_-24px_hsl(var(--shadow-color)/0.35)]"
         >
           {heroStats.map((s, i) => (
             <div
               key={s.label.en}
               className={cn(
                 "flex flex-col gap-1 p-5 sm:p-7",
+                statAccents[i % statAccents.length],
                 i % 2 === 1 && "border-l border-border",
                 i >= 2 && "border-t border-border lg:border-t-0",
                 i === 2 && "lg:border-l",
@@ -364,6 +398,8 @@ export default function Hero() {
                   {tr(s.detail)}
                 </span>
               </dt>
+              {/* Accent tick above each number, colourful palette only. */}
+              <span className="order-none mb-2 hidden h-1 w-8 rounded-full bg-acc-solid colorful:block" aria-hidden="true" />
               <dd className="ink-gradient order-1 text-3xl font-bold tracking-[-0.04em] tabular-nums sm:text-4xl lg:text-5xl">
                 {n(s.value)}
               </dd>
@@ -380,7 +416,7 @@ export default function Hero() {
           transition={{ delay: 1, duration: 0.8 }}
           className="group mx-auto mt-12 hidden items-center gap-3 rounded-full px-3 py-2 text-subtle transition-colors hover:text-foreground lg:flex"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors group-hover:border-foreground/40">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors group-hover:border-foreground/40 colorful:border-brand-line colorful:text-brand">
             <ArrowDown className="h-3.5 w-3.5 motion-safe:animate-bounce" aria-hidden="true" />
           </span>
           <span className="mono text-[10px] uppercase tracking-[0.18em]">

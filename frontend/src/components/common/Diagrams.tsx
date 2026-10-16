@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/context";
 import { drGrades, gradeText } from "@/data/drGrades";
+import { gradeTone, GRADE_RAMP } from "@/lib/gradeTone";
 
 /** SVG has no <i>; `*term*` markers become italic tspans instead. */
 function svgRich(text: string) {
@@ -17,11 +18,17 @@ function svgRich(text: string) {
 }
 
 /**
- * Monochrome method diagrams.
+ * Method diagrams.
  *
- * These are drawn rather than imported so they inherit `currentColor` and
- * therefore invert correctly between light and dark themes — a raster diagram
- * would need two files and would still be wrong at arbitrary sizes.
+ * These are drawn rather than imported so they inherit `currentColor` and the
+ * theme tokens, and therefore follow light/dark and mono/colourful without a
+ * second file — a raster diagram would also be wrong at arbitrary sizes.
+ *
+ * Shapes that carry meaning are coloured through classes (`fill-brand`,
+ * `stroke-amber`, …). In monochrome those tokens are the ink colour, so the
+ * diagram is drawn exactly as a single-colour line drawing; the colourful
+ * palette gives the stages their hue. Filled stages use a brand gradient whose
+ * two stops are the same ink colour in monochrome.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -50,8 +57,12 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
           markerHeight="6"
           orient="auto-start-reverse"
         >
-          <path d="M0 0 L10 5 L0 10 z" fill="currentColor" fillOpacity="0.6" />
+          <path d="M0 0 L10 5 L0 10 z" fill="currentColor" fillOpacity="0.6" className="fill-brand" />
         </marker>
+        <linearGradient id="arch-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" style={{ stopColor: "hsl(var(--brand-from))" }} />
+          <stop offset="1" style={{ stopColor: "hsl(var(--brand-to))" }} />
+        </linearGradient>
       </defs>
 
       <g
@@ -60,6 +71,7 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
         strokeWidth="1.2"
         fill="none"
         markerEnd="url(#arch-arrow)"
+        className="stroke-brand"
       >
         <path d="M186 96 C 226 96, 226 130, 262 130" />
         <path d="M186 204 C 226 204, 226 170, 262 170" />
@@ -69,8 +81,18 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
 
       {/* Inputs */}
       {[
-        { y: 56, label: pick("MACULA VIEW", "CITRA MAKULA"), sub: "384 x 384" },
-        { y: 164, label: pick("OPTIC DISC VIEW", "CITRA DISKUS OPTIK"), sub: "384 x 384" },
+        {
+          y: 56,
+          label: pick("MACULA VIEW", "CITRA MAKULA"),
+          sub: "384 x 384",
+          accent: "fill-coral-solid stroke-coral-solid",
+        },
+        {
+          y: 164,
+          label: pick("OPTIC DISC VIEW", "CITRA DISKUS OPTIK"),
+          sub: "384 x 384",
+          accent: "fill-amber-solid stroke-amber-solid",
+        },
       ].map((b) => (
         <g key={b.label}>
           <rect
@@ -84,6 +106,7 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
             stroke="currentColor"
             strokeOpacity="0.45"
             strokeWidth="1.2"
+            className={b.accent}
           />
           <text
             className="mono"
@@ -122,6 +145,7 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
         stroke="currentColor"
         strokeOpacity="0.55"
         strokeWidth="1.4"
+        className="fill-brand stroke-brand"
       />
       <text className="mono" x="334" y="144" textAnchor="middle" fontSize="12" fill="currentColor" letterSpacing="1">
         SHARED
@@ -142,6 +166,7 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
         stroke="currentColor"
         strokeOpacity="0.55"
         strokeWidth="1.4"
+        className="fill-brand stroke-brand"
       />
       <text className="mono" x="542" y="138" textAnchor="middle" fontSize="12" fill="currentColor" letterSpacing="1">
         INTERACTION
@@ -160,20 +185,18 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
         width="198"
         height="88"
         rx="10"
-        fill="currentColor"
+        fill="url(#arch-grad)"
         fillOpacity="0.92"
-        stroke="currentColor"
+        stroke="url(#arch-grad)"
         strokeWidth="1.4"
       />
       <text
-        className="mono"
+        className="mono fill-brand-foreground"
         x="777"
         y="138"
         textAnchor="middle"
         fontSize="12"
         letterSpacing="1"
-        fill="currentColor"
-        style={{ mixBlendMode: "difference" }}
       >
         CORAL ORDINAL HEAD
       </text>
@@ -187,18 +210,15 @@ export function ArchitectureDiagram({ className }: { className?: string }) {
               width="30"
               height="8"
               rx="4"
-              fill="currentColor"
-              fillOpacity="0.35"
-              style={{ mixBlendMode: "difference" }}
+              className="fill-brand-foreground"
+              fillOpacity="0.45"
             />
             <text
-              className="mono"
+              className="mono fill-brand-foreground"
               x="15"
               y="24"
               textAnchor="middle"
               fontSize="8"
-              fill="currentColor"
-              style={{ mixBlendMode: "difference" }}
             >
               {`Y>${i}`}
             </text>
@@ -237,8 +257,12 @@ export function ShiftDiagram({ className }: { className?: string }) {
           markerHeight="6"
           orient="auto-start-reverse"
         >
-          <path d="M0 0 L10 5 L0 10 z" fill="currentColor" fillOpacity="0.6" />
+          <path d="M0 0 L10 5 L0 10 z" fill="currentColor" fillOpacity="0.6" className="fill-brand" />
         </marker>
+        <linearGradient id="shift-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" style={{ stopColor: "hsl(var(--brand-from))" }} />
+          <stop offset="1" style={{ stopColor: "hsl(var(--brand-to))" }} />
+        </linearGradient>
       </defs>
 
       {/* --- teacher row --- */}
@@ -246,9 +270,9 @@ export function ShiftDiagram({ className }: { className?: string }) {
         TEACHER
       </text>
 
-      <Block x={24} y={48} w={150} h={64} title="p_macula" sub={single} />
+      <Block x={24} y={48} w={150} h={64} title="p_macula" sub={single} accent="coral" />
       <Operator x={186} y={80} symbol="+" />
-      <Block x={214} y={48} w={150} h={64} title="p_disc" sub={single} />
+      <Block x={214} y={48} w={150} h={64} title="p_disc" sub={single} accent="amber" />
       <Operator x={376} y={80} symbol="=" />
       <Block x={404} y={48} w={166} h={64} title="p_agg" sub={averaged} />
 
@@ -265,9 +289,10 @@ export function ShiftDiagram({ className }: { className?: string }) {
       <Block x={404} y={146} w={166} h={64} title="p_agg" sub={averaged} />
 
       {/* Δ, the quantity the whole method is about */}
-      <g stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" fill="none" markerEnd="url(#shift-arrow)">
+      <g stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" fill="none" markerEnd="url(#shift-arrow)" className="stroke-brand">
         <path d="M586 178 L 646 178" />
       </g>
+      {/* Δ is the quantity the method is about: amber in the colourful palette. */}
       <rect
         x="654"
         y="140"
@@ -279,8 +304,9 @@ export function ShiftDiagram({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="1.6"
         strokeDasharray="6 4"
+        className="fill-amber-solid stroke-amber-solid"
       />
-      <text className="mono" x="765" y="172" textAnchor="middle" fontSize="18" fill="currentColor">
+      <text className="mono fill-amber" x="765" y="172" textAnchor="middle" fontSize="18" fill="currentColor">
         Δ
         <tspan fontSize="11" dy="-6">
           T
@@ -291,15 +317,15 @@ export function ShiftDiagram({ className }: { className?: string }) {
       </text>
 
       {/* --- transfer --- */}
-      <g stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" fill="none" markerEnd="url(#shift-arrow)">
+      <g stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" fill="none" markerEnd="url(#shift-arrow)" className="stroke-brand">
         <path d="M765 224 L 765 258" />
       </g>
-      <text className="mono" x="782" y="248" fontSize="10" fill="currentColor" fillOpacity="0.6">
+      <text className="mono" x="752" y="248" textAnchor="end" fontSize="10" fill="currentColor" fillOpacity="0.6">
         SmoothL1( Δ_S / s , Δ_T / s )
       </text>
 
       {/* --- student row --- */}
-      <text className="mono" x="24" y="286" fontSize="11" fill="currentColor" fillOpacity="0.55" letterSpacing="1.5">
+      <text className="mono" x="24" y="256" fontSize="11" fill="currentColor" fillOpacity="0.55" letterSpacing="1.5">
         STUDENT
       </text>
       <rect
@@ -308,19 +334,17 @@ export function ShiftDiagram({ className }: { className?: string }) {
         width="222"
         height="60"
         rx="10"
-        fill="currentColor"
+        fill="url(#shift-grad)"
         fillOpacity="0.92"
-        stroke="currentColor"
+        stroke="url(#shift-grad)"
         strokeWidth="1.4"
       />
       <text
-        className="mono"
+        className="mono fill-brand-foreground"
         x="765"
         y="292"
         textAnchor="middle"
         fontSize="16"
-        fill="currentColor"
-        style={{ mixBlendMode: "difference" }}
       >
         Δ
         <tspan fontSize="10" dy="-5">
@@ -328,14 +352,12 @@ export function ShiftDiagram({ className }: { className?: string }) {
         </tspan>
       </text>
       <text
-        className="mono"
         x="765"
         y="312"
         textAnchor="middle"
         fontSize="9"
-        fill="currentColor"
-        fillOpacity="0.7"
-        style={{ mixBlendMode: "difference" }}
+        className="mono fill-brand-foreground"
+        fillOpacity="0.85"
       >
         {svgRich(pick("student reproduces the shift", "*student* mereproduksi pergeseran"))}
       </text>
@@ -347,6 +369,7 @@ export function ShiftDiagram({ className }: { className?: string }) {
         h={60}
         title={pick("~328K parameters", "~328K parameter")}
         sub={pick("lightweight dual-view student", "*lightweight dual-view student*")}
+        accent="brand"
       />
     </svg>
   );
@@ -360,6 +383,7 @@ function Block({
   title,
   sub,
   filled = false,
+  accent = "brand",
 }: {
   x: number;
   y: number;
@@ -368,7 +392,13 @@ function Block({
   title: string;
   sub?: string;
   filled?: boolean;
+  accent?: "brand" | "coral" | "amber";
 }) {
+  const tint = {
+    brand: "fill-brand stroke-brand",
+    coral: "fill-coral-solid stroke-coral-solid",
+    amber: "fill-amber-solid stroke-amber-solid",
+  }[accent];
   return (
     <g>
       <rect
@@ -378,10 +408,11 @@ function Block({
         height={h}
         rx="10"
         fill="currentColor"
-        fillOpacity={filled ? 0.12 : 0.04}
+        fillOpacity={filled ? 0.12 : 0.05}
         stroke="currentColor"
         strokeOpacity={filled ? 0.6 : 0.4}
         strokeWidth={filled ? 1.5 : 1.2}
+        className={tint}
       />
       <text
         className="mono"
@@ -455,7 +486,10 @@ export function OrdinalScale({
         {/* Track — from the first dot's centre to the last one's (10% / 90%
             of five equal columns), so it never sticks out past the scale. */}
         <div
-          className="absolute left-[10%] right-[10%] top-[15px] h-px bg-border"
+          className={cn(
+            "absolute left-[10%] right-[10%] top-[15px] h-px bg-border colorful:top-[14.5px] colorful:h-[3px] colorful:rounded-full colorful:opacity-80",
+            GRADE_RAMP,
+          )}
           aria-hidden="true"
         />
         <ol className="relative flex justify-between">
@@ -467,8 +501,14 @@ export function OrdinalScale({
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300",
                     isActive
-                      ? "border-foreground bg-foreground text-background scale-110"
-                      : "border-border bg-background text-muted-foreground",
+                      ? cn(
+                          "border-foreground bg-foreground text-background scale-110 colorful:scale-[1.2] colorful:shadow-lg",
+                          gradeTone(item.g).fill,
+                        )
+                      : cn(
+                          "border-border bg-background text-muted-foreground colorful:border-2 colorful:bg-card colorful:text-foreground",
+                          gradeTone(item.g).border,
+                        ),
                   )}
                   aria-current={isActive ? "step" : undefined}
                 >

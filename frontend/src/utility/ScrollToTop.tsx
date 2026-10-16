@@ -30,6 +30,7 @@ const ScrollToTopButton = () => {
         "no-print fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full",
         "border border-border bg-background/90 text-foreground backdrop-blur",
         "transition-all duration-300 ease-editorial hover:border-foreground hover:bg-muted",
+        "colorful:border-transparent colorful:brand-fill colorful:text-white colorful:shadow-[0_10px_24px_-10px_hsl(var(--brand-to)/0.8)] colorful:hover:-translate-y-0.5",
         isVisible && !hidden
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-3 opacity-0",

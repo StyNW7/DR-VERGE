@@ -44,8 +44,8 @@ export function Section({
   const tones = {
     default: "",
     surface: "bg-surface",
-    // Full inversion — the strongest emphasis available in a monochrome system.
-    inverted: "bg-foreground text-background",
+    // Full inversion in monochrome; a deep navy-to-blue ground in colourful.
+    inverted: "inverse inverse-deep",
   } as const;
 
   return (

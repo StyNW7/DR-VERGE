@@ -158,7 +158,7 @@ export default function ResearchPage() {
                   (i === 2 ? "lg:border-l" : "")
                 }
               >
-                <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+                <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle colorful:font-semibold colorful:text-brand">
                   {p.label}
                 </dt>
                 <dd className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">

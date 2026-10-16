@@ -9,9 +9,11 @@ import { useI18n } from "@/i18n/context";
 /**
  * A real figure from the DR-VERGE evaluation run.
  *
- * The source PNGs are grayscale renders of the actual matplotlib output, so they
- * are inverted in dark mode: for a grayscale image that is lossless and turns a
- * glaring white canvas into a native-looking dark chart.
+ * The source PNGs are the actual matplotlib output on a white canvas. The
+ * monochrome palette shows them in grayscale and inverts them in dark mode (for
+ * a grayscale image that is lossless and turns a glaring white canvas into a
+ * native-looking dark chart); the colourful palette keeps their real colours —
+ * see `.figure-invert` in index.css.
  *
  * Failure is handled explicitly. A missing figure shows a labelled placeholder
  * rather than a broken image icon, because a research page with a broken image
@@ -56,7 +58,7 @@ export function ResearchFigure({
               loading={priority ? "eager" : "lazy"}
               decoding="async"
               onError={() => setFailed(true)}
-              className="figure-invert w-full bg-white transition-transform duration-500 ease-editorial group-hover:scale-[1.015] dark:bg-transparent"
+              className="figure-invert w-full bg-white transition-transform duration-500 ease-editorial group-hover:scale-[1.015] dark:bg-transparent colorful:bg-white"
             />
             <span className="glass absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
               <Maximize2 className="h-3 w-3" aria-hidden="true" />
@@ -66,7 +68,7 @@ export function ResearchFigure({
         )}
       </div>
       <figcaption className="mt-4 flex flex-col gap-1.5">
-        <span className="mono text-[11px] uppercase tracking-[0.14em] text-foreground">
+        <span className="mono text-[11px] uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
           {tr(figure.title)}
         </span>
         <span className="max-w-prose text-[13px] leading-relaxed text-muted-foreground">
