@@ -25,11 +25,15 @@ export default function NotFoundPage() {
         >
           {/* The illustration doubles as the zero in "404". */}
           <div className="flex items-center justify-center gap-2">
-            <span className="display text-display-xl leading-none">4</span>
-            <span className="h-[clamp(3.5rem,14vw,10rem)] w-[clamp(3.5rem,14vw,10rem)] text-foreground opacity-30">
-              <FundusIllustration variant="macula" />
+            <span className="display ink-gradient text-display-xl leading-none">4</span>
+            {/* Drawn with the same stroke weight as the 4s, so it reads as
+                the digit first and as an eye second. */}
+            <span className="relative flex h-[clamp(3.5rem,14vw,10rem)] w-[clamp(3.5rem,14vw,10rem)] items-center justify-center rounded-full border-[clamp(7px,1.6vw,16px)] border-foreground colorful:border-brand colorful:shadow-[0_18px_50px_-18px_hsl(var(--brand-to)/0.7)]">
+              <span className="h-[78%] w-[78%] text-foreground opacity-50 colorful:text-brand colorful:opacity-80">
+                <FundusIllustration variant="macula" />
+              </span>
             </span>
-            <span className="display text-display-xl leading-none">4</span>
+            <span className="display ink-gradient text-display-xl leading-none">4</span>
           </div>
 
           <span className="eyebrow mt-8">{t("Error 404", "Galat 404")}</span>

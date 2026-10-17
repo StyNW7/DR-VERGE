@@ -119,7 +119,7 @@ export default function Footer() {
 
         {/* Oversized wordmark: the page's closing gesture. Decorative only. */}
         <div
-          className="ink-gradient pointer-events-none mt-16 select-none text-center text-[clamp(4rem,17vw,15rem)] font-extrabold leading-[0.8] tracking-[-0.06em] opacity-[0.12] colorful:opacity-[0.22]"
+          className="ink-gradient pointer-events-none mt-16 select-none whitespace-nowrap pb-[0.06em] text-center text-[clamp(3.25rem,15vw,13rem)] font-extrabold leading-[0.85] tracking-[-0.06em] opacity-[0.12] colorful:opacity-[0.22]"
           aria-hidden="true"
         >
           {siteConfig.projectName}

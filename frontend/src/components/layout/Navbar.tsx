@@ -374,7 +374,7 @@ export default function Navbar() {
           className={cn(
             "mx-auto flex items-center justify-between gap-3 transition-all duration-500 ease-editorial",
             scrolled
-              ? "glass h-14 max-w-[1120px] rounded-full border border-border pl-2 pr-2 shadow-[0_10px_40px_-16px_hsl(var(--shadow-color)/0.35)] sm:pl-3"
+              ? "glass h-14 max-w-[1200px] rounded-full border border-border pl-2 pr-2 shadow-[0_10px_40px_-16px_hsl(var(--shadow-color)/0.35)] sm:pl-3"
               : "h-16 max-w-[1440px] border border-transparent px-5 sm:h-20 sm:px-6 lg:px-8",
           )}
         >
@@ -386,7 +386,9 @@ export default function Navbar() {
             <span className="brand-fill flex h-9 w-9 items-center justify-center rounded-full colorful:shadow-[0_6px_16px_-6px_hsl(var(--brand-to)/0.7)]">
               <Logo className="h-5 w-5" />
             </span>
-            <span className="flex flex-col leading-none">
+            {/* On a phone the compact (scrolled) bar keeps only the mark, so
+                every control still fits on a 375px screen. */}
+            <span className={cn("flex flex-col leading-none", scrolled && "max-sm:hidden")}>
               <span className="text-15 font-bold tracking-tight a11y:text-[1.0625rem]">
                 {siteConfig.projectName}
               </span>

@@ -22,7 +22,7 @@ import { useI18n } from "@/i18n/context";
 
 /** The paper button. While the PDF is not published it reads as "coming soon"
  *  in a quiet outline style, rather than as a greyed-out primary button. */
-function PaperButton({ size = "lg" as const }) {
+function PaperButton({ size = "lg" as const, className }: { size?: "lg"; className?: string }) {
   const { t, ts } = useI18n();
   const paperOk = isLinkConfigured(siteConfig.paperUrl);
   return (
@@ -31,6 +31,7 @@ function PaperButton({ size = "lg" as const }) {
       enabled={paperOk}
       size={size}
       variant={paperOk ? "primary" : "outline"}
+      className={className}
       disabledTitle={ts(
         "The paper link has not been configured yet.",
         "Tautan makalah belum dikonfigurasi.",
@@ -207,16 +208,26 @@ export default function ResearchPage() {
                 )}
               </p>
 
-              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <PaperButton />
-                <LinkButton to="/demo" size="lg" variant="outline">
+              {/* Labels never break mid-button; the row wraps instead. While
+                  the paper is unpublished the demo is the strongest action,
+                  so it takes the filled style. */}
+              <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <PaperButton className="whitespace-nowrap" />
+                <LinkButton
+                  to="/demo"
+                  size="lg"
+                  variant={paperOk ? "outline" : "primary"}
+                  className="group whitespace-nowrap"
+                >
                   {t("Open Model Demo", "Buka Demo Model")}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                 </LinkButton>
                 <ExternalButton
                   href={siteConfig.githubUrl}
                   enabled={githubOk}
                   size="lg"
                   variant="ghost"
+                  className="whitespace-nowrap"
                   disabledTitle={ts(
                     "The repository link has not been configured yet.",
                     "Tautan repositori belum dikonfigurasi.",

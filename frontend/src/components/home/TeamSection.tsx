@@ -139,9 +139,15 @@ export default function TeamSection() {
       {advisors.length > 0 && (
         <>
           <Divider label={t("Faculty Advisor", "Dosen Pembimbing")} className="mt-16" />
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Centred under the team, each card the width of one team column,
+              so a single advisor does not sit alone at the left edge. */}
+          <div className="mt-10 flex flex-wrap justify-center gap-5">
             {advisors.map((a, i) => (
-              <Reveal key={a.id} delay={i * 0.07}>
+              <Reveal
+                key={a.id}
+                delay={i * 0.07}
+                className="w-full sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
+              >
                 <MemberCard member={a} />
               </Reveal>
             ))}

@@ -54,10 +54,12 @@ export function Badge({
 export function Divider({ className, label }: { className?: string; label?: React.ReactNode }) {
   if (label) {
     return (
+      // The label may wrap (large text on a narrow phone); the rules keep a
+      // minimum length so the divider still reads as one.
       <div className={cn("flex items-center gap-4", className)}>
-        <span className="h-px flex-1 bg-border" />
-        <span className="eyebrow shrink-0">{label}</span>
-        <span className="h-px flex-1 bg-border" />
+        <span className="h-px min-w-6 flex-1 bg-border" />
+        <span className="eyebrow max-w-[75%] text-center">{label}</span>
+        <span className="h-px min-w-6 flex-1 bg-border" />
       </div>
     );
   }

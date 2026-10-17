@@ -1,4 +1,4 @@
-import { Info, Check, Cpu, Layers, Binary, Timer, Boxes, ScanEye } from "lucide-react";
+import { Info, Check, Cpu, Layers, Binary, Timer, Boxes, ScanEye, X, Equal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { InferenceResult } from "@/services/inferenceApi";
 import {
@@ -52,8 +52,11 @@ export function OutputHero({ result }: { result: InferenceResult }) {
             <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
               {t("Predicted DR Grade", "Prediksi *Grade* DR")}
             </span>
-            <div className="display mt-5 text-[clamp(4.5rem,18vw,8rem)] leading-[0.82]">
-              {grade?.display ?? String(result.grade)}
+            {/* "0 / 4" rather than "00": the position on the scale is the
+                point, and a lone double zero reads as a code, not a grade. */}
+            <div className="display mt-5 flex items-baseline text-[clamp(4.5rem,18vw,8rem)] leading-[0.82]">
+              {result.grade}
+              <span className="ml-3 text-[0.3em] font-semibold tracking-normal opacity-60">/ {maxGrade}</span>
             </div>
           </div>
           <div className="mt-7">
@@ -132,7 +135,7 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
             <div key={i} className="print-block">
               <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <div className="flex items-baseline gap-3">
-                  <span className="mono text-sm font-semibold">
+                  <span className="mono whitespace-nowrap text-sm font-semibold">
                     {meta?.key ?? `P(Y > ${i})`}
                   </span>
                   <span className="text-12 text-muted-foreground">
@@ -156,10 +159,65 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
         })}
       </div>
 
-      <Callout tone="note" className="mt-7">
+      <ThresholdCount scores={result.ordinalScores} grade={result.grade} />
+
+      <Callout tone="note" className="mt-auto">
         {tr(DISCLAIMER_SCORES)}
       </Callout>
     </SectionCard>
+  );
+}
+
+/**
+ * The counting rule made visible: one tile per threshold, ticked when it is
+ * passed, and the total — which *is* the grade.
+ */
+function ThresholdCount({ scores, grade }: { scores: number[]; grade: number }) {
+  const { t } = useI18n();
+  const passed = scores.filter((s) => s > 0.5).length;
+
+  return (
+    <div className="my-7 rounded-xl border border-border bg-surface/70 p-4 colorful:border-brand-line/70 colorful:bg-brand-soft/50">
+      <div className="mb-3 text-12 font-medium text-muted-foreground">
+        {t("How the grade is counted", "Cara *grade* dihitung")}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {scores.map((s, i) => {
+          const ok = s > 0.5;
+          return (
+            <span
+              key={i}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-lg border",
+                ok ? "brand-fill border-transparent" : "border-dashed border-border-strong bg-card text-subtle",
+              )}
+              title={`P(Y > ${i})`}
+            >
+              {ok ? <Check className="h-4 w-4" aria-hidden="true" /> : <X className="h-3.5 w-3.5" aria-hidden="true" />}
+            </span>
+          );
+        })}
+        <Equal className="mx-1 h-4 w-4 text-subtle" aria-hidden="true" />
+        <span
+          className={cn(
+            "inline-flex h-9 items-center rounded-lg bg-foreground px-3 text-sm font-bold text-background",
+            gradeTone(grade).fill,
+          )}
+        >
+          Grade {grade}
+        </span>
+      </div>
+      {/* Only claimed when it holds — a service with another operating point
+          would otherwise be described wrongly. */}
+      {passed === grade && (
+        <p className="mt-3 text-12 leading-relaxed text-muted-foreground">
+          {t(
+            `${passed} of ${scores.length} thresholds passed at 0.5, so the predicted grade is ${grade}.`,
+            `${passed} dari ${scores.length} ambang terlampaui pada 0,5, sehingga *grade* prediksinya ${grade}.`,
+          )}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -190,14 +248,14 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
           return (
             <div key={g} className="print-block">
               <div className="mb-2 flex items-baseline justify-between gap-4">
-                <div className="flex items-baseline gap-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span
                     className={cn("hidden h-2.5 w-2.5 self-center rounded-full colorful:block", gradeTone(g).dot)}
                     aria-hidden="true"
                   />
                   <span
                     className={cn(
-                      "mono text-sm",
+                      "mono whitespace-nowrap text-sm",
                       isPredicted ? "font-bold text-foreground" : "text-muted-foreground",
                     )}
                   >
@@ -373,19 +431,21 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="print-block card-premium p-6 sm:p-8">
-      <div className="mb-6 flex items-start gap-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface colorful:border-brand-line colorful:bg-brand-soft">
-          <Icon className="h-4 w-4 text-foreground/70 colorful:text-brand" aria-hidden="true" />
-        </span>
-        <div>
-          <h3 className="pt-1 text-base font-bold tracking-tight">{title}</h3>
-          {description && (
-            <p className="mt-2 max-w-prose text-14 leading-relaxed text-muted-foreground">
-              {description}
-            </p>
-          )}
+    <section className="print-block card-premium flex flex-col p-6 sm:p-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface colorful:border-brand-line colorful:bg-brand-soft">
+            <Icon className="h-4 w-4 text-foreground/70 colorful:text-brand" aria-hidden="true" />
+          </span>
+          <h3 className="text-base font-bold tracking-tight">{title}</h3>
         </div>
+        {/* Full width under the heading: beside the icon it was squeezed into
+            a narrow column on phones. */}
+        {description && (
+          <p className="mt-3 max-w-prose text-14 leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+        )}
       </div>
       {children}
     </section>

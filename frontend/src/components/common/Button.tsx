@@ -8,7 +8,7 @@ type Variant = "primary" | "secondary" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "relative inline-flex items-center justify-center gap-2 rounded-full font-medium " +
+  "relative inline-flex items-center justify-center gap-2 rounded-full text-center font-medium leading-tight " +
   "transition-all duration-200 ease-editorial select-none " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
   "focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40";
@@ -32,10 +32,11 @@ const variants: Record<Variant, string> = {
 
 const sizes: Record<Size, string> = {
   // Accessibility mode: taller targets for the larger type and for less
-  // precise pointing.
-  sm: "h-9 px-4 text-13 a11y:h-11",
-  md: "h-11 px-6 text-sm a11y:h-[3.25rem]",
-  lg: "h-14 px-8 text-base a11y:h-16",
+  // precise pointing. A minimum rather than a fixed height there, so a long
+  // label that wraps on a phone still has room for both lines.
+  sm: "h-9 px-4 text-13 a11y:h-auto a11y:min-h-11 a11y:py-2",
+  md: "h-11 px-6 text-sm a11y:h-auto a11y:min-h-[3.25rem] a11y:py-2.5",
+  lg: "h-14 px-8 text-base a11y:h-auto a11y:min-h-16 a11y:py-3",
 };
 
 interface CommonProps {

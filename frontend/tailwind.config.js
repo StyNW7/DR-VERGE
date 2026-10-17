@@ -14,7 +14,7 @@ module.exports = {
   prefix: "",
   theme: {
     // `xs` sits below `sm` for the narrowest phones' navbar.
-    screens: { xs: "370px", ...defaultTheme.screens },
+    screens: { xs: "380px", ...defaultTheme.screens },
     // The whole scale is replaced (not extended) so that every size is
     // variable-driven. The numeric tokens are the old pixel sizes (`text-13` is
     // 13px at normal size) and carry no line height, like the arbitrary

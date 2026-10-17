@@ -56,6 +56,56 @@ function CompareBar({
   );
 }
 
+/**
+ * The compression factor drawn to scale: one cell per student-sized block of
+ * parameters. The teacher fills all of them; the student is the single
+ * highlighted cell.
+ */
+function ScaleWaffle({ factor }: { factor: number }) {
+  const { t, ts } = useI18n();
+  const reduce = useReducedMotion();
+  const cells = Math.round(factor);
+
+  return (
+    <figure className="mt-8">
+      <div
+        className="grid grid-cols-[repeat(25,minmax(0,1fr))] gap-[3px]"
+        role="img"
+        aria-label={ts(
+          `The teacher has about ${cells} times as many parameters as the student`,
+          `Teacher memiliki sekitar ${cells} kali lebih banyak parameter daripada student`,
+        )}
+      >
+        {Array.from({ length: cells }, (_, i) => (
+          <motion.span
+            key={i}
+            className={cn(
+              "aspect-square rounded-[3px]",
+              i === 0
+                ? "brand-fill shadow-[0_0_0_2px_hsl(var(--background)),0_0_0_3.5px_hsl(var(--brand))]"
+                : "bg-foreground/15 colorful:bg-[hsl(var(--chart-2)/0.45)]",
+            )}
+            initial={reduce ? false : { opacity: 0, scale: 0.4 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.35, delay: reduce ? 0 : i * 0.006, ease: [0.22, 1, 0.36, 1] }}
+          />
+        ))}
+      </div>
+      <figcaption className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-12 text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="brand-fill h-2.5 w-2.5 rounded-[2px]" aria-hidden="true" />
+          {t("Student (1 block)", "*Student* (1 blok)")}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-[2px] bg-foreground/15 colorful:bg-[hsl(var(--chart-2)/0.45)]" aria-hidden="true" />
+          {t(`Teacher (${cells} blocks)`, `*Teacher* (${cells} blok)`)}
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function Rq2Section() {
   const { t, tr, pick, num, lang } = useI18n();
   const maxLatency = Math.max(...efficiencyResults.map((r) => r.latencyMs));
@@ -107,6 +157,8 @@ export default function Rq2Section() {
                 delay={0.15}
               />
             </div>
+
+            <ScaleWaffle factor={modelStats.compressionFactor} />
 
             <div className="mt-auto flex items-baseline gap-3 border-t border-border pt-7">
               <span className="mono text-4xl font-bold tracking-tight colorful:text-brand-gradient">

@@ -9,6 +9,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { gradeTone } from "@/lib/gradeTone";
 import type { SampleEntry, SampleManifest } from "@/data/samples";
 import { getGrade, gradeText } from "@/data/drGrades";
 import { Skeleton } from "@/components/common/Primitives";
@@ -179,8 +180,9 @@ export function ReferenceCheck({
             {t("Reference grade", "*Grade* referensi")} · {sample.sample_id}
           </span>
           <div>
-            <div className="display text-5xl colorful:text-brand-gradient">
-              {ref?.display ?? sample.ground_truth_grade}
+            <div className="display flex items-baseline text-5xl">
+              <span className="colorful:text-brand-gradient">{ref?.grade ?? sample.ground_truth_grade}</span>
+              <span className="ml-2 text-xl font-semibold tracking-normal text-subtle">/ 4</span>
             </div>
             <div className="mt-2 text-sm font-semibold">
               {ref ? gradeText(ref, lang).name : sample.ground_truth_name}
@@ -193,6 +195,35 @@ export function ReferenceCheck({
 
         <div className="flex flex-col justify-between gap-6 bg-card p-6 sm:p-8">
           <span className="eyebrow">{t("Model vs reference", "Model vs referensi")}</span>
+
+          {/* Both grades on the same 0–4 scale, so the distance between them
+              is seen rather than read. */}
+          <div className="flex flex-col gap-2.5" aria-hidden="true">
+            {[
+              { label: t("Model", "Model"), value: predictedGrade },
+              { label: t("Reference", "Referensi"), value: sample.ground_truth_grade },
+            ].map((row, r) => (
+              <div key={r} className="grid grid-cols-[4.75rem_1fr] items-center gap-3">
+                <span className="text-12 font-medium text-muted-foreground">{row.label}</span>
+                <span className="grid grid-cols-5 gap-1">
+                  {[0, 1, 2, 3, 4].map((g) => (
+                    <span
+                      key={g}
+                      className={cn(
+                        "mono flex h-6 items-center justify-center rounded-md text-11 font-semibold transition-colors",
+                        g === row.value
+                          ? cn("bg-foreground text-background", gradeTone(g).fill)
+                          : "bg-muted text-subtle",
+                      )}
+                    >
+                      {g}
+                    </span>
+                  ))}
+                </span>
+              </div>
+            ))}
+          </div>
+
           <div className="flex items-center gap-3">
             <span
               className={cn(
