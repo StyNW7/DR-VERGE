@@ -93,7 +93,7 @@ export function AbstractSection() {
                 className={
                   i === 0
                     ? "text-lg leading-relaxed text-foreground"
-                    : "text-[15px] leading-relaxed text-muted-foreground"
+                    : "text-15 leading-relaxed text-muted-foreground"
                 }
               >
                 {tr(p)}
@@ -114,10 +114,10 @@ export function AbstractSection() {
                     (i < meta.length - 1 ? "border-b border-border" : "")
                   }
                 >
-                  <dt className="mono shrink-0 text-[10px] uppercase tracking-[0.14em] text-subtle">
+                  <dt className="mono shrink-0 text-11 uppercase tracking-[0.14em] text-subtle">
                     {m.label}
                   </dt>
-                  <dd className="text-right text-[13px] font-medium leading-snug">{m.value}</dd>
+                  <dd className="text-right text-13 font-medium leading-snug">{m.value}</dd>
                 </div>
               ))}
             </dl>
@@ -128,11 +128,11 @@ export function AbstractSection() {
               <div key={d.name} className="bg-card p-5">
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-sm font-bold">{d.name}</span>
-                  <span className="mono text-right text-[9px] uppercase tracking-[0.12em] text-subtle">
+                  <span className="mono text-right text-10 uppercase tracking-[0.12em] text-subtle">
                     {tr(d.role)}
                   </span>
                 </div>
-                <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                <p className="mt-1.5 text-13 leading-relaxed text-muted-foreground">
                   {tr(d.detail)}
                 </p>
               </div>
@@ -177,24 +177,24 @@ export function ResearchQuestionsSection() {
             <div className="card-premium flex h-full flex-col p-7 sm:p-9">
               <div className="flex items-baseline justify-between gap-4">
                 <span className="display text-5xl sm:text-6xl colorful:text-brand-gradient">{rq.label}</span>
-                <span className="mono text-right text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                <span className="mono text-right text-11 uppercase tracking-[0.16em] text-muted-foreground">
                   {tr(rq.topic)}
                 </span>
               </div>
 
-              <p className="mt-8 text-[15px] font-medium leading-relaxed text-foreground">
+              <p className="mt-8 text-15 font-medium leading-relaxed text-foreground">
                 {tr(rq.question)}
               </p>
 
               <div className="mt-auto pt-8">
-                <span className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+                <span className="mono text-11 uppercase tracking-[0.14em] text-subtle">
                   {t("Judged on", "Dinilai berdasarkan")}
                 </span>
                 <ul className="mt-3 flex flex-col gap-2">
                   {rq.judgedOn.map((j) => (
                     <li
                       key={j.en}
-                      className="flex items-start gap-2.5 text-[13px] text-muted-foreground"
+                      className="flex items-start gap-2.5 text-13 text-muted-foreground"
                     >
                       <Check
                         className="mt-0.5 h-3.5 w-3.5 shrink-0 text-foreground"
@@ -242,8 +242,8 @@ export function ResearchGapSection() {
           <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
             {researchGap.existing.map((e) => (
               <div key={e.title.en} className="bg-card p-5 colorful:hover:bg-brand-soft/60">
-                <h3 className="text-[13px] font-bold">{tr(e.title)}</h3>
-                <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+                <h3 className="text-13 font-bold">{tr(e.title)}</h3>
+                <p className="mt-2 text-13 leading-relaxed text-muted-foreground">
                   {tr(e.body)}
                 </p>
               </div>
@@ -258,7 +258,7 @@ export function ResearchGapSection() {
               {tr(researchGap.question)}
             </p>
             <div className="mt-auto pt-8">
-              <span className="mono text-[10px] uppercase tracking-[0.16em] opacity-60">
+              <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
                 {t("The specific question", "Pertanyaan spesifiknya")}
               </span>
             </div>
@@ -324,11 +324,11 @@ export function MethodSection() {
         <ol className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {methodStages.map((s, i) => (
             <li key={s.title.en} className="flex flex-col gap-3 bg-card p-5">
-              <span className="mono text-[10px] tracking-[0.16em] text-subtle">
+              <span className="mono text-11 tracking-[0.16em] text-subtle">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-[13px] font-bold leading-tight">{tr(s.title)}</h3>
-              <p className="text-[12px] leading-relaxed text-muted-foreground">{tr(s.body)}</p>
+              <h3 className="text-13 font-bold leading-tight">{tr(s.title)}</h3>
+              <p className="text-13 leading-relaxed text-muted-foreground">{tr(s.body)}</p>
             </li>
           ))}
         </ol>
@@ -347,19 +347,19 @@ export function MethodSection() {
                       <span className="mono text-base font-semibold">
                         {f.lhs}
                         {f.superscript && (
-                          <sup className="text-[10px] opacity-70">{f.superscript}</sup>
+                          <sup className="text-11 opacity-70">{f.superscript}</sup>
                         )}
                       </span>
                       <span className="mono text-muted-foreground">=</span>
                       <span className="mono text-sm">{f.rhs}</span>
                     </div>
-                    <div className="mt-1.5 pl-4 text-[11px] text-muted-foreground">
+                    <div className="mt-1.5 pl-4 text-12 text-muted-foreground">
                       {tr(f.note)}
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="mt-auto border-t border-border pt-6 text-[12px] leading-relaxed text-muted-foreground">
+              <p className="mt-auto border-t border-border pt-6 text-13 leading-relaxed text-muted-foreground">
                 {tr(csdExplanation.deltaMeaning)}
               </p>
             </div>
@@ -435,7 +435,7 @@ export function Rq1ResultsSection() {
               </h3>
               <Badge tone="solid">{t("CSD best on all three", "CSD terbaik pada ketiganya")}</Badge>
             </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 text-14 leading-relaxed text-muted-foreground">
               {t(
                 "Whether the student reproduced the teacher's dual-view decision shift.",
                 "Apakah *student* mereproduksi pergeseran keputusan *dual-view* milik *teacher*.",
@@ -446,10 +446,10 @@ export function Rq1ResultsSection() {
               {mechanismRows.map(({ key, meta, rows }) => (
                 <div key={key}>
                   <div className="mb-3 flex items-baseline justify-between gap-3">
-                    <span className="mono text-[11px] uppercase tracking-[0.14em]">
+                    <span className="mono text-12 uppercase tracking-[0.14em]">
                       {tr(meta.label)}
                     </span>
-                    <span className="mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+                    <span className="mono text-11 uppercase tracking-[0.12em] text-subtle">
                       {meta.direction === "lower"
                         ? t("lower better", "makin rendah makin baik")
                         : t("higher better", "makin tinggi makin baik")}
@@ -482,7 +482,7 @@ export function Rq1ResultsSection() {
               </h3>
               <Badge tone="warn">{t("All null", "Semua *null*")}</Badge>
             </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 text-14 leading-relaxed text-muted-foreground">
               {t(
                 "Whether that mechanism gain produced better in-domain grading agreement.",
                 "Apakah keunggulan mekanisme tersebut menghasilkan kesepakatan *grading in-domain* yang lebih baik.",
@@ -493,12 +493,12 @@ export function Rq1ResultsSection() {
               {rq1Verdict.comparisons.map((c) => (
                 <div key={c.pair.en} className="flex flex-col gap-1 bg-card px-5 py-4">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-[13px] font-medium">{tr(c.pair)}</span>
-                    <span className="mono whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-amber">
+                    <span className="text-13 font-medium">{tr(c.pair)}</span>
+                    <span className="mono whitespace-nowrap text-12 uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-amber">
                       {tr(c.outcome)}
                     </span>
                   </div>
-                  <span className="mono text-[11px] tabular-nums text-subtle">
+                  <span className="mono text-12 tabular-nums text-subtle">
                     ΔQWK {signed(c.delta, lang)} · {ciText(c.ciLow, c.ciHigh, lang)}
                   </span>
                 </div>
@@ -518,7 +518,7 @@ export function Rq1ResultsSection() {
             </Callout>
 
             <div className="mt-auto pt-8">
-              <p className="text-[15px] font-semibold leading-snug">{tr(rq1Verdict.predictive)}</p>
+              <p className="text-15 font-semibold leading-snug">{tr(rq1Verdict.predictive)}</p>
             </div>
           </div>
         </Reveal>
@@ -657,10 +657,10 @@ function StatBlock({
       <div className={"mono text-2xl font-bold tracking-tight " + (emphasis ? "" : "colorful:text-brand")}>
         {value}
       </div>
-      <div className="mt-3 text-[13px] font-medium">{label}</div>
+      <div className="mt-3 text-13 font-medium">{label}</div>
       <div
         className={
-          "mt-1 text-[11px] " + (emphasis ? "text-background/65" : "text-muted-foreground")
+          "mt-1 text-12 " + (emphasis ? "text-background/65" : "text-muted-foreground")
         }
       >
         {detail}
@@ -731,14 +731,14 @@ export function ExternalValidationSection() {
                     (r.isSelected ? "inverse" : "bg-card")
                   }
                 >
-                  <span className="text-[13px] font-medium">{tr(r.model)}</span>
+                  <span className="text-13 font-medium">{tr(r.model)}</span>
                   <div className="flex items-center gap-3">
                     {r.isSelected && (
-                      <span className="mono text-[9px] uppercase tracking-[0.12em] opacity-60">
+                      <span className="mono text-10 uppercase tracking-[0.12em] opacity-60">
                         {t("deployed", "di-*deploy*")}
                       </span>
                     )}
-                    <span className="mono text-[13px] font-semibold tabular-nums">
+                    <span className="mono text-13 font-semibold tabular-nums">
                       {num(r.qwk, 4)}
                     </span>
                   </div>
@@ -855,18 +855,18 @@ export function LimitationsSection() {
                   : "")
               }
             >
-              <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
+              <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-11 text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div>
-                <h3 className="flex items-start gap-2 text-[14px] font-bold leading-tight">
+                <h3 className="flex items-start gap-2 text-14 font-bold leading-tight">
                   <AlertTriangle
                     className="mt-px h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-amber"
                     aria-hidden="true"
                   />
                   <span>{tr(lim.title)}</span>
                 </h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-14 leading-relaxed text-muted-foreground">
                   {tr(lim.body)}
                 </p>
               </div>
@@ -909,7 +909,7 @@ export function SdgImpactSection() {
             {pillars.map((p) => (
               <span
                 key={p.en}
-                className="mono rounded-full border border-background/30 px-4 py-1.5 text-[10px] uppercase tracking-[0.14em] colorful:bg-white/10 colorful:font-semibold"
+                className="mono rounded-full border border-background/30 px-4 py-1.5 text-11 uppercase tracking-[0.14em] colorful:bg-white/10 colorful:font-semibold"
               >
                 {tr(p)}
               </span>
@@ -918,13 +918,13 @@ export function SdgImpactSection() {
 
           {/* "Potential contribution", never "proven impact". */}
           <div className="mt-9 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5 colorful:border-l-amber-solid colorful:bg-white/[0.04]">
-            <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
+            <div className="mono mb-2 text-11 uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
               {t(
                 "Potential contribution, not proven impact",
                 "Potensi kontribusi, bukan dampak yang telah terbukti",
               )}
             </div>
-            <p className="text-[13px] leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>
+            <p className="text-14 leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>
           </div>
         </div>
       </div>
@@ -969,7 +969,7 @@ export function ReadingOrder() {
     <div className="no-print sticky top-[4.25rem] z-30 sm:top-[4.75rem]">
       <div className="mx-auto max-w-[1200px] px-3 sm:px-6 lg:px-8">
         <div className="glass flex items-center gap-3 rounded-full border border-border py-1.5 pl-4 pr-1.5 shadow-[0_10px_30px_-18px_hsl(var(--shadow-color)/0.4)] colorful:border-brand-line">
-          <span className="mono hidden shrink-0 text-[10px] uppercase tracking-[0.16em] text-subtle sm:block">
+          <span className="mono hidden shrink-0 text-11 uppercase tracking-[0.16em] text-subtle sm:block">
             {activeIndex >= 0
               ? `${String(activeIndex + 1).padStart(2, "0")} / ${String(tocSteps.length).padStart(2, "0")}`
               : ts("On this page", "Di halaman ini")}
@@ -990,7 +990,7 @@ export function ReadingOrder() {
                   onClick={() => scrollToSection(st.id)}
                   aria-current={isActive ? "true" : undefined}
                   className={
-                    "relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors " +
+                    "relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-12 font-medium transition-colors " +
                     (isActive
                       ? "text-background colorful:text-white"
                       : "text-muted-foreground hover:text-foreground colorful:hover:text-brand")

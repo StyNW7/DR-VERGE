@@ -41,7 +41,7 @@ export function ResearchFigure({
         {failed ? (
           <div className="flex aspect-[16/9] flex-col items-center justify-center gap-3 bg-surface text-muted-foreground">
             <ImageOff className="h-6 w-6" aria-hidden="true" />
-            <span className="mono text-[10px] uppercase tracking-[0.16em]">
+            <span className="mono text-11 uppercase tracking-[0.16em]">
               {t("Figure unavailable", "Gambar tidak tersedia")}
             </span>
           </div>
@@ -60,7 +60,7 @@ export function ResearchFigure({
               onError={() => setFailed(true)}
               className="figure-invert w-full bg-white transition-transform duration-500 ease-editorial group-hover:scale-[1.015] dark:bg-transparent colorful:bg-white"
             />
-            <span className="glass absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+            <span className="glass absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-12 font-medium text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
               <Maximize2 className="h-3 w-3" aria-hidden="true" />
               {t("Enlarge", "Perbesar")}
             </span>
@@ -68,10 +68,10 @@ export function ResearchFigure({
         )}
       </div>
       <figcaption className="mt-4 flex flex-col gap-1.5">
-        <span className="mono text-[11px] uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
+        <span className="mono text-12 uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
           {tr(figure.title)}
         </span>
-        <span className="max-w-prose text-[13px] leading-relaxed text-muted-foreground">
+        <span className="max-w-prose text-14 leading-relaxed text-muted-foreground">
           {tr(figure.caption)}
         </span>
       </figcaption>
@@ -128,7 +128,7 @@ function FigureLightbox({
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-3.5">
-              <span className="mono truncate text-[11px] uppercase tracking-[0.14em]">
+              <span className="mono truncate text-12 uppercase tracking-[0.14em]">
                 {tr(figure.title)}
               </span>
               <button
@@ -148,9 +148,9 @@ function FigureLightbox({
                 className="figure-invert mx-auto max-h-[75vh] w-auto max-w-full object-contain"
               />
             </div>
-            <p className="border-t border-border px-5 py-3.5 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="border-t border-border px-5 py-3.5 text-14 leading-relaxed text-muted-foreground">
               {tr(figure.caption)}
-              <span className="mono ml-2 text-[10px] uppercase tracking-[0.14em] text-subtle">
+              <span className="mono ml-2 text-11 uppercase tracking-[0.14em] text-subtle">
                 {t("Esc to close", "Esc untuk menutup")}
               </span>
             </p>

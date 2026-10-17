@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useI18n, type Lang } from "@/i18n/context";
 import { formatScore } from "@/utils/formatting";
+import { useA11y } from "@/components/theme-provider";
 
 /** Axis ticks: up to three decimals, in the reader's number format. */
 const tickFormat = (lang: Lang) => (v: unknown) =>
@@ -59,7 +60,7 @@ function MonoTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-lg">
-      <div className="text-[11px] font-medium text-popover-foreground">{label}</div>
+      <div className="text-12 font-medium text-popover-foreground">{label}</div>
       <div className="mono mt-0.5 text-sm font-semibold text-popover-foreground">
         {formatScore(payload[0].value, digits, lang)}
         {unit ? ` ${unit}` : ""}
@@ -92,6 +93,11 @@ export function MonoBarChart({
 }) {
   const isHorizontalBars = layout === "vertical";
   const { lang } = useI18n();
+  // Recharts draws its text at fixed pixel sizes, so the accessibility mode
+  // has to be passed in rather than inherited from the type scale.
+  const { a11y } = useA11y();
+  const small = a11y ? 13 : 10;
+  const label = a11y ? 14 : 11;
 
   return (
     <div className={cn("w-full", className)} role="img" aria-label={ariaLabel}>
@@ -99,7 +105,7 @@ export function MonoBarChart({
         <BarChart
           data={data}
           layout={layout}
-          margin={{ top: 8, right: showValues ? 44 : 12, bottom: 4, left: 4 }}
+          margin={{ top: 8, right: showValues ? (a11y ? 60 : 44) : 12, bottom: 4, left: 4 }}
           barCategoryGap={isHorizontalBars ? "22%" : "28%"}
         >
           <CartesianGrid
@@ -113,7 +119,7 @@ export function MonoBarChart({
               <XAxis
                 type="number"
                 domain={domain ?? [0, "auto"]}
-                tick={{ fill: MUTED, fontSize: 10 }}
+                tick={{ fill: MUTED, fontSize: small }}
                 tickFormatter={tickFormat(lang)}
                 axisLine={{ stroke: BORDER }}
                 tickLine={false}
@@ -121,8 +127,8 @@ export function MonoBarChart({
               <YAxis
                 type="category"
                 dataKey="name"
-                width={104}
-                tick={{ fill: MUTED, fontSize: 11 }}
+                width={a11y ? 116 : 104}
+                tick={{ fill: MUTED, fontSize: label }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -131,17 +137,17 @@ export function MonoBarChart({
             <>
               <XAxis
                 dataKey="name"
-                tick={{ fill: MUTED, fontSize: 11 }}
+                tick={{ fill: MUTED, fontSize: label }}
                 axisLine={{ stroke: BORDER }}
                 tickLine={false}
               />
               <YAxis
                 domain={domain ?? [0, "auto"]}
-                tick={{ fill: MUTED, fontSize: 10 }}
+                tick={{ fill: MUTED, fontSize: small }}
                 tickFormatter={tickFormat(lang)}
                 axisLine={false}
                 tickLine={false}
-                width={44}
+                width={a11y ? 54 : 44}
               />
             </>
           )}
@@ -162,7 +168,7 @@ export function MonoBarChart({
                 formatter={(v: unknown) =>
                   typeof v === "number" ? formatScore(v, digits, lang) : String(v ?? "")
                 }
-                style={{ fill: MUTED, fontSize: 10, fontFamily: "JetBrains Mono, monospace" }}
+                style={{ fill: MUTED, fontSize: small, fontFamily: "JetBrains Mono, monospace" }}
               />
             )}
           </Bar>

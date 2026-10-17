@@ -39,7 +39,7 @@ export default function CsdSection() {
                     <div className="flex flex-col items-center">
                       <span
                         className={
-                          "mono flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] " +
+                          "mono flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-12 " +
                           (i === csdExplanation.steps.length - 1
                             ? "brand-fill"
                             : "border border-border colorful:border-brand-line colorful:bg-brand-soft colorful:font-semibold colorful:text-brand")
@@ -53,7 +53,7 @@ export default function CsdSection() {
                     </div>
                     <div className="pb-7">
                       <div className="text-sm font-semibold">{tr(s.label)}</div>
-                      <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                      <p className="mt-1.5 text-14 leading-relaxed text-muted-foreground">
                         {tr(s.body)}
                       </p>
                     </div>
@@ -78,13 +78,13 @@ export default function CsdSection() {
                     <span className="mono text-base font-semibold text-foreground colorful:text-brand">
                       {f.lhs}
                       {f.superscript && (
-                        <sup className="text-[10px] opacity-70">{f.superscript}</sup>
+                        <sup className="text-11 opacity-70">{f.superscript}</sup>
                       )}
                     </span>
                     <span className="mono text-muted-foreground">=</span>
                     <span className="mono text-sm text-foreground">{f.rhs}</span>
                   </div>
-                  <div className="mt-1.5 pl-4 text-[11px] text-muted-foreground">
+                  <div className="mt-1.5 pl-4 text-12 text-muted-foreground">
                     {tr(f.note)}
                   </div>
                   {i < csdExplanation.formulas.length - 1 && (
@@ -96,7 +96,7 @@ export default function CsdSection() {
               ))}
             </div>
 
-            <p className="mt-7 border-t border-border pt-6 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-7 border-t border-border pt-6 text-14 leading-relaxed text-muted-foreground">
               {tr(csdExplanation.deltaMeaning)}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function CsdSection() {
       <Reveal delay={0.12}>
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div className="grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-9">
-            <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
+            <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
               {t("What CSD does", "Apa yang dilakukan CSD")}
             </span>
             <p className="mt-4 text-xl font-semibold leading-snug tracking-tight sm:text-2xl">

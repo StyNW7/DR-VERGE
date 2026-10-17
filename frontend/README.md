@@ -312,6 +312,31 @@ put no secrets in them.
 
 ## Accessibility
 
+### Accessibility mode (large, high-contrast text)
+
+DR-VERGE is about eye health, so the site itself is built for readers with low or ageing
+vision. One switch — in the navbar (the "Aa" toggle), the mobile menu, the hero and the
+footer — turns on the **accessibility mode** (`html.a11y`, stored as `dr-verge-a11y`,
+applied before first paint like the theme):
+
+- **Larger text.** Every text size goes through a CSS variable (`--fs-*` / `--lh-*` in
+  `index.css`, wired up in `tailwind.config.js`), so the mode enlarges only the type:
+  10px labels become 14px, 16px body copy becomes 20px, with looser line height. Layout,
+  spacing and breakpoints stay where they are.
+- **Higher contrast.** Secondary text moves toward the ink colour and hairline borders
+  become visible edges, in all four palette/theme combinations.
+- **Plainer type.** The serif italic accent and small all-caps monospace labels switch to
+  upright Inter; faint (opacity-drawn) text is raised to near-full strength.
+- **Calmer page.** Looping animations stop, framer-motion skips transforms, background
+  grain is removed, focus rings are thicker, buttons are taller.
+
+Use the numeric tokens (`text-11`, `text-13`, …) or the normal Tailwind scale for text —
+never arbitrary pixel sizes like `text-[13px]`, which would not grow with the mode. Use the
+`a11y:` variant for the rare element that needs a mode-specific tweak (e.g. compact navbar
+chrome).
+
+### Baseline
+
 Skip-to-content link · visible high-contrast focus rings · keyboard-operable dropzones
 (they are real `<button>`s, so drag-and-drop is an enhancement rather than the only way
 in) · `aria-live` result announcements including a spoken score summary · `role="alert"`

@@ -40,7 +40,7 @@ function MechanismPanel({ metricKey }: { metricKey: MechanismMetricKey }) {
 
   return (
     <div className="card-premium flex h-full flex-col p-6 sm:p-7">
-      <div className="mb-1 flex items-start justify-between gap-3">
+      <div className="mb-1 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <h3 className="text-base font-bold tracking-tight">{tr(meta.label)}</h3>
         <Badge tone="outline" icon={meta.direction === "lower" ? TrendingDown : TrendingUp}>
           {meta.direction === "lower"
@@ -48,7 +48,7 @@ function MechanismPanel({ metricKey }: { metricKey: MechanismMetricKey }) {
             : t("Higher better", "Makin tinggi makin baik")}
         </Badge>
       </div>
-      <p className="mb-5 text-[12px] leading-relaxed text-muted-foreground">
+      <p className="mb-5 text-13 leading-relaxed text-muted-foreground">
         {tr(meta.description)}
       </p>
 
@@ -63,7 +63,7 @@ function MechanismPanel({ metricKey }: { metricKey: MechanismMetricKey }) {
       />
 
       {csdIsBest && (
-        <div className="mono mt-auto border-t border-border pt-4 text-[10px] uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
+        <div className="mono mt-auto border-t border-border pt-4 text-11 uppercase tracking-[0.14em] text-foreground colorful:font-semibold colorful:text-brand">
           {t("CSD best on this metric", "CSD terbaik pada metrik ini")}
         </div>
       )}
@@ -109,11 +109,11 @@ export default function Rq1Section() {
             <span className="mono text-3xl font-bold tracking-tight colorful:text-brand-gradient">
               {mechanismReplication.wins}/{mechanismReplication.measurements}
             </span>
-            <span className="mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="mono text-11 uppercase tracking-[0.14em] text-muted-foreground">
               {t("measurements", "pengukuran")}
             </span>
           </div>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
+          <p className="text-14 leading-relaxed text-muted-foreground">
             {tr(mechanismReplication.note)}
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function Rq1Section() {
       <Reveal delay={0.1}>
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div className="grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-9">
-            <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
+            <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
               {t("The mechanism finding", "Temuan mekanisme")}
             </span>
             <p className="mt-4 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
@@ -133,7 +133,7 @@ export default function Rq1Section() {
           </div>
 
           <div className="rounded-2xl border-2 border-dashed border-foreground bg-card p-7 sm:p-9 colorful:border-amber-solid/60 colorful:bg-amber-soft/50">
-            <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground colorful:font-semibold colorful:text-amber">
+            <span className="mono text-11 uppercase tracking-[0.16em] text-muted-foreground colorful:font-semibold colorful:text-amber">
               {t("The predictive finding", "Temuan prediktif")}
             </span>
             <p className="mt-4 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
@@ -143,23 +143,23 @@ export default function Rq1Section() {
             <div className="mt-7 flex flex-col gap-3.5 border-t border-border pt-6">
               {rq1Verdict.comparisons.map((c) => (
                 <div key={c.pair.en} className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between gap-3 text-[13px]">
+                  <div className="flex items-center justify-between gap-3 text-13">
                     <span className="text-muted-foreground">{tr(c.pair)}</span>
-                    <span className="mono inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-foreground colorful:font-semibold colorful:text-amber">
+                    <span className="mono inline-flex items-center gap-1.5 whitespace-nowrap text-12 uppercase tracking-[0.12em] text-foreground colorful:font-semibold colorful:text-amber">
                       <Minus className="h-3 w-3" aria-hidden="true" />
                       {tr(c.outcome)}
                     </span>
                   </div>
                   {/* The interval is the evidence; the verdict above is only a
                       summary of it. Showing both keeps the claim checkable. */}
-                  <div className="mono text-[11px] tabular-nums text-subtle">
+                  <div className="mono text-12 tabular-nums text-subtle">
                     ΔQWK {signed(c.delta, lang)} · {ciText(c.ciLow, c.ciHigh, lang)}
                   </div>
                 </div>
               ))}
             </div>
 
-            <p className="mt-6 text-[12px] leading-relaxed text-muted-foreground">
+            <p className="mt-6 text-13 leading-relaxed text-muted-foreground">
               {tr(rq1Verdict.note)}
             </p>
           </div>
@@ -170,13 +170,13 @@ export default function Rq1Section() {
           together, and it is the sentence the paper leads with. */}
       <Reveal delay={0.12}>
         <div className="mt-5 rounded-2xl border border-border bg-card/60 p-7 sm:p-9 colorful:border-brand-line colorful:bg-card colorful:border-l-4 colorful:border-l-brand">
-          <span className="mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground colorful:font-semibold colorful:text-brand">
+          <span className="mono text-11 uppercase tracking-[0.16em] text-muted-foreground colorful:font-semibold colorful:text-brand">
             {t("What the two findings mean together", "Makna kedua temuan bila dilihat bersama")}
           </span>
-          <p className="mt-4 max-w-4xl text-[15px] leading-relaxed text-foreground">
+          <p className="mt-4 max-w-4xl text-15 leading-relaxed text-foreground">
             {tr(rq1Verdict.synthesis)}
           </p>
-          <p className="mono mt-6 border-t border-border pt-5 text-[11px] leading-relaxed text-subtle">
+          <p className="mono mt-6 border-t border-border pt-5 text-12 leading-relaxed text-subtle">
             {tr(rq1Verdict.method)}
           </p>
         </div>

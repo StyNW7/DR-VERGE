@@ -95,7 +95,7 @@ export default function PipelineSection() {
                   />
                   <span
                     className={
-                      "mono text-[11px] tracking-[0.16em] " +
+                      "mono text-12 tracking-[0.16em] " +
                       (isCsd ? "text-background/50" : "text-subtle colorful:font-semibold")
                     }
                   >
@@ -105,14 +105,14 @@ export default function PipelineSection() {
                 <h3 className="text-sm font-bold leading-tight tracking-tight">{tr(s.title)}</h3>
                 <p
                   className={
-                    "text-[12px] leading-relaxed " +
+                    "text-13 leading-relaxed " +
                     (isCsd ? "text-background/65" : "text-muted-foreground")
                   }
                 >
                   {tr(s.body)}
                 </p>
                 {isCsd && (
-                  <span className="mono mt-auto self-start rounded-full border border-background/25 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] colorful:border-transparent colorful:bg-[hsl(45_100%_72%)] colorful:font-semibold colorful:text-[hsl(222_60%_18%)]">
+                  <span className="mono mt-auto self-start rounded-full border border-background/25 px-2 py-0.5 text-10 uppercase tracking-[0.14em] colorful:border-transparent colorful:bg-[hsl(45_100%_72%)] colorful:font-semibold colorful:text-[hsl(222_60%_18%)]">
                     {t("Contribution", "Kontribusi")}
                   </span>
                 )}

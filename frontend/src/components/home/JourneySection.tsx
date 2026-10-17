@@ -82,7 +82,7 @@ function StepCard({ step }: { step: Step }) {
         </span>
         <span
           className={cn(
-            "mono text-[11px] tracking-[0.16em]",
+            "mono text-12 tracking-[0.16em]",
             step.primary ? "text-background/50" : "text-subtle colorful:font-semibold colorful:text-acc",
           )}
         >
@@ -93,7 +93,7 @@ function StepCard({ step }: { step: Step }) {
       <h3 className="mt-8 text-xl font-bold tracking-tight">{tr(step.title)}</h3>
       <p
         className={cn(
-          "mt-3 text-[14px] leading-relaxed",
+          "mt-3 text-14 leading-relaxed",
           step.primary ? "text-background/70" : "text-muted-foreground",
         )}
       >
@@ -108,7 +108,7 @@ function StepCard({ step }: { step: Step }) {
       >
         <span
           className={cn(
-            "mono text-[10px] uppercase tracking-[0.14em]",
+            "mono text-11 uppercase tracking-[0.14em]",
             step.primary ? "text-background/60" : "text-subtle",
           )}
         >
@@ -116,7 +116,7 @@ function StepCard({ step }: { step: Step }) {
         </span>
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 text-[13px] font-semibold",
+            "inline-flex items-center gap-1.5 text-13 font-semibold",
             !step.primary && "colorful:text-acc",
           )}
         >
@@ -172,7 +172,7 @@ export default function JourneySection() {
                 <em className="serif-accent font-normal">DR-VERGE</em>
               </h2>
             </div>
-            <p className="max-w-sm text-[13px] leading-relaxed text-muted-foreground">
+            <p className="max-w-sm text-14 leading-relaxed text-muted-foreground">
               {t(
                 "New here? Follow them in order — or jump straight to the demo.",
                 "Baru pertama kali? Ikuti secara berurutan — atau langsung menuju demo.",

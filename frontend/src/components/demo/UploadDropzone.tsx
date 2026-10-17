@@ -80,19 +80,19 @@ export function UploadDropzone({
         <div className="flex items-center gap-2.5">
           <span
             className={cn(
-              "mono flex h-6 w-6 items-center justify-center rounded-full border border-border text-[10px] text-foreground",
+              "mono flex h-6 w-6 items-center justify-center rounded-full border border-border text-11 text-foreground",
               "colorful:border-transparent colorful:bg-acc-solid colorful:font-semibold colorful:text-acc-fg",
               variant === "macula" ? "accent-coral" : "accent-amber",
             )}
           >
             {index}
           </span>
-          <span className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+          <span className="mono text-12 font-semibold uppercase tracking-[0.14em] text-foreground">
             {label}
           </span>
         </div>
         {value && (
-          <span className="mono inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-brand">
+          <span className="mono inline-flex items-center gap-1.5 text-11 uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-brand">
             <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
             {t("Received", "Diterima")}
           </span>
@@ -131,7 +131,7 @@ export function UploadDropzone({
               <button
                 type="button"
                 onClick={onZoom}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-12 font-medium transition-colors hover:border-foreground"
               >
                 <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
                 {t("Zoom", "Perbesar")}
@@ -140,7 +140,7 @@ export function UploadDropzone({
                 type="button"
                 onClick={openPicker}
                 disabled={disabled}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-12 font-medium transition-colors hover:border-foreground disabled:opacity-40"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
                 {t("Replace", "Ganti")}
@@ -149,7 +149,7 @@ export function UploadDropzone({
                 type="button"
                 onClick={onClear}
                 disabled={disabled}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-foreground disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-12 font-medium transition-colors hover:border-foreground disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
                 {t("Remove", "Hapus")}
@@ -158,7 +158,7 @@ export function UploadDropzone({
           </div>
 
           {/* File metadata */}
-          <dl className="grid grid-cols-3 gap-px border-t border-border bg-border text-[11px]">
+          <dl className="grid grid-cols-3 gap-px border-t border-border bg-border text-12">
             <div className="bg-card px-3 py-2.5">
               <dt className="text-subtle">{t("File", "Berkas")}</dt>
               <dd className="mt-0.5 truncate font-medium" title={value.file.name}>
@@ -218,12 +218,12 @@ export function UploadDropzone({
                 ? t("Drop the image here", "Lepaskan citra di sini")
                 : t("Drag and drop, or click to browse", "Seret dan lepas, atau klik untuk memilih")}
             </div>
-            <p className="max-w-[26ch] text-[11px] leading-relaxed text-muted-foreground">
+            <p className="max-w-[26ch] text-12 leading-relaxed text-muted-foreground">
               {hint}
             </p>
           </div>
 
-          <span className="mono relative text-[9px] uppercase tracking-[0.14em] text-subtle">
+          <span className="mono relative text-10 uppercase tracking-[0.14em] text-subtle">
             JPG · JPEG · PNG
           </span>
         </button>
@@ -234,7 +234,7 @@ export function UploadDropzone({
         <p
           id={errorId}
           role="alert"
-          className="mt-2.5 inline-flex items-start gap-2 text-[12px] leading-relaxed text-foreground colorful:font-medium colorful:text-coral"
+          className="mt-2.5 inline-flex items-start gap-2 text-13 leading-relaxed text-foreground colorful:font-medium colorful:text-coral"
         >
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {error}
@@ -283,10 +283,10 @@ export function ZoomModal({
         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
           <div className="flex min-w-0 items-center gap-3">
             <ImageIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-            <span className="mono truncate text-[11px] uppercase tracking-[0.14em]">
+            <span className="mono truncate text-12 uppercase tracking-[0.14em]">
               {label}
             </span>
-            <span className="truncate text-[12px] text-muted-foreground">
+            <span className="truncate text-12 text-muted-foreground">
               {image.file.name}
             </span>
           </div>
@@ -308,7 +308,7 @@ export function ZoomModal({
           />
         </div>
 
-        <div className="mono flex flex-wrap gap-x-6 gap-y-1 border-t border-border px-5 py-3 text-[11px] text-muted-foreground">
+        <div className="mono flex flex-wrap gap-x-6 gap-y-1 border-t border-border px-5 py-3 text-12 text-muted-foreground">
           <span>
             {image.meta
               ? `${image.meta.width} × ${image.meta.height} px`

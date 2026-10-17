@@ -496,7 +496,7 @@ export function OrdinalScale({
           {grades.map((item) => {
             const isActive = active === item.g;
             return (
-              <li key={item.g} className="flex flex-1 flex-col items-center gap-2">
+              <li key={item.g} className="flex min-w-0 flex-1 flex-col items-center gap-2 px-0.5">
                 <div
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300",
@@ -517,7 +517,10 @@ export function OrdinalScale({
                 <span
                   className={cn(
                     "text-center leading-tight transition-colors",
-                    compact ? "text-[10px]" : "text-[11px] sm:text-xs",
+                    // Five labels share one row even on a phone, so the
+                    // accessibility mode enlarges them only where they fit.
+                    compact ? "text-11" : "text-12 sm:text-xs",
+                    "a11y:text-[0.8125rem] sm:a11y:text-[0.9375rem]",
                     isActive ? "font-semibold text-foreground" : "text-muted-foreground",
                   )}
                 >

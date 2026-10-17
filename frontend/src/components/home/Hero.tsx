@@ -11,6 +11,7 @@ import { l, useI18n } from "@/i18n/context";
 import { cn } from "@/lib/utils";
 import { gradeTone } from "@/lib/gradeTone";
 import { useIsColorful } from "@/components/theme-provider";
+import { AccessibilityPrompt } from "@/components/common/AccessibilityToggle";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -66,7 +67,7 @@ function FieldTile({
         aria-hidden="true"
       />
       <div className="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between">
-        <span className="mono rounded-full border border-white/20 bg-black/40 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-white backdrop-blur">
+        <span className="mono rounded-full border border-white/20 bg-black/40 px-2 py-0.5 text-10 uppercase tracking-[0.14em] text-white backdrop-blur">
           {index} · {label}
         </span>
       </div>
@@ -89,14 +90,14 @@ function HeroVisual() {
   return (
     <div className="card-premium relative rounded-[28px] p-3 sm:p-4">
       <div className="mb-3 flex items-center justify-between px-1">
-        <span className="mono inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+        <span className="mono inline-flex items-center gap-2 text-11 uppercase tracking-[0.16em] text-muted-foreground">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/60 colorful:bg-coral-solid/60" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-foreground colorful:bg-coral-solid" />
           </span>
           {t("Real model output", "Keluaran model asli")}
         </span>
-        <span className="mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+        <span className="mono text-11 uppercase tracking-[0.14em] text-subtle">
           {t("Eye", "Mata")} {heroExample.sampleId}
         </span>
       </div>
@@ -161,11 +162,11 @@ function HeroVisual() {
             <div className="text-sm font-bold tracking-tight">
               {siteConfig.projectName} {t("student", "*student*")}
             </div>
-            <div className="mono truncate text-[9px] uppercase tracking-[0.14em] opacity-60">
+            <div className="mono truncate text-10 uppercase tracking-[0.14em] opacity-60 a11y:whitespace-normal">
               Shared encoder · interaction fusion · CORAL
             </div>
           </div>
-          <span className="mono shrink-0 rounded-full border border-background/20 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] opacity-80">
+          <span className="mono shrink-0 rounded-full border border-background/20 px-2.5 py-1 text-10 uppercase tracking-[0.14em] opacity-80">
             {t("328K params", "328K parameter")}
           </span>
         </div>
@@ -187,10 +188,10 @@ function HeroVisual() {
         className="mt-2.5 rounded-2xl border border-border bg-surface/70 p-4 colorful:border-brand-line/70 colorful:bg-brand-soft/60"
       >
         <div className="mb-3 flex items-center justify-between">
-          <span className="mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="mono text-10 uppercase tracking-[0.14em] text-muted-foreground">
             {t("Ordinal threshold scores", "Skor ambang ordinal")}
           </span>
-          <span className="mono text-[9px] uppercase tracking-[0.14em] text-subtle">
+          <span className="mono text-10 uppercase tracking-[0.14em] text-subtle">
             {t("pass at", "lolos pada")} {num(heroExample.decisionThreshold, 1)}
           </span>
         </div>
@@ -198,10 +199,10 @@ function HeroVisual() {
           {scores.map((s, i) => {
             const isPassed = s > heroExample.decisionThreshold;
             return (
-              <li key={i} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3">
+              <li key={i} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3 a11y:grid-cols-[auto_1fr_auto]">
                 <span
                   className={cn(
-                    "mono text-[11px]",
+                    "mono whitespace-nowrap text-12",
                     isPassed ? "text-foreground colorful:font-semibold colorful:text-brand" : "text-muted-foreground",
                   )}
                 >
@@ -220,15 +221,15 @@ function HeroVisual() {
                   {/* The 0.5 decision line. */}
                   <span className="absolute inset-y-0 left-1/2 w-px bg-background/80" aria-hidden="true" />
                 </span>
-                <span className="mono text-right text-[11px] tabular-nums text-muted-foreground">
+                <span className="mono text-right text-12 tabular-nums text-muted-foreground">
                   {num(s, 2)}
                 </span>
               </li>
             );
           })}
         </ul>
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
-          <span className="text-[12px] text-muted-foreground">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+          <span className="text-12 text-muted-foreground">
             {t(
               `${passed} of ${scores.length} thresholds passed`,
               `${passed} dari ${scores.length} ambang terlampaui`,
@@ -236,7 +237,7 @@ function HeroVisual() {
           </span>
           <span
             className={cn(
-              "inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-[12px] font-semibold text-background",
+              "inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-12 font-semibold text-background",
               gradeTone(passed).fill,
             )}
           >
@@ -246,7 +247,7 @@ function HeroVisual() {
         </div>
       </motion.div>
 
-      <p className="mono mt-3 px-1 text-center text-[9px] uppercase tracking-[0.14em] text-subtle">
+      <p className="mono mt-3 px-1 text-center text-10 uppercase tracking-[0.14em] text-subtle">
         {heroExample.credit} ·{" "}
         {colorful
           ? t("research output, not a diagnosis", "keluaran riset, bukan diagnosis")
@@ -273,7 +274,10 @@ export default function Hero() {
         };
 
   return (
-    <section className="grain relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16 lg:pb-24 lg:pt-20">
+    // Pulled up under the transparent navbar (and padded back down by the same
+    // amount) so the spotlight and grid start at the very top of the page
+    // instead of meeting the bar on a visible seam.
+    <section className="grain relative -mt-16 overflow-hidden pb-16 pt-28 sm:-mt-20 sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-40">
       {/* Background: spotlight + grid paper, both pure foreground alpha. */}
       <div className="spotlight pointer-events-none absolute inset-0" aria-hidden="true" />
       <div
@@ -289,10 +293,10 @@ export default function Hero() {
               {...fade(0)}
               className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-card/70 py-1 pl-1 pr-4 shadow-sm backdrop-blur colorful:border-brand-line"
             >
-              <span className="brand-fill mono rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">
+              <span className="brand-fill mono whitespace-nowrap rounded-full px-2.5 py-1 text-10 font-semibold uppercase tracking-[0.16em] a11y:text-[0.75rem]">
                 {siteConfig.competition}
               </span>
-              <span className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              <span className="mono whitespace-nowrap text-11 uppercase tracking-[0.16em] text-muted-foreground a11y:text-[0.8125rem]">
                 {siteConfig.category}
               </span>
             </motion.div>
@@ -360,12 +364,16 @@ export default function Hero() {
 
             <motion.ul {...fade(0.34)} className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
               {trust.map(({ icon: Icon, label }) => (
-                <li key={label.en} className="inline-flex items-center gap-2 text-[13px] text-muted-foreground">
+                <li key={label.en} className="inline-flex items-center gap-2 text-13 text-muted-foreground">
                   <Icon className="h-3.5 w-3.5 shrink-0 text-foreground colorful:text-brand" aria-hidden="true" />
                   {tr(label)}
                 </li>
               ))}
             </motion.ul>
+
+            <motion.div {...fade(0.4)} className="mt-7">
+              <AccessibilityPrompt />
+            </motion.div>
           </div>
 
           {/* Visual */}
@@ -392,9 +400,9 @@ export default function Hero() {
                 i === 2 && "lg:border-l",
               )}
             >
-              <dt className="order-2 text-[13px] font-medium text-foreground">
+              <dt className="order-2 text-13 font-medium text-foreground">
                 {tr(s.label)}
-                <span className="mt-0.5 block text-[11px] font-normal text-muted-foreground">
+                <span className="mt-0.5 block text-12 font-normal text-muted-foreground">
                   {tr(s.detail)}
                 </span>
               </dt>
@@ -419,7 +427,7 @@ export default function Hero() {
           <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors group-hover:border-foreground/40 colorful:border-brand-line colorful:text-brand">
             <ArrowDown className="h-3.5 w-3.5 motion-safe:animate-bounce" aria-hidden="true" />
           </span>
-          <span className="mono text-[10px] uppercase tracking-[0.18em]">
+          <span className="mono text-11 uppercase tracking-[0.16em]">
             {t("Scroll to explore the research", "Gulir untuk menjelajahi penelitian")}
           </span>
         </motion.button>

@@ -29,7 +29,7 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
     >
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <span className="mono text-[11px] tracking-[0.16em] text-subtle colorful:inline-flex colorful:rounded-full colorful:bg-acc-soft colorful:px-2.5 colorful:py-0.5 colorful:font-semibold colorful:text-acc">
+          <span className="mono text-12 tracking-[0.16em] text-subtle colorful:inline-flex colorful:rounded-full colorful:bg-acc-soft colorful:px-2.5 colorful:py-0.5 colorful:font-semibold colorful:text-acc">
             {view.number}
           </span>
           <h3 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">
@@ -46,7 +46,7 @@ function ViewCard({ view, variant }: { view: ViewInfo; variant: "macula" | "disc
 
       <ul className="mt-6 flex flex-col gap-2.5 border-t border-border pt-5">
         {view.captures.map((c) => (
-          <li key={c.en} className="flex items-center gap-2.5 text-[13px] text-foreground">
+          <li key={c.en} className="flex items-center gap-2.5 text-13 text-foreground">
             <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-acc" aria-hidden="true" />
             {tr(c)}
           </li>
@@ -114,7 +114,7 @@ export default function TwoViewsSection() {
       {/* Visual equation */}
       <Reveal delay={0.14}>
         <div className="mt-6 grain inverse relative overflow-hidden rounded-2xl p-7 sm:p-10">
-          <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
+          <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
             {t("The evidence path", "Alur bukti")}
           </span>
           <div className="mt-7 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
@@ -136,7 +136,7 @@ function EquationTerm({ label, emphasis = false }: { label: React.ReactNode; emp
   return (
     <div
       className={
-        "flex flex-1 items-center justify-center rounded-xl border px-4 py-4 text-center text-[13px] font-medium leading-tight sm:text-sm " +
+        "flex flex-1 items-center justify-center rounded-xl border px-4 py-4 text-center text-13 font-medium leading-tight sm:text-sm " +
         (emphasis
           ? "border-background bg-background text-foreground colorful:font-bold colorful:shadow-lg"
           : "border-background/25 text-background colorful:bg-white/10 colorful:backdrop-blur")

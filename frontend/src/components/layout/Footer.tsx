@@ -3,6 +3,7 @@ import { Github, FileText, Download, ArrowUpRight } from "lucide-react";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 import { Container } from "./PageContainer";
 import { l, useI18n } from "@/i18n/context";
+import { AccessibilityLink } from "@/components/common/AccessibilityToggle";
 
 const navLinks = [
   { label: l("Home", "Beranda"), to: "/" },
@@ -30,23 +31,23 @@ export default function Footer() {
             <div className="display text-3xl">
               {siteConfig.projectName}
             </div>
-            <p className="mt-2 font-serif text-lg italic text-muted-foreground">
+            <p className="mt-2 font-serif text-lg italic text-muted-foreground a11y:font-sans a11y:not-italic">
               {siteConfig.fullName}
             </p>
-            <p className="mt-5 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-5 max-w-sm text-14 leading-relaxed text-muted-foreground">
               {t(
                 "Dual-view diabetic retinopathy grading through Complementarity-Shift Distillation and lightweight INT8 deployment.",
                 "*Grading* retinopati diabetik *dual-view* melalui *Complementarity-Shift Distillation* dan *deployment* INT8 yang ringan.",
               )}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <span className="brand-fill mono rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+              <span className="brand-fill mono rounded-full px-3 py-1 text-11 uppercase tracking-[0.14em]">
                 {siteConfig.competition}
               </span>
-              <span className="mono rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="mono rounded-full border border-border px-3 py-1 text-11 uppercase tracking-[0.14em] text-muted-foreground">
                 {siteConfig.category}
               </span>
-              <span className="mono rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="mono rounded-full border border-border px-3 py-1 text-11 uppercase tracking-[0.14em] text-muted-foreground">
                 {siteConfig.institution}
               </span>
             </div>
@@ -66,6 +67,9 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li className="mt-2 border-t border-border pt-4">
+                <AccessibilityLink />
+              </li>
             </ul>
           </div>
 
@@ -101,7 +105,7 @@ export default function Footer() {
                       >
                         <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                         {tr(link.label)}
-                        <span className="mono text-[9px] uppercase tracking-[0.14em]">
+                        <span className="mono text-10 uppercase tracking-[0.14em]">
                           {t("soon", "segera")}
                         </span>
                       </span>
@@ -123,7 +127,7 @@ export default function Footer() {
 
         {/* Disclaimer — the site's most repeated statement, and the last word. */}
         <div className="border-t border-border pt-8">
-          <p className="max-w-3xl text-[13px] leading-relaxed text-muted-foreground">
+          <p className="max-w-3xl text-14 leading-relaxed text-muted-foreground">
             <span className="font-medium text-foreground">
               {t(
                 `${siteConfig.projectName} is a research prototype`,

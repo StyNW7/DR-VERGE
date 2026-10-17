@@ -7,6 +7,7 @@ import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
 import { useTheme, type Palette } from "@/components/theme-provider";
 import { LinkButton } from "@/components/common/Button";
 import { ReadingProgress } from "@/components/common/SectionRail";
+import { AccessibilityCard, AccessibilityToggle } from "@/components/common/AccessibilityToggle";
 import { useI18n, useLang, type Lang } from "@/i18n/context";
 import { transitionContent, transitionTheme } from "@/lib/viewTransition";
 
@@ -48,7 +49,7 @@ function useIsDark() {
 
 /** Sun/moon toggle. The icon rotates out and in; the page itself is revealed
  *  as a circle growing from this button (see transitionTheme). */
-function ThemeToggle() {
+function ThemeToggle({ className }: { className?: string }) {
   const { setTheme } = useTheme();
   const isDark = useIsDark();
   const { ts } = useI18n();
@@ -70,7 +71,10 @@ function ThemeToggle() {
           : ts("Switch to dark theme", "Beralih ke tema gelap")
       }
       title={isDark ? ts("Light theme", "Tema terang") : ts("Dark theme", "Tema gelap")}
-      className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground colorful:hover:border-brand-line colorful:hover:text-brand"
+      className={cn(
+        "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground colorful:hover:border-brand-line colorful:hover:text-brand",
+        className,
+      )}
     >
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
@@ -163,7 +167,7 @@ function PaletteToggle({ layoutId, className }: { layoutId: string; className?: 
               if (!active) transitionTheme(() => setPalette(o.value), originOf(e.currentTarget));
             }}
             className={cn(
-              "relative flex h-7 items-center gap-1.5 rounded-full px-1.5 text-[11px] font-semibold transition-colors duration-200 xl:px-2.5",
+              "relative flex h-7 items-center gap-1.5 rounded-full px-1.5 text-12 font-semibold transition-colors duration-200 a11y:text-[0.8125rem] xl:px-2.5",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -215,7 +219,7 @@ function AppearancePanel() {
               <PaletteSwatch palette={o.value} className="h-8 w-8" />
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{trs(o.label)}</span>
-                <span className="block text-[11px] leading-snug text-muted-foreground">
+                <span className="block text-12 leading-snug text-muted-foreground">
                   {trs(o.hint)}
                 </span>
               </span>
@@ -247,7 +251,7 @@ function AppearancePanel() {
                 if (!active) transitionTheme(() => setTheme(mode), originOf(e.currentTarget));
               }}
               className={cn(
-                "flex h-10 items-center justify-center gap-2 rounded-xl border text-[13px] font-medium transition-colors",
+                "flex h-10 items-center justify-center gap-2 rounded-xl border text-13 font-medium transition-colors",
                 active
                   ? "border-foreground bg-surface text-foreground colorful:border-brand colorful:bg-brand-soft colorful:text-brand"
                   : "border-border text-muted-foreground hover:text-foreground",
@@ -281,7 +285,7 @@ function LanguageToggle({ layoutId, className }: { layoutId: string; className?:
         className,
       )}
     >
-      <Languages className="mx-1 hidden h-3.5 w-3.5 text-muted-foreground sm:block" aria-hidden="true" />
+      <Languages className="mx-1 hidden h-3.5 w-3.5 text-muted-foreground lg:block" aria-hidden="true" />
       {options.map((o) => {
         const active = o.value === lang;
         return (
@@ -296,7 +300,7 @@ function LanguageToggle({ layoutId, className }: { layoutId: string; className?:
               if (!active) transitionContent(() => setLang(o.value));
             }}
             className={cn(
-              "mono relative h-7 rounded-full px-2.5 text-[11px] font-semibold tracking-[0.08em] transition-colors duration-200",
+              "mono relative h-7 rounded-full px-2.5 text-12 font-semibold tracking-[0.08em] transition-colors duration-200 a11y:text-[0.8125rem]",
               active ? "text-background colorful:text-white" : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -383,12 +387,12 @@ export default function Navbar() {
               <Logo className="h-5 w-5" />
             </span>
             <span className="flex flex-col leading-none">
-              <span className="text-[15px] font-bold tracking-tight">
+              <span className="text-15 font-bold tracking-tight a11y:text-[1.0625rem]">
                 {siteConfig.projectName}
               </span>
               <span
                 className={cn(
-                  "mono overflow-hidden text-[9px] uppercase tracking-[0.18em] text-muted-foreground transition-all duration-300",
+                  "mono overflow-hidden text-10 uppercase tracking-[0.16em] text-muted-foreground transition-all duration-300 a11y:text-[0.6875rem]",
                   scrolled ? "max-h-0 opacity-0" : "mt-1 max-h-4 opacity-100",
                 )}
               >
@@ -406,7 +410,7 @@ export default function Navbar() {
                 end={item.to === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "relative whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors duration-200",
+                    "relative whitespace-nowrap rounded-full px-3 py-1.5 text-13 font-medium transition-colors duration-200 a11y:text-[0.9375rem] lg:px-4",
                     isActive
                       ? "text-background colorful:text-white"
                       : "text-muted-foreground hover:text-foreground colorful:hover:text-brand",
@@ -433,7 +437,7 @@ export default function Navbar() {
                 href={siteConfig.paperUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-13 font-medium text-muted-foreground transition-colors hover:text-foreground a11y:text-[0.9375rem] lg:px-4"
               >
                 {t("Paper", "Makalah")}
                 <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -441,11 +445,15 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <LanguageToggle layoutId="lang-pill-desktop" />
-            <PaletteToggle layoutId="palette-pill-desktop" className="hidden sm:flex" />
-            <ThemeToggle />
-            <LinkButton to="/demo" size="sm" className="group hidden lg:inline-flex">
+            {/* Between md and lg the nav links need the room; the palette is
+                still one tap away in the mobile menu below md. */}
+            <PaletteToggle layoutId="palette-pill-desktop" className="hidden sm:flex md:hidden lg:flex" />
+            <AccessibilityToggle className="hidden sm:flex" />
+            <AccessibilityToggle compact className="sm:hidden" />
+            <ThemeToggle className="hidden xs:flex" />
+            <LinkButton to="/demo" size="sm" className="group hidden xl:inline-flex">
               {t("Try DR-VERGE", "Coba DR-VERGE")}
               <ArrowRight
                 className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -475,12 +483,15 @@ export default function Navbar() {
         {open && (
           <motion.div
             id="mobile-nav"
-            className="no-print fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background pt-20 md:hidden"
+            className="no-print fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
+            {/* Solid band behind the (transparent) bar, so the menu scrolls
+                under it instead of showing through it. */}
+            <div className="sticky top-0 z-10 h-20 shrink-0 bg-background" aria-hidden="true" />
             <div className="flex flex-col gap-1 px-5 pt-6">
               {navItems.map((item, i) => (
                 <motion.div
@@ -500,14 +511,14 @@ export default function Navbar() {
                     }
                   >
                     <span className="flex items-baseline gap-4">
-                      <span className="mono text-[11px] text-subtle">
+                      <span className="mono text-12 text-subtle">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="flex flex-col">
                         <span className="text-2xl font-semibold tracking-tight">
                           {trs(item.label)}
                         </span>
-                        <span className="mt-1 text-[12px] text-muted-foreground">
+                        <span className="mt-1 text-12 text-muted-foreground">
                           {trs(item.hint)}
                         </span>
                       </span>
@@ -529,7 +540,8 @@ export default function Navbar() {
                 </a>
               )}
 
-              <div className="mt-6">
+              <div className="mt-6 grid gap-3">
+                <AccessibilityCard />
                 <AppearancePanel />
               </div>
             </div>
@@ -538,7 +550,7 @@ export default function Navbar() {
               <LinkButton to="/demo" size="lg" className="w-full">
                 {t("Try DR-VERGE", "Coba DR-VERGE")}
               </LinkButton>
-              <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+              <p className="mt-4 text-center text-12 leading-relaxed text-muted-foreground">
                 {t(
                   "Research prototype. Not intended as a standalone clinical diagnostic system.",
                   "Prototipe penelitian. Tidak ditujukan sebagai sistem diagnosis klinis yang berdiri sendiri.",

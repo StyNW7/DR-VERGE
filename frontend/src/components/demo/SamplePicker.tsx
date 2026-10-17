@@ -52,7 +52,7 @@ export function SamplePicker({
             <h3 className="text-base font-bold tracking-tight">
               {t("Fastest way: load a sample eye", "Cara tercepat: muat sampel mata")}
             </h3>
-            <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-14 leading-relaxed text-muted-foreground">
               {t(
                 "One click fills both slots with a real macula + optic-disc pair from the public DeepDRiD dataset.",
                 "Satu klik langsung mengisi kedua slot dengan pasangan citra makula + diskus optik asli dari dataset publik DeepDRiD.",
@@ -61,7 +61,7 @@ export function SamplePicker({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
-          <span className="mono inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
+          <span className="mono inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-11 uppercase tracking-[0.12em] text-muted-foreground colorful:border-amber-line colorful:bg-amber-soft colorful:font-semibold colorful:text-amber">
             <EyeOff className="h-3 w-3" aria-hidden="true" />
             {t("Grade hidden until analysed", "*Grade* disembunyikan hingga dianalisis")}
           </span>
@@ -135,11 +135,11 @@ export function SamplePicker({
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center justify-between gap-2 px-2.5 py-2">
-                    <span className={cn("mono text-[11px] font-semibold", active && "colorful:text-brand")}>
+                  <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 px-2.5 py-2">
+                    <span className={cn("mono whitespace-nowrap text-12 font-semibold", active && "colorful:text-brand")}>
                       {s.sample_id}
                     </span>
-                    <span className="mono text-[9px] uppercase tracking-[0.12em] text-subtle">
+                    <span className="mono whitespace-nowrap text-10 uppercase tracking-[0.12em] text-subtle">
                       {side}
                     </span>
                   </div>
@@ -185,7 +185,7 @@ export function ReferenceCheck({
             <div className="mt-2 text-sm font-semibold">
               {ref ? gradeText(ref, lang).name : sample.ground_truth_name}
             </div>
-            <div className="mono mt-1 text-[10px] uppercase tracking-[0.12em] text-subtle">
+            <div className="mono mt-1 text-11 uppercase tracking-[0.12em] text-subtle">
               {t("DeepDRiD annotation", "Anotasi DeepDRiD")}
             </div>
           </div>
@@ -217,7 +217,7 @@ export function ReferenceCheck({
                       `Selisih ${diff} *grade*`,
                     )}
               </div>
-              <div className="text-[12px] text-muted-foreground">
+              <div className="text-12 text-muted-foreground">
                 {t("Predicted", "Prediksi")} {predictedGrade} · {t("reference", "referensi")}{" "}
                 {sample.ground_truth_grade}
               </div>
@@ -226,10 +226,10 @@ export function ReferenceCheck({
         </div>
 
         <div className="flex flex-col gap-3 bg-surface p-6 sm:p-8 colorful:bg-amber-soft">
-          <span className="mono text-[10px] uppercase tracking-[0.16em] text-foreground colorful:font-semibold colorful:text-amber">
+          <span className="mono text-11 uppercase tracking-[0.16em] text-foreground colorful:font-semibold colorful:text-amber">
             {t("Read this before celebrating", "Baca ini sebelum menyimpulkan")}
           </span>
-          <p className="text-[12px] leading-relaxed text-muted-foreground">
+          <p className="text-13 leading-relaxed text-muted-foreground">
             {pick(
               <>
                 These samples were curated <em>because</em> this model grades them correctly
@@ -255,7 +255,7 @@ export function ReferenceCheck({
               href={manifest.source.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="no-print mt-auto inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground underline-offset-4 hover:underline"
+              className="no-print mt-auto inline-flex items-center gap-1.5 text-12 font-medium text-foreground underline-offset-4 hover:underline"
             >
               {manifest.source.dataset} · {manifest.source.license}
               <ExternalLink className="h-3 w-3" aria-hidden="true" />

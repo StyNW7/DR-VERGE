@@ -31,9 +31,11 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-[13px]",
-  md: "h-11 px-6 text-sm",
-  lg: "h-14 px-8 text-base",
+  // Accessibility mode: taller targets for the larger type and for less
+  // precise pointing.
+  sm: "h-9 px-4 text-13 a11y:h-11",
+  md: "h-11 px-6 text-sm a11y:h-[3.25rem]",
+  lg: "h-14 px-8 text-base a11y:h-16",
 };
 
 interface CommonProps {

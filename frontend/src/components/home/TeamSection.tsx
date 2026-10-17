@@ -63,15 +63,15 @@ function MemberCard({ member }: { member: TeamMember }) {
         >
           {member.name}
         </h3>
-        <p className="mt-1.5 text-[13px] leading-snug text-muted-foreground colorful:font-medium colorful:text-brand">
+        <p className="mt-1.5 text-13 leading-snug text-muted-foreground colorful:font-medium colorful:text-brand">
           {tr(member.role)}
         </p>
-        <p className="mt-1 text-[11px] text-subtle">{member.institution}</p>
+        <p className="mt-1 text-12 text-subtle">{member.institution}</p>
 
         <div className="mt-auto pt-5">
           {member.placeholder ? (
             // Never invent a person. An unfilled slot says so.
-            <span className="mono text-[9px] uppercase tracking-[0.14em] text-subtle">
+            <span className="mono text-10 uppercase tracking-[0.14em] text-subtle">
               {t("Awaiting team details", "Menunggu data anggota tim")}
             </span>
           ) : hasLinks ? (

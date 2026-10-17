@@ -42,7 +42,7 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
               <span
                 className={cn(
-                  "mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors duration-500",
+                  "mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-12 font-semibold transition-colors duration-500",
                   isDone || isCurrent
                     ? "brand-fill"
                     : "border border-border text-muted-foreground",
@@ -53,13 +53,13 @@ export function DemoStepper({ current, done }: { current: DemoStep; done: boolea
               <div className="min-w-0">
                 <div
                   className={cn(
-                    "text-[12px] font-semibold leading-tight sm:truncate sm:text-sm",
+                    "text-12 font-semibold leading-tight sm:truncate sm:text-sm",
                     isDone || isCurrent ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   {tr(s.title)}
                 </div>
-                <div className="hidden truncate text-[11px] text-muted-foreground sm:block">
+                <div className="hidden truncate text-12 text-muted-foreground sm:block">
                   {tr(s.hint)}
                 </div>
               </div>

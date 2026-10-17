@@ -60,7 +60,7 @@ export default function ProblemSection() {
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface colorful:border-acc-line colorful:bg-card">
                     <Icon className="h-[18px] w-[18px] text-foreground colorful:text-acc" aria-hidden="true" />
                   </span>
-                  <span className="mono text-[11px] tracking-[0.16em] text-subtle colorful:hidden">{c.number}</span>
+                  <span className="mono text-12 tracking-[0.16em] text-subtle colorful:hidden">{c.number}</span>
                   <span
                     className="hidden h-10 w-10 items-center justify-center rounded-full bg-acc-solid text-lg font-extrabold text-acc-fg shadow-md colorful:flex"
                     aria-hidden="true"
@@ -109,7 +109,7 @@ export default function ProblemSection() {
                       className={cn("hidden h-2.5 w-2.5 rounded-full colorful:block", gradeTone(g.grade).dot)}
                       aria-hidden="true"
                     />
-                    <span className="mono text-[10px] uppercase tracking-[0.16em] text-subtle colorful:font-semibold colorful:text-foreground">
+                    <span className="mono text-11 uppercase tracking-[0.16em] text-subtle colorful:font-semibold colorful:text-foreground">
                       Grade {g.grade}
                     </span>
                   </span>

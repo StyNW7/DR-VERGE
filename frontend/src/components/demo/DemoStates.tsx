@@ -68,7 +68,7 @@ export function ProcessingState({
         <h3 className="mt-8 text-lg font-bold tracking-tight">
           {t("Analyzing dual-view pair", "Menganalisis pasangan *dual-view*")}
         </h3>
-        <p className="mt-2 text-center text-[13px] text-muted-foreground">
+        <p className="mt-2 text-center text-13 text-muted-foreground">
           {t(
             "The first run downloads the model once; after that it takes a few seconds.",
             "Pada percobaan pertama model diunduh satu kali; setelah itu hanya butuh beberapa detik.",
@@ -107,7 +107,7 @@ export function ProcessingState({
                   </span>
                   <span
                     className={cn(
-                      "text-[13px]",
+                      "text-13",
                       active ? "font-medium text-foreground" : "text-muted-foreground",
                     )}
                   >
@@ -217,13 +217,13 @@ export function ErrorState({
         </div>
 
         <h3 className="mt-7 text-lg font-bold tracking-tight">{tr(errorTitles[error.kind])}</h3>
-        <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-14 leading-relaxed text-muted-foreground">
           {t(message, message)}
         </p>
 
         {/* A short technical hint, never a stack trace. */}
         {error.detail && (
-          <p className="mono mt-4 rounded-md border border-border bg-surface px-3 py-1.5 text-[10px] uppercase tracking-[0.12em] text-subtle">
+          <p className="mono mt-4 rounded-md border border-border bg-surface px-3 py-1.5 text-11 uppercase tracking-[0.12em] text-subtle">
             {error.detail}
           </p>
         )}
@@ -269,13 +269,13 @@ export function DemoModeBanner({ compact = false }: { compact?: boolean }) {
         aria-hidden="true"
       />
       <div className="min-w-0">
-        <div className="mono text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-amber">
+        <div className="mono text-11 font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-amber">
           {t("Demo Mode · Simulated Output", "Mode Demo · Keluaran Simulasi")}
         </div>
         <p
           className={cn(
             "mt-1.5 leading-relaxed text-muted-foreground",
-            compact ? "text-[12px]" : "text-[13px]",
+            compact ? "text-12" : "text-13",
           )}
         >
           {pick(

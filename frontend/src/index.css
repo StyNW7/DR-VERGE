@@ -14,6 +14,75 @@
    ========================================================================== */
 
 @layer base {
+  /* --------------------------------------------------------------------------
+     Type scale. Every `text-*` utility reads one of these (tailwind.config.js),
+     so the accessibility mode below can enlarge the type on its own. All values
+     are rem, which also honours a reader's own browser font-size setting.
+     ------------------------------------------------------------------------ */
+  :root {
+    --fs-10: 0.625rem;
+    --fs-11: 0.6875rem;
+    --fs-12: 0.75rem;
+    --fs-13: 0.8125rem;
+    --fs-14: 0.875rem;
+    --fs-15: 0.9375rem;
+    --fs-xs: 0.75rem;
+    --lh-xs: 1rem;
+    --fs-sm: 0.875rem;
+    --lh-sm: 1.25rem;
+    --fs-base: 1rem;
+    --lh-base: 1.5rem;
+    --fs-lg: 1.125rem;
+    --lh-lg: 1.75rem;
+    --fs-xl: 1.25rem;
+    --lh-xl: 1.75rem;
+    --fs-2xl: 1.5rem;
+    --lh-2xl: 2rem;
+    --fs-3xl: 1.875rem;
+    --lh-3xl: 2.25rem;
+    --fs-4xl: 2.25rem;
+    --lh-4xl: 2.5rem;
+    --fs-5xl: 3rem;
+    --lh-5xl: 1;
+    --fs-6xl: 3.75rem;
+    --lh-6xl: 1;
+    --fs-7xl: 4.5rem;
+    --lh-7xl: 1;
+  }
+
+  /* --------------------------------------------------------------------------
+     ACCESSIBILITY MODE — `html.a11y`.
+
+     For readers with low or ageing vision. The smallest text grows the most
+     (10px labels become 14px, body copy 16px becomes 20px), headings grow a
+     little, and every size gets a looser line height. Layout and spacing are
+     untouched, so the page is the same page — only easier to read.
+     ------------------------------------------------------------------------ */
+  .a11y {
+    --fs-10: 0.875rem;
+    --fs-11: 0.9375rem;
+    --fs-12: 1rem;
+    --fs-13: 1.0625rem;
+    --fs-14: 1.125rem;
+    --fs-15: 1.1875rem;
+    --fs-xs: 1rem;
+    --lh-xs: 1.5;
+    --fs-sm: 1.125rem;
+    --lh-sm: 1.6;
+    --fs-base: 1.25rem;
+    --lh-base: 1.7;
+    --fs-lg: 1.375rem;
+    --lh-lg: 1.6;
+    --fs-xl: 1.5rem;
+    --lh-xl: 1.5;
+    --fs-2xl: 1.75rem;
+    --lh-2xl: 1.35;
+    --fs-3xl: 2.125rem;
+    --lh-3xl: 1.25;
+    --fs-4xl: 2.5rem;
+    --lh-4xl: 1.15;
+  }
+
   :root {
     /* light: white page, black ink */
     --background: 0 0% 100%; /* #FFFFFF */
@@ -308,6 +377,36 @@
     --acc-soft: var(--amber-soft);
     --acc-line: var(--amber-line);
   }
+
+  /* Accessibility mode, contrast: secondary text moves toward the ink colour
+     (≥ 9:1 everywhere) and hairlines become visible edges. One block per
+     palette/theme pair, each specific enough to win over the palette itself. */
+  .a11y {
+    --muted-foreground: 0 0% 22%;
+    --subtle-foreground: 0 0% 30%;
+    --border: 0 0% 80%;
+    --border-strong: 0 0% 62%;
+  }
+  .a11y.dark {
+    --muted-foreground: 0 0% 82%;
+    --subtle-foreground: 0 0% 72%;
+    --border: 0 0% 28%;
+    --border-strong: 0 0% 42%;
+  }
+  .a11y.colorful {
+    --muted-foreground: 220 32% 24%;
+    --subtle-foreground: 218 24% 31%;
+    --border: 213 38% 79%;
+    --border-strong: 213 34% 64%;
+    --brand-line: 207 70% 72%;
+  }
+  .a11y.colorful.dark {
+    --muted-foreground: 214 32% 85%;
+    --subtle-foreground: 215 24% 75%;
+    --border: 219 30% 30%;
+    --border-strong: 218 28% 42%;
+    --brand-line: 207 55% 40%;
+  }
 }
 
 @layer base {
@@ -372,7 +471,7 @@
 
   /* The eyebrow label above a section title. */
   .eyebrow {
-    @apply mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground;
+    @apply mono text-12 uppercase tracking-[0.16em] text-muted-foreground;
   }
 
   .surface-card {
@@ -712,6 +811,105 @@
 
   .colorful :focus-visible {
     outline-color: hsl(var(--ring));
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY MODE — everything beyond size and contrast.
+
+   Each rule removes one specific reading obstacle:
+     · decorative typefaces (serif italic, all-caps monospace) → plain Inter
+     · faint text drawn with opacity → near-full strength
+     · background texture behind text → removed or quietened
+     · perpetual motion → stopped
+     · thin focus ring → thick and offset
+   ========================================================================== */
+@layer components {
+  .a11y body {
+    letter-spacing: 0.006em;
+    word-spacing: 0.04em;
+  }
+
+  /* The serif italic accent is beautiful but thin at reading distance. Same
+     weight as the heading around it, upright; the brand gradient stays. */
+  .a11y .display em,
+  .a11y .serif-accent {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-style: normal;
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+
+  /* Small all-caps monospace labels: the hardest text on the page to read. */
+  .a11y .eyebrow,
+  .a11y .mono.uppercase {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .a11y :is(p, span, div, dd, dt, li, small, h3, h4):is(
+      .opacity-50,
+      .opacity-60,
+      .opacity-65,
+      .opacity-70,
+      .opacity-80
+    ):not([aria-hidden="true"]):not(.pointer-events-none) {
+    opacity: 0.95;
+  }
+  .a11y :is(
+      .text-foreground\/50,
+      .text-foreground\/60,
+      .text-foreground\/70,
+      .text-foreground\/80
+    ) {
+    color: hsl(var(--foreground) / 0.92);
+  }
+  .a11y :is(
+      .text-background\/50,
+      .text-background\/60,
+      .text-background\/65,
+      .text-background\/70,
+      .text-background\/80
+    ) {
+    color: hsl(var(--background) / 0.95);
+  }
+
+  .a11y .grain::after {
+    display: none;
+  }
+  .a11y .grid-bg,
+  .a11y .dot-bg {
+    opacity: 0.25;
+  }
+
+  /* Links inside running text are underlined, not just coloured. */
+  .a11y :is(p, li, dd) > a:not([class*="rounded"]) {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 0.08em;
+  }
+
+  .a11y :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .a11y :is(
+      .animate-ping,
+      .animate-bounce,
+      .animate-dash-flow,
+      .animate-marquee,
+      .animate-spin-slow,
+      .animate-pulse-sweep,
+      .animate-shimmer
+    ) {
+    animation: none !important;
+  }
+
+  /* Comfortable reading measure for long paragraphs. */
+  .a11y .max-w-prose {
+    max-width: 62ch;
   }
 }
 

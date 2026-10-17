@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { MotionConfig } from "framer-motion";
 
 type Theme = "dark" | "light" | "system";
 
@@ -9,13 +10,19 @@ type Theme = "dark" | "light" | "system";
  *   palette — "mono" (the original black-and-white identity) or "color"
  *             (blue-led, with coral and amber accents)
  *
- * Both are classes on <html> (`dark`, `colorful`), so every combination is
- * plain CSS and a component never needs to know which one is active.
+ *   a11y    — the accessibility mode: larger type, higher contrast, plain
+ *             typefaces and calmer motion, for readers with low or ageing
+ *             vision (see "ACCESSIBILITY MODE" in index.css)
+ *
+ * All three are classes on <html> (`dark`, `colorful`, `a11y`), so every
+ * combination is plain CSS and a component never needs to know which one is
+ * active.
  */
 export type Palette = "mono" | "color";
 
 export const PALETTE_STORAGE_KEY = "dr-verge-palette";
 export const DEFAULT_PALETTE: Palette = "color";
+export const A11Y_STORAGE_KEY = "dr-verge-a11y";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -28,6 +35,8 @@ type ThemeProviderState = {
   setTheme: (theme: Theme) => void;
   palette: Palette;
   setPalette: (palette: Palette) => void;
+  a11y: boolean;
+  setA11y: (on: boolean) => void;
 };
 
 const initialState: ThemeProviderState = {
@@ -35,6 +44,8 @@ const initialState: ThemeProviderState = {
   setTheme: () => null,
   palette: DEFAULT_PALETTE,
   setPalette: () => null,
+  a11y: false,
+  setA11y: () => null,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -68,6 +79,18 @@ function applyPalette(palette: Palette) {
   syncThemeColor();
 }
 
+function applyA11y(on: boolean) {
+  document.documentElement.classList.toggle("a11y", on);
+}
+
+function readA11y(): boolean {
+  try {
+    return localStorage.getItem(A11Y_STORAGE_KEY) === "on";
+  } catch {
+    return false;
+  }
+}
+
 function readPalette(): Palette {
   try {
     const v = localStorage.getItem(PALETTE_STORAGE_KEY);
@@ -92,6 +115,7 @@ export function ThemeProvider({
     }
   });
   const [palette, setPaletteState] = useState<Palette>(readPalette);
+  const [a11y, setA11yState] = useState<boolean>(readA11y);
 
   useEffect(() => {
     applyTheme(theme);
@@ -100,6 +124,10 @@ export function ThemeProvider({
   useEffect(() => {
     applyPalette(palette);
   }, [palette]);
+
+  useEffect(() => {
+    applyA11y(a11y);
+  }, [a11y]);
 
   const value = {
     theme,
@@ -122,11 +150,23 @@ export function ThemeProvider({
       applyPalette(next);
       setPaletteState(next);
     },
+    a11y,
+    setA11y: (on: boolean) => {
+      try {
+        localStorage.setItem(A11Y_STORAGE_KEY, on ? "on" : "off");
+      } catch {
+        /* not persisted, still applied */
+      }
+      applyA11y(on);
+      setA11yState(on);
+    },
   };
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
+      {/* The accessibility mode also calms motion: transforms are skipped and
+          only opacity fades remain. */}
+      <MotionConfig reducedMotion={a11y ? "always" : "user"}>{children}</MotionConfig>
     </ThemeProviderContext.Provider>
   );
 }
@@ -142,3 +182,9 @@ export const useTheme = () => {
 
 /** True when the colourful palette is active. */
 export const useIsColorful = () => useTheme().palette === "color";
+
+/** The accessibility (large, high-contrast text) mode and its setter. */
+export const useA11y = () => {
+  const { a11y, setA11y } = useTheme();
+  return { a11y, setA11y };
+};

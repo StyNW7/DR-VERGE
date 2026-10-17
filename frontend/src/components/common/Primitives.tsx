@@ -36,7 +36,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "mono inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] uppercase leading-none tracking-[0.14em]",
+        "mono inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-11 uppercase leading-none tracking-[0.14em]",
         badgeTones[tone],
         className,
       )}
@@ -141,7 +141,7 @@ export function SectionHeader({
             align === "center" ? "self-center" : "self-start",
           )}
         >
-          <span className="brand-fill mono flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold">
+          <span className="brand-fill mono flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-11 font-semibold">
             {index ?? <span className="h-1.5 w-1.5 rounded-full bg-current" />}
           </span>
           <span className="eyebrow text-foreground/80">{eyebrow}</span>
@@ -300,13 +300,13 @@ export function Callout({
       </span>
       <div className="min-w-0">
         {title && (
-          <div className="mono mb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-acc">
+          <div className="mono mb-1 pt-1 text-11 font-semibold uppercase tracking-[0.16em] text-foreground colorful:text-acc">
             {title}
           </div>
         )}
         <div
           className={cn(
-            "text-[13px] leading-relaxed text-muted-foreground",
+            "text-14 leading-relaxed text-muted-foreground",
             !title && "pt-1",
           )}
         >

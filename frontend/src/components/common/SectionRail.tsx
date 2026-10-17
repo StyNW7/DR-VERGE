@@ -42,7 +42,7 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
               >
                 <span
                   className={cn(
-                    "mono whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] transition-all duration-300",
+                    "mono whitespace-nowrap rounded-full px-2 py-0.5 text-11 uppercase tracking-[0.14em] transition-all duration-300",
                     isActive
                       ? "glass translate-x-1 border border-border text-foreground colorful:border-brand-line colorful:text-brand opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 2xl:translate-x-0 2xl:opacity-100"
                       : "translate-x-1 text-muted-foreground opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-hover/rail:opacity-60",

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { AccessibilityToast } from "@/components/common/AccessibilityToggle";
 
 /**
  * Shell shared by every route.
@@ -18,6 +19,7 @@ export default function RootLayout() {
           <Outlet />
         </div>
         <Footer />
+        <AccessibilityToast />
       </div>
     </ThemeProvider>
   );

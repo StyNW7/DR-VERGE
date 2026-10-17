@@ -380,7 +380,7 @@ export default function DemoPage() {
             onPick={(s) => void handlePickSample(s)}
           />
           {sampleError && (
-            <p role="alert" className="mt-3 text-[12px] text-foreground">
+            <p role="alert" className="mt-3 text-12 text-foreground">
               {t(
                 "That sample could not be loaded. Please try another one, or upload your own pair.",
                 "Sampel tersebut tidak dapat dimuat. Silakan coba sampel lain, atau unggah pasangan citra Anda sendiri.",
@@ -395,7 +395,7 @@ export default function DemoPage() {
         />
 
         {/* What a valid upload looks like, said once and briefly. */}
-        <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-muted-foreground">
+        <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-12 text-muted-foreground">
           <span className="inline-flex items-center gap-2">
             <ImageIcon className="h-3.5 w-3.5 text-foreground" aria-hidden="true" />
             {t(
@@ -463,7 +463,7 @@ export default function DemoPage() {
                 ))}
               </div>
               {/* Always say why the button is disabled. */}
-              <p className="text-[13px] text-muted-foreground" aria-live="polite">
+              <p className="text-13 text-muted-foreground" aria-live="polite">
                 {bothReady ? (
                   <span className="font-medium text-foreground">
                     {activeSample
@@ -534,14 +534,14 @@ export default function DemoPage() {
               {/* Printed header — only visible on paper. */}
               <div className="print-only mb-4">
                 <div className="text-2xl font-bold">DR-VERGE</div>
-                <div className="mono mt-1 text-[11px] uppercase tracking-[0.14em]">
+                <div className="mono mt-1 text-12 uppercase tracking-[0.14em]">
                   {t("Research Prototype · Result Summary", "Prototipe Penelitian · Ringkasan Hasil")}
                 </div>
-                <div className="mono mt-1 text-[11px]">
+                <div className="mono mt-1 text-12">
                   {formatTimestamp(new Date(result.receivedAt), lang)}
                 </div>
                 {result.isMock && (
-                  <div className="mono mt-2 border border-black px-2 py-1 text-[11px] uppercase tracking-[0.14em]">
+                  <div className="mono mt-2 border border-black px-2 py-1 text-12 uppercase tracking-[0.14em]">
                     {t(
                       "Simulated output — no model was executed",
                       "Keluaran simulasi — tidak ada model yang dijalankan",
@@ -603,7 +603,7 @@ export default function DemoPage() {
               </div>
 
               {/* Printed disclaimer — the last thing on the page. */}
-              <div className="print-only mt-6 border-t border-black pt-4 text-[11px] leading-relaxed">
+              <div className="print-only mt-6 border-t border-black pt-4 text-12 leading-relaxed">
                 {t(
                   "DR-VERGE is a research prototype and is not intended as a standalone clinical diagnostic system. Ordinal threshold scores and relative grade scores are internal model outputs and are not calibrated clinical probabilities. Please consult an ophthalmologist for clinical interpretation.",
                   "DR-VERGE adalah prototipe penelitian dan tidak ditujukan sebagai sistem diagnosis klinis yang berdiri sendiri. Skor ambang ordinal dan skor relatif per *grade* merupakan keluaran internal model dan bukan probabilitas klinis yang terkalibrasi. Silakan berkonsultasi dengan dokter spesialis mata untuk interpretasi klinis.",
@@ -616,7 +616,7 @@ export default function DemoPage() {
                   <h3 className="text-lg font-bold tracking-tight">
                     {t("What next?", "Selanjutnya?")}
                   </h3>
-                  <p className="mt-1 text-[13px] text-muted-foreground">
+                  <p className="mt-1 text-13 text-muted-foreground">
                     {t(
                       "Try another eye, keep a copy of this summary, or see how the model was evaluated.",
                       "Coba mata lain, simpan salinan ringkasan ini, atau lihat bagaimana model dievaluasi.",
@@ -637,7 +637,7 @@ export default function DemoPage() {
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </LinkButton>
                 </div>
-                <p className="text-[11px] text-subtle">
+                <p className="text-12 text-subtle">
                   {t(
                     "The printed summary contains the grade, scores, model configuration, and timestamp. Uploaded images are not included.",
                     "Ringkasan cetak memuat *grade*, skor, konfigurasi model, dan waktu analisis. Citra yang diunggah tidak disertakan.",
@@ -659,7 +659,7 @@ export default function DemoPage() {
                 <h2 className="text-2xl font-bold tracking-tight">
                   {t("What do these outputs actually mean?", "Apa sebenarnya arti keluaran ini?")}
                 </h2>
-                <p className="text-[14px] leading-relaxed text-muted-foreground">
+                <p className="text-14 leading-relaxed text-muted-foreground">
                   {t(
                     "The research page explains the CORAL ordinal head, the complementarity shift that DR-VERGE distils, and what the evaluation did and did not establish.",
                     "Halaman penelitian menjelaskan *head* ordinal CORAL, *complementarity shift* yang didistilasi DR-VERGE, serta apa saja yang berhasil dan belum berhasil dibuktikan oleh evaluasi.",
@@ -678,7 +678,7 @@ export default function DemoPage() {
                 <h2 className="text-2xl font-bold tracking-tight">
                   {t("Want to test offline or in bulk?", "Ingin menguji secara luring atau dalam jumlah banyak?")}
                 </h2>
-                <p className="text-[14px] leading-relaxed text-muted-foreground">
+                <p className="text-14 leading-relaxed text-muted-foreground">
                   {t(
                     "Download sample dual-view fundus image pairs prepared for research demonstration. The samples open in a new tab.",
                     "Unduh pasangan citra fundus *dual-view* contoh yang disiapkan untuk demonstrasi penelitian. Sampel akan terbuka di tab baru.",
@@ -699,7 +699,7 @@ export default function DemoPage() {
                     <ExternalLink className="h-3.5 w-3.5 opacity-60" aria-hidden="true" />
                   </ExternalButton>
                   {!isLinkConfigured(siteConfig.sampleDatasetUrl) && (
-                    <p className="mt-3 text-[11px] text-subtle">
+                    <p className="mt-3 text-12 text-subtle">
                       {t(
                         "Sample dataset link not yet configured.",
                         "Tautan dataset sampel belum dikonfigurasi.",

@@ -49,7 +49,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
             aria-hidden="true"
           />
           <div>
-            <span className="mono text-[10px] uppercase tracking-[0.18em] opacity-60">
+            <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
               {t("Predicted DR Grade", "Prediksi *Grade* DR")}
             </span>
             <div className="display mt-5 text-[clamp(4.5rem,18vw,8rem)] leading-[0.82]">
@@ -58,7 +58,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
           </div>
           <div className="mt-7">
             <div className="text-xl font-bold tracking-tight sm:text-2xl">{gradeName}</div>
-            <div className="mono mt-2 text-[10px] uppercase tracking-[0.14em] opacity-60">
+            <div className="mono mt-2 text-11 uppercase tracking-[0.14em] opacity-60">
               {t(`Grade ${result.grade} of ${maxGrade}`, `Grade ${result.grade} dari ${maxGrade}`)}
             </div>
           </div>
@@ -68,7 +68,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
         <div className="flex flex-col justify-center gap-8 bg-card p-8 md:col-span-3 sm:p-10">
           <div>
             <span className="eyebrow">{t("Ordinal Severity", "Keparahan Ordinal")}</span>
-            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 text-14 leading-relaxed text-muted-foreground">
               {t(
                 "DR grades are ordered. The position on this scale carries meaning — an error of one grade is not the same as an error of three.",
                 "*Grade* DR bersifat berurutan. Posisi pada skala ini bermakna — kesalahan satu tingkat tidak sama dengan kesalahan tiga tingkat.",
@@ -80,7 +80,7 @@ export function OutputHero({ result }: { result: InferenceResult }) {
 
           {grade && (
             <div className="border-t border-border pt-6">
-              <p className="text-[13px] leading-relaxed text-muted-foreground">
+              <p className="text-14 leading-relaxed text-muted-foreground">
                 {gradeText(grade, lang).detail}
               </p>
             </div>
@@ -135,13 +135,13 @@ export function OrdinalThresholdScores({ result }: { result: InferenceResult }) 
                   <span className="mono text-sm font-semibold">
                     {meta?.key ?? `P(Y > ${i})`}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-12 text-muted-foreground">
                     {meta ? tr(meta.meaning) : null}
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   {passed && (
-                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-[9px] uppercase tracking-[0.14em]">
+                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-10 uppercase tracking-[0.14em]">
                       {t("passed", "terlampaui")}
                     </span>
                   )}
@@ -203,11 +203,11 @@ export function RelativeGradeScores({ result }: { result: InferenceResult }) {
                   >
                     Grade {g}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-12 text-muted-foreground">
                     {info ? gradeText(info, lang).name : ""}
                   </span>
                   {isPredicted && (
-                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-[9px] uppercase tracking-[0.14em]">
+                    <span className="brand-fill mono rounded-full px-2 py-0.5 text-10 uppercase tracking-[0.14em]">
                       {t("predicted", "prediksi")}
                     </span>
                   )}
@@ -255,15 +255,15 @@ export function DualViewSummary({
       <ul className="flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
         {rows.map((r, i) => (
           <li key={i} className="flex items-center justify-between gap-4 bg-card px-4 py-3.5">
-            <span className="flex items-center gap-3 text-[13px] font-medium">
+            <span className="flex items-center gap-3 text-13 font-medium">
               <Check className="h-3.5 w-3.5 shrink-0 text-muted-foreground colorful:text-brand" aria-hidden="true" />
               {r.label}
             </span>
-            <span className="truncate text-[12px] text-muted-foreground">{r.value}</span>
+            <span className="truncate text-12 text-muted-foreground">{r.value}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-5 text-[13px] leading-relaxed text-muted-foreground">
+      <p className="mt-5 text-14 leading-relaxed text-muted-foreground">
         {t(
           "Both views are jointly processed by DR-VERGE. The final grade is produced from their fused representation, not from either view alone.",
           "Kedua citra diproses bersama oleh DR-VERGE. *Grade* akhir dihasilkan dari representasi gabungan keduanya, bukan dari salah satu citra saja.",
@@ -307,13 +307,13 @@ export function ModelInformation({ result }: { result: InferenceResult }) {
       <dl className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
         {rows.map((r, i) => (
           <div key={i} className="bg-card px-4 py-3.5">
-            <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle colorful:text-brand">{r.label}</dt>
-            <dd className="mt-1 truncate text-[13px] font-medium">{r.value}</dd>
+            <dt className="mono text-11 uppercase tracking-[0.14em] text-subtle colorful:text-brand">{r.label}</dt>
+            <dd className="mt-1 truncate text-13 font-medium">{r.value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="mono mt-5 flex flex-wrap gap-x-6 gap-y-1 text-[10px] uppercase tracking-[0.12em] text-subtle">
+      <div className="mono mt-5 flex flex-wrap gap-x-6 gap-y-1 text-11 uppercase tracking-[0.12em] text-subtle">
         <span>
           {t("Round trip", "Waktu total")} {formatMs(result.clientElapsedMs, 0, lang)}
         </span>
@@ -340,8 +340,8 @@ export function ResultInterpretation({ result }: { result: InferenceResult }) {
           <Badge tone="solid" className={gradeTone(grade.grade).fill}>
             {copy.name}
           </Badge>
-          <p className="mt-4 text-[14px] leading-relaxed text-foreground">{copy.description}</p>
-          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{copy.detail}</p>
+          <p className="mt-4 text-14 leading-relaxed text-foreground">{copy.description}</p>
+          <p className="mt-3 text-14 leading-relaxed text-muted-foreground">{copy.detail}</p>
         </div>
 
         {/* No treatment advice, no urgency instruction — only this. */}
@@ -381,7 +381,7 @@ function SectionCard({
         <div>
           <h3 className="pt-1 text-base font-bold tracking-tight">{title}</h3>
           {description && (
-            <p className="mt-2 max-w-prose text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 max-w-prose text-14 leading-relaxed text-muted-foreground">
               {description}
             </p>
           )}
@@ -394,7 +394,7 @@ function SectionCard({
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-[13px] text-muted-foreground">
+    <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-13 text-muted-foreground">
       {children}
     </p>
   );

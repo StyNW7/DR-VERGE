@@ -35,7 +35,7 @@ function CompareBar({
       <div className="flex items-baseline justify-between gap-3">
         <div className="min-w-0">
           <span className="text-sm font-semibold">{label}</span>
-          <span className="mono ml-2 text-[10px] uppercase tracking-[0.12em] text-subtle">
+          <span className="mono ml-2 text-11 uppercase tracking-[0.12em] text-subtle">
             {sublabel}
           </span>
         </div>
@@ -160,7 +160,7 @@ export default function Rq2Section() {
                 <div className="mono text-2xl font-bold colorful:text-coral">
                   {num(modelStats.studentFp32LatencyMs, 2)}
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground">
+                <div className="mt-1 text-12 text-muted-foreground">
                   {t("FP32 student, ms", "*Student* FP32, ms")}
                 </div>
               </div>
@@ -168,7 +168,7 @@ export default function Rq2Section() {
                 <div className="mono text-2xl font-bold colorful:text-brand">
                   {num(modelStats.selectedDeploymentLatencyMs, 2)}
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground">
+                <div className="mt-1 text-12 text-muted-foreground">
                   {t("Selected INT8, ms", "INT8 terpilih, ms")}
                 </div>
               </div>
@@ -176,7 +176,7 @@ export default function Rq2Section() {
                 <div className="mono text-2xl font-bold colorful:text-amber">
                   {num(modelStats.selectedQwkRetentionPct, 1)}%
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground">
+                <div className="mt-1 text-12 text-muted-foreground">
                   {t("INT8 QWK retention", "Retensi QWK INT8")}
                 </div>
               </div>

@@ -20,7 +20,7 @@ export default function CtaSection() {
 
           <div className="relative grid items-center gap-12 p-8 sm:p-12 lg:grid-cols-12 lg:p-16">
             <div className="lg:col-span-7">
-              <span className="mono inline-flex items-center gap-2 rounded-full border border-background/25 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+              <span className="mono inline-flex items-center gap-2 rounded-full border border-background/25 px-3 py-1 text-11 uppercase tracking-[0.14em]">
                 <ScanEye className="h-3 w-3" aria-hidden="true" />
                 {t("Interactive Demo", "Demo Interaktif")}
               </span>
@@ -66,7 +66,7 @@ export default function CtaSection() {
                 </LinkButton>
               </div>
 
-              <p className="mt-8 max-w-lg text-[12px] leading-relaxed text-background/60">
+              <p className="mt-8 max-w-lg text-13 leading-relaxed text-background/60">
                 <span className="font-medium text-background">
                   {t("For research and educational use only.", "Hanya untuk penelitian dan edukasi.")}
                 </span>{" "}

@@ -1,9 +1,49 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
+/**
+ * Every text size resolves through a CSS variable (see `--fs-*` in index.css),
+ * so the accessibility mode can enlarge the type alone — spacing, breakpoints
+ * and layout stay where they are. `--lh-*` does the same for line height.
+ */
+const fs = (name) => [`var(--fs-${name})`, { lineHeight: `var(--lh-${name})` }];
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
+    // `xs` sits below `sm` for the narrowest phones' navbar.
+    screens: { xs: "370px", ...defaultTheme.screens },
+    // The whole scale is replaced (not extended) so that every size is
+    // variable-driven. The numeric tokens are the old pixel sizes (`text-13` is
+    // 13px at normal size) and carry no line height, like the arbitrary
+    // `text-[13px]` values they replaced.
+    fontSize: {
+      10: "var(--fs-10)",
+      11: "var(--fs-11)",
+      12: "var(--fs-12)",
+      13: "var(--fs-13)",
+      14: "var(--fs-14)",
+      15: "var(--fs-15)",
+      xs: fs("xs"),
+      sm: fs("sm"),
+      base: fs("base"),
+      lg: fs("lg"),
+      xl: fs("xl"),
+      "2xl": fs("2xl"),
+      "3xl": fs("3xl"),
+      "4xl": fs("4xl"),
+      "5xl": fs("5xl"),
+      "6xl": fs("6xl"),
+      "7xl": fs("7xl"),
+      // Fluid editorial display sizes. clamp() means the hero never needs a
+      // breakpoint to stay proportionate between 375px and 1920px.
+      "display-sm": ["clamp(2rem,6vw,3rem)", { lineHeight: "1.02", letterSpacing: "-0.03em" }],
+      "display-md": ["clamp(2.5rem,8vw,4.5rem)", { lineHeight: "0.98", letterSpacing: "-0.04em" }],
+      "display-lg": ["clamp(3rem,11vw,7rem)", { lineHeight: "0.92", letterSpacing: "-0.045em" }],
+      "display-xl": ["clamp(4rem,16vw,12rem)", { lineHeight: "0.86", letterSpacing: "-0.05em" }],
+    },
     container: {
       center: true,
       padding: { DEFAULT: "1.25rem", sm: "1.5rem", lg: "2rem" },
@@ -96,14 +136,6 @@ module.exports = {
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
         serif: ["Instrument Serif", "ui-serif", "Georgia", "serif"],
       },
-      fontSize: {
-        // Fluid editorial display sizes. clamp() means the hero never needs a
-        // breakpoint to stay proportionate between 375px and 1920px.
-        "display-sm": ["clamp(2rem,6vw,3rem)", { lineHeight: "1", letterSpacing: "-0.03em" }],
-        "display-md": ["clamp(2.5rem,8vw,4.5rem)", { lineHeight: "0.98", letterSpacing: "-0.04em" }],
-        "display-lg": ["clamp(3rem,11vw,7rem)", { lineHeight: "0.92", letterSpacing: "-0.045em" }],
-        "display-xl": ["clamp(4rem,16vw,12rem)", { lineHeight: "0.86", letterSpacing: "-0.05em" }],
-      },
       maxWidth: { content: "1440px", prose: "68ch" },
       keyframes: {
         "accordion-down": {
@@ -161,6 +193,8 @@ module.exports = {
       addVariant("colorful", ".colorful &");
       addVariant("colorful-dark", ".colorful.dark &");
       addVariant("mono", "html:not(.colorful) &");
+      // `a11y:` applies only in the accessibility (large text) mode.
+      addVariant("a11y", ".a11y &");
     },
   ],
 };

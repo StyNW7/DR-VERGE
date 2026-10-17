@@ -24,7 +24,7 @@ export default function SdgSection() {
               <div className="w-28 shrink-0 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-background/20 sm:w-36">
                 <Sdg3Logo />
               </div>
-              <div className="mono text-[10px] uppercase leading-relaxed tracking-[0.2em] opacity-60">
+              <div className="mono text-11 uppercase leading-relaxed tracking-[0.16em] opacity-60">
                 {t("Sustainable", "Tujuan")}
                 <br />
                 {t("Development", "Pembangunan")}
@@ -48,17 +48,17 @@ export default function SdgSection() {
               {sdgContent.points.map((p) => (
                 <div key={p.title.en} className="bg-foreground p-6 colorful:bg-[hsl(222_62%_19%/0.92)]">
                   <h3 className="text-sm font-bold">{tr(p.title)}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed opacity-65">{tr(p.body)}</p>
+                  <p className="mt-2 text-14 leading-relaxed opacity-65">{tr(p.body)}</p>
                 </div>
               ))}
             </div>
 
             {/* Inverted callout — the section runs on the dark ground. */}
             <div className="mt-8 rounded-xl border border-background/25 border-l-[3px] border-l-background p-5 colorful:border-l-amber-solid colorful:bg-white/[0.04]">
-              <div className="mono mb-2 text-[10px] uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
+              <div className="mono mb-2 text-11 uppercase tracking-[0.16em] colorful:font-semibold colorful:text-[hsl(45_100%_75%)]">
                 {t("Scope of this claim", "Cakupan klaim ini")}
               </div>
-              <p className="text-[13px] leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>
+              <p className="text-14 leading-relaxed opacity-70">{tr(sdgContent.caution)}</p>
             </div>
           </Reveal>
         </div>

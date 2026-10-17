@@ -138,7 +138,7 @@ export default function ResearchPage() {
           </div>
 
           {!paperOk && (
-            <p className="mt-5 text-[12px] text-subtle">
+            <p className="mt-5 text-12 text-subtle">
               {t(
                 "The paper is not yet published. The download link will activate once it is available.",
                 "Makalah belum dipublikasikan. Tautan unduhan akan aktif setelah makalah tersedia.",
@@ -158,13 +158,13 @@ export default function ResearchPage() {
                   (i === 2 ? "lg:border-l" : "")
                 }
               >
-                <dt className="mono text-[10px] uppercase tracking-[0.14em] text-subtle colorful:font-semibold colorful:text-brand">
+                <dt className="mono text-11 uppercase tracking-[0.14em] text-subtle colorful:font-semibold colorful:text-brand">
                   {p.label}
                 </dt>
                 <dd className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
                   {p.value}
                 </dd>
-                <dd className="break-words text-[11px] leading-snug text-muted-foreground">
+                <dd className="break-words text-12 leading-snug text-muted-foreground">
                   {p.detail}
                 </dd>
               </div>
