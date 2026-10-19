@@ -20,6 +20,11 @@ import {
   datasets,
   externalValidation,
   externalCaveat,
+  externalCredibleFindings,
+  externalSetup,
+  rq2Comparisons,
+  rq2ControlComparison,
+  rq2Verdict,
   limitations,
   mechanismResults,
   mechanismMetricMeta,
@@ -546,7 +551,7 @@ export function Rq1ResultsSection() {
 /* -------------------------------------------------------------------------- */
 
 export function Rq2ResultsSection() {
-  const { t, ts, pick, num, lang } = useI18n();
+  const { t, ts, tr, pick, num, lang } = useI18n();
 
   const latencyData = efficiencyResults
     .filter((r) => !r.variant.startsWith("Teacher"))
@@ -618,6 +623,67 @@ export function Rq2ResultsSection() {
         </Reveal>
       </div>
 
+      {/* The pre-registered comparisons behind the headline, with both tests, so
+          the one place they disagree is visible rather than averaged away. */}
+      <Reveal delay={0.08}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="card-premium p-7 sm:p-8 lg:col-span-7">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-lg font-bold tracking-tight">
+                {t("Pre-registered QWK comparisons", "Perbandingan QWK pra-registrasi")}
+              </h3>
+              <Badge tone="outline">{t("Internal test set", "Data uji internal")}</Badge>
+            </div>
+            <div className="flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
+              {[...rq2Comparisons, rq2ControlComparison].map((c) => {
+                const ciCrossesZero = c.ciLow < 0 && c.ciHigh > 0;
+                const permSignificant = c.pHolm < 0.05;
+                const isControl = c.pair === rq2ControlComparison.pair;
+                return (
+                  <div key={c.pair} className="flex flex-col gap-1 bg-card px-5 py-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-13 font-medium">
+                        {c.pair}
+                        {isControl && (
+                          <span className="ml-2 text-12 font-normal text-subtle">
+                            {t("(supplementary control)", "(kontrol suplemen)")}
+                          </span>
+                        )}
+                      </span>
+                      <span className="mono whitespace-nowrap text-12 uppercase tracking-[0.12em] text-muted-foreground colorful:font-semibold colorful:text-amber">
+                        {ciCrossesZero && permSignificant
+                          ? t("Tests disagree", "Uji tidak sepakat")
+                          : t("Not credible", "Tidak kredibel")}
+                      </span>
+                    </div>
+                    <span className="mono text-12 tabular-nums text-subtle">
+                      ΔQWK {signed(c.delta, lang)} · {ciText(c.ciLow, c.ciHigh, lang)} · p
+                      <sub>Holm</sub> = {num(c.pHolm, 3)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-5 text-13 leading-relaxed text-muted-foreground">
+              {tr(rq2Verdict.control)}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-5 lg:col-span-5">
+            <div className="card-premium p-6">
+              <Badge tone="outline">{t("Finding", "Temuan")}</Badge>
+              <p className="mt-4 text-15 font-medium leading-relaxed">{tr(rq2Verdict.headline)}</p>
+            </div>
+            <Callout tone="caution" title={t("One unresolved comparison", "Satu perbandingan belum tuntas")}>
+              {tr(rq2Verdict.disagreement)}
+            </Callout>
+            <Callout tone="research" title={t("What this does not say", "Yang tidak dinyatakan di sini")}>
+              {tr(rq2Verdict.caution)}
+            </Callout>
+          </div>
+        </div>
+      </Reveal>
+
       <Reveal delay={0.1}>
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ResearchFigure figure={researchFigures.retention} />
@@ -674,7 +740,7 @@ function StatBlock({
 /* -------------------------------------------------------------------------- */
 
 export function ExternalValidationSection() {
-  const { t, ts, tr, trs, pick, num } = useI18n();
+  const { t, ts, tr, trs, pick, num, lang } = useI18n();
 
   const data = externalValidation.map((r) => ({
     name: trs(r.model),
@@ -753,6 +819,61 @@ export function ExternalValidationSection() {
           </div>
         </Reveal>
       </div>
+
+      <Reveal delay={0.08}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* What the partition is, so the QWK values above have a denominator. */}
+          <dl className="card-premium grid grid-cols-2 gap-x-6 gap-y-5 p-7 sm:grid-cols-3 sm:p-8 lg:col-span-5 lg:grid-cols-2">
+            {[
+              { k: t("Patients", "Pasien"), v: num(externalSetup.patients, 0) },
+              { k: t("Eyes", "Mata"), v: num(externalSetup.eyes, 0) },
+              { k: t("Images", "Citra"), v: num(externalSetup.images, 0) },
+              { k: t("Exclusions", "Dikecualikan"), v: num(externalSetup.exclusions, 0) },
+              { k: t("Student seeds", "*Seed student*"), v: num(externalSetup.seeds, 0) },
+              {
+                k: t("Teacher QWK retained", "QWK *teacher* dipertahankan"),
+                v: `${num(externalSetup.teacherQwkRetainedPct, 1)}%`,
+              },
+            ].map((row, i) => (
+              <div key={i}>
+                <dt className="mono text-10 uppercase tracking-[0.14em] text-subtle">{row.k}</dt>
+                <dd className="mt-1.5 text-2xl font-bold tabular-nums tracking-tight">{row.v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="card-premium p-7 sm:p-8 lg:col-span-7">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-lg font-bold tracking-tight">
+                {t("The only credible differences on Set-C", "Satu-satunya perbedaan kredibel pada Set-C")}
+              </h3>
+              <Badge tone="warn">{t("Against the deployed model", "Merugikan model *deployment*")}</Badge>
+            </div>
+            <div className="flex flex-col gap-px overflow-hidden rounded-xl border border-border bg-border">
+              {externalCredibleFindings.map((f) => (
+                <div key={f.pair + f.metric} className="flex flex-col gap-1 bg-card px-5 py-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-13 font-medium">{f.pair}</span>
+                    <span className="mono whitespace-nowrap text-12 uppercase tracking-[0.12em] text-muted-foreground">
+                      {f.metric}
+                    </span>
+                  </div>
+                  <span className="text-13 text-muted-foreground">{tr(f.meaning)}</span>
+                  <span className="mono text-12 tabular-nums text-subtle">
+                    Δ {signed(f.delta, lang)} · {ciText(f.ciLow, f.ciHigh, lang)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-13 leading-relaxed text-muted-foreground">
+              {t(
+                "Every other paired Set-C comparison has an interval that includes zero. The teacher is a single run, so its value has no seed interval.",
+                "Seluruh perbandingan berpasangan lain pada Set-C memiliki interval yang memuat nol. *Teacher* hanya dilatih satu kali, sehingga nilainya tidak memiliki interval antar-*seed*.",
+              )}
+            </p>
+          </div>
+        </div>
+      </Reveal>
 
       <Reveal delay={0.1}>
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">

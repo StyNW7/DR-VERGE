@@ -77,8 +77,8 @@ export default function ResearchPage() {
       label: t("Statistics", "Statistik"),
       value: t(`${runProvenance.seedsPerCondition} seeds`, `${runProvenance.seedsPerCondition} *seed*`),
       detail: t(
-        `B = ${num(runProvenance.bootstrapResamples)} bootstrap · patient-clustered`,
-        `B = ${num(runProvenance.bootstrapResamples)} *bootstrap* · dikelompokkan per pasien`,
+        `B = ${num(runProvenance.bootstrapResamples)} bootstrap · eye- / patient-clustered`,
+        `B = ${num(runProvenance.bootstrapResamples)} *bootstrap* · klaster mata / pasien`,
       ),
     },
   ];

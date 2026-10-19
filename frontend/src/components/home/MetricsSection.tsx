@@ -20,8 +20,8 @@ export default function MetricsSection() {
           </>,
         )}
         description={t(
-          "Results from the locked DR-VERGE evaluation protocol: five seeds per condition, selection on validation only, and a test set opened once.",
-          "Hasil dari protokol evaluasi DR-VERGE yang telah dikunci: lima *seed* per kondisi, pemilihan hanya pada data validasi, dan data uji yang dibuka satu kali.",
+          "Results from the locked DR-VERGE evaluation protocol: five seeds per student condition, selection on validation only, and a test set opened once.",
+          "Hasil dari protokol evaluasi DR-VERGE yang telah dikunci: lima *seed* per kondisi *student*, pemilihan hanya pada data validasi, dan data uji yang dibuka satu kali.",
         )}
         size="lg"
       />

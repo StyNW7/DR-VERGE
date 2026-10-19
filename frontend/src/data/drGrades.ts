@@ -1,6 +1,10 @@
 /**
  * The five ordinal DR grades.
  *
+ * Retinal findings follow the International Clinical Diabetic Retinopathy (ICDR)
+ * severity scale (Wilkinson et al., Ophthalmology 2003), the 0-4 scale DRTiD,
+ * APTOS 2019 and DeepDRiD are labelled on.
+ *
  * Descriptions are short and educational ONLY. They deliberately contain no
  * treatment advice, no medication guidance, no diagnostic confirmation, and no
  * urgency instruction — the site is a research showcase, and a visitor reading a
@@ -53,13 +57,13 @@ export const drGrades: DrGrade[] = [
     shortName: "Mild",
     description: "Mild non-proliferative diabetic retinopathy.",
     detail:
-      "The earliest stage, characterised in the literature by microaneurysms. These are among the smallest retinal features and are the hardest for any automated system to detect reliably.",
+      "The earliest stage: microaneurysms only, under the ICDR scale. Microaneurysms are among the smallest retinal features and are the hardest for any automated system to detect reliably.",
     idCopy: {
       name: "NPDR Ringan",
       shortName: "Ringan",
       description: "Retinopati diabetik non-proliferatif ringan.",
       detail:
-        "Tahap paling awal, yang dalam literatur dicirikan oleh mikroaneurisma. Mikroaneurisma termasuk ciri retina terkecil dan paling sulit dideteksi secara andal oleh sistem otomatis mana pun.",
+        "Tahap paling awal: hanya terdapat mikroaneurisma, menurut skala ICDR. Mikroaneurisma termasuk ciri retina terkecil dan paling sulit dideteksi secara andal oleh sistem otomatis mana pun.",
     },
   },
   {
@@ -69,13 +73,13 @@ export const drGrades: DrGrade[] = [
     shortName: "Moderate",
     description: "Moderate non-proliferative diabetic retinopathy.",
     detail:
-      "An intermediate stage in which more extensive retinal changes are typically described, beyond isolated microaneurysms.",
+      "More than microaneurysms alone — for example retinal haemorrhages or hard exudates — but short of the severe criteria. Screening programmes commonly treat moderate NPDR or worse as referable.",
     idCopy: {
       name: "NPDR Sedang",
       shortName: "Sedang",
       description: "Retinopati diabetik non-proliferatif sedang.",
       detail:
-        "Tahap menengah, ketika perubahan retina yang lebih luas umumnya dijumpai, tidak hanya mikroaneurisma yang terisolasi.",
+        "Lebih dari sekadar mikroaneurisma — misalnya perdarahan retina atau eksudat keras — tetapi belum memenuhi kriteria berat. Program skrining umumnya menganggap NPDR sedang atau lebih berat sebagai kasus yang perlu dirujuk.",
     },
   },
   {
@@ -85,13 +89,13 @@ export const drGrades: DrGrade[] = [
     shortName: "Severe",
     description: "Severe non-proliferative diabetic retinopathy.",
     detail:
-      "An advanced non-proliferative stage. Clinical guidelines treat this stage as requiring specialist assessment.",
+      "An advanced non-proliferative stage, defined by the \"4-2-1\" rule: more than 20 haemorrhages in each of the four quadrants, definite venous beading in two or more, or prominent intraretinal microvascular abnormalities in one or more — with no new vessels. Clinical guidelines treat this stage as requiring specialist assessment.",
     idCopy: {
       name: "NPDR Berat",
       shortName: "Berat",
       description: "Retinopati diabetik non-proliferatif berat.",
       detail:
-        "Tahap non-proliferatif lanjut. Pedoman klinis menyatakan tahap ini memerlukan pemeriksaan oleh dokter spesialis.",
+        "Tahap non-proliferatif lanjut yang didefinisikan dengan aturan \"4-2-1\": lebih dari 20 perdarahan di setiap kuadran dari keempat kuadran, *venous beading* yang jelas di dua kuadran atau lebih, atau kelainan mikrovaskular intraretina yang menonjol di satu kuadran atau lebih — tanpa pembuluh darah baru. Pedoman klinis menyatakan tahap ini memerlukan pemeriksaan oleh dokter spesialis.",
     },
   },
   {
@@ -101,13 +105,13 @@ export const drGrades: DrGrade[] = [
     shortName: "Proliferative",
     description: "Proliferative diabetic retinopathy.",
     detail:
-      "The most advanced stage in this grading scale, associated in the literature with new vessel growth. Specialist ophthalmic assessment is indicated.",
+      "The most advanced stage on this scale: growth of new, fragile blood vessels (neovascularisation), or bleeding into the vitreous or in front of the retina. Specialist ophthalmic assessment is indicated.",
     idCopy: {
       name: "DR Proliferatif",
       shortName: "Proliferatif",
       description: "Retinopati diabetik proliferatif.",
       detail:
-        "Tahap paling lanjut pada skala ini, yang dalam literatur dikaitkan dengan pertumbuhan pembuluh darah baru. Pemeriksaan oleh dokter spesialis mata diperlukan.",
+        "Tahap paling lanjut pada skala ini: tumbuhnya pembuluh darah baru yang rapuh (neovaskularisasi), atau perdarahan ke dalam vitreus maupun di depan retina. Pemeriksaan oleh dokter spesialis mata diperlukan.",
     },
   },
 ];

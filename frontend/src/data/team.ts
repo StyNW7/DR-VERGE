@@ -17,6 +17,7 @@ export interface TeamMember {
   image: string | null;
   linkedin: string | null;
   github: string | null;
+  instagram: string | null;
   /** True while this slot is awaiting real data. */
   placeholder?: boolean;
 }
@@ -30,6 +31,7 @@ export const team: TeamMember[] = [
     image: "/Images/Stanley.jpg",
     linkedin: "https://www.linkedin.com/in/stanley-nathanael-wijaya/",
     github: "https://github.com/StyNW7",
+    instagram: "https://www.instagram.com/snw.77/",
   },
   {
     id: "member-2",
@@ -37,8 +39,9 @@ export const team: TeamMember[] = [
     role: l("Research Paper Writing", "Menulis Paper Riset"),
     institution: "BINUS University",
     image: "/Images/Seline.jpeg",
-    linkedin: null,
-    github: null,
+    linkedin: "https://www.linkedin.com/in/seline-loewel/",
+    github: "https://github.com/selineloewel8-prog",
+    instagram: "https://www.instagram.com/seline.lo/",
   },
   {
     id: "member-3",
@@ -46,8 +49,9 @@ export const team: TeamMember[] = [
     role: l("Research & Video Documentation", "Riset & Dokumentasi Video"),
     institution: "BINUS University",
     image: "/Images/Hamra.jpeg",
-    linkedin: null,
-    github: null,
+    linkedin: "https://www.linkedin.com/in/ahmad-hamra/",
+    github: "https://github.com/Ahamra1120",
+    instagram: "https://www.instagram.com/ahamra.1120/",
   },
 ];
 
@@ -58,8 +62,9 @@ export const advisors: TeamMember[] = [
     role: l("Research Advisor", "Dosen Pembimbing"),
     institution: "BINUS University",
     image: "/Images/Nikita.jpg",
-    linkedin: null,
+    linkedin: "https://www.linkedin.com/in/nikita-masaling/",
     github: null,
+    instagram: "https://www.instagram.com/nikitamasaling/",
   },
 ];
 

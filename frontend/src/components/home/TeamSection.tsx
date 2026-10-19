@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Linkedin, Github, UserRound } from "lucide-react";
+import { Linkedin, Github, Instagram, UserRound, type LucideIcon } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
 import { SectionHeader, Reveal, Divider } from "@/components/common/Primitives";
 import { team, advisors, initialsOf, type TeamMember } from "@/data/team";
@@ -41,8 +41,18 @@ function Avatar({ member }: { member: TeamMember }) {
   );
 }
 
+/** Social profiles shown under each card, in display order. */
+const SOCIALS: { key: "linkedin" | "github" | "instagram"; label: string; icon: LucideIcon }[] = [
+  { key: "linkedin", label: "LinkedIn", icon: Linkedin },
+  { key: "github", label: "GitHub", icon: Github },
+  { key: "instagram", label: "Instagram", icon: Instagram },
+];
+
 function MemberCard({ member }: { member: TeamMember }) {
-  const hasLinks = Boolean(member.linkedin || member.github);
+  const links = SOCIALS.flatMap((s) => {
+    const url = member[s.key];
+    return url ? [{ ...s, url }] : [];
+  });
   const { t, ts, tr } = useI18n();
 
   return (
@@ -74,31 +84,23 @@ function MemberCard({ member }: { member: TeamMember }) {
             <span className="mono text-10 uppercase tracking-[0.14em] text-subtle">
               {t("Awaiting team details", "Menunggu data anggota tim")}
             </span>
-          ) : hasLinks ? (
-            <div className="flex items-center gap-2">
-              {member.linkedin && (
-                <a
-                  href={member.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={ts(`${member.name} on LinkedIn`, `${member.name} di LinkedIn`)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground colorful:hover:border-brand colorful:hover:bg-brand-soft colorful:hover:text-brand"
-                >
-                  <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              )}
-              {member.github && (
-                <a
-                  href={member.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={ts(`${member.name} on GitHub`, `${member.name} di GitHub`)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground colorful:hover:border-brand colorful:hover:bg-brand-soft colorful:hover:text-brand"
-                >
-                  <Github className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              )}
-            </div>
+          ) : links.length > 0 ? (
+            <ul className="flex items-center gap-2" aria-label={ts(`${member.name} profiles`, `Profil ${member.name}`)}>
+              {links.map(({ key, label, icon: Icon, url }) => (
+                <li key={key}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={ts(`${member.name} on ${label}`, `${member.name} di ${label}`)}
+                    title={label}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground colorful:hover:border-brand colorful:hover:bg-brand-soft colorful:hover:text-brand"
+                  >
+                    <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           ) : null}
         </div>
       </div>

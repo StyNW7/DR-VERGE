@@ -279,8 +279,8 @@ export const rq1Verdict = {
     "Interval kepercayaan yang memuat nol bukanlah dasar klaim. Perbandingan ini dilaporkan sebagai hasil *null*, bukan dihilangkan.",
   ),
   method: l(
-    "Paired patient-clustered bootstrap over 5 matched seeds (B = 10,000), permutation tests (P = 10,000), Holm correction within each family.",
-    "*Paired patient-clustered bootstrap* pada 5 *seed* berpasangan (B = 10.000), uji permutasi (P = 10.000), dan koreksi Holm di dalam setiap keluarga hipotesis.",
+    "Paired cluster bootstrap over 5 matched seeds (B = 10,000; resampling eyes on DRTiD and patients on DeepDRiD), paired permutation tests (P = 10,000), and Holm correction within each family of comparisons.",
+    "*Paired cluster bootstrap* pada 5 *seed* berpasangan (B = 10.000; yang di-*resample* adalah mata pada DRTiD dan pasien pada DeepDRiD), uji permutasi berpasangan (P = 10.000), dan koreksi Holm di dalam setiap keluarga perbandingan.",
   ),
 } as const;
 
@@ -348,21 +348,37 @@ export const efficiencyResults: EfficiencyRow[] = [
   },
 ];
 
-/** Pre-registered RQ2 comparisons on the internal test set. */
+/**
+ * Pre-registered RQ2 comparisons on the internal test set, from
+ * `table_statistics.csv`. `pHolm` is the Holm-adjusted permutation p-value.
+ */
 export const rq2Comparisons = [
-  { pair: "PTQ INT8 vs FP32", delta: -0.0164, ciLow: -0.036, ciHigh: 0.0023 },
-  { pair: "QAT INT8 vs FP32", delta: -0.0063, ciLow: -0.0293, ciHigh: 0.0175 },
-  { pair: "QAT INT8 vs PTQ INT8", delta: 0.0101, ciLow: -0.0179, ciHigh: 0.0411 },
+  { pair: "PTQ INT8 vs FP32", delta: -0.0164, ciLow: -0.036, ciHigh: 0.0023, pHolm: 0.0243 },
+  { pair: "QAT INT8 vs FP32", delta: -0.0063, ciLow: -0.0293, ciHigh: 0.0175, pHolm: 0.4854 },
+  { pair: "QAT INT8 vs PTQ INT8", delta: 0.0101, ciLow: -0.0179, ciHigh: 0.0411, pHolm: 0.4854 },
 ] as const;
+
+/** Supplementary control: QAT against an FP32 student given the same extra epochs. */
+export const rq2ControlComparison = {
+  pair: "QAT INT8 vs FP32 fine-tune control",
+  delta: -0.017,
+  ciLow: -0.0378,
+  ciHigh: 0.0049,
+  pHolm: 0.0552,
+} as const;
 
 export const rq2Verdict = {
   headline: l(
-    "INT8 quantization substantially reduced inference cost while preserving ordinal grading performance: no variant showed a credible degradation against the FP32 student.",
-    "Kuantisasi INT8 menurunkan biaya inferensi secara substansial sambil mempertahankan performa *grading* ordinal: tidak ada varian yang menunjukkan penurunan yang kredibel dibandingkan *student* FP32.",
+    "INT8 quantization cut single-thread CPU latency about 2.9× and artifact size 1.36× against the FP32 student, and every pre-registered bootstrap interval for the QWK change includes zero.",
+    "Kuantisasi INT8 memangkas latensi CPU *single-thread* sekitar 2,9× dan ukuran artefak 1,36× dibandingkan *student* FP32, dan setiap interval *bootstrap* pra-registrasi untuk perubahan QWK memuat nol.",
+  ),
+  disagreement: l(
+    "For PTQ INT8 versus FP32 the bootstrap interval includes zero, but the Holm-adjusted permutation test gives p = 0.024. The protocol reports both and claims neither equivalence nor degradation.",
+    "Untuk PTQ INT8 dibandingkan FP32, interval *bootstrap* memuat nol, tetapi uji permutasi yang dikoreksi Holm memberikan p = 0,024. Protokol melaporkan keduanya dan tidak mengklaim kesetaraan maupun penurunan.",
   ),
   control: l(
-    "A matched FP32 fine-tuning control was run alongside, so the retention is attributable to quantization-aware training rather than to the extra epochs it involves.",
-    "Kontrol *fine-tuning* FP32 yang setara dijalankan berdampingan, sehingga retensi tersebut dapat diatribusikan pada *quantization-aware training*, bukan pada tambahan *epoch* yang menyertainya.",
+    "A matched FP32 fine-tuning control — the same extra epochs, without fake quantization — separates the effect of quantization from the effect of extra training. QAT INT8 against that control is not a credible difference.",
+    "Kontrol *fine-tuning* FP32 yang setara — tambahan *epoch* yang sama, tanpa *fake quantization* — memisahkan efek kuantisasi dari efek pelatihan tambahan. Perbandingan QAT INT8 terhadap kontrol tersebut tidak menunjukkan perbedaan yang kredibel.",
   ),
   caution: l(
     "Quantization reduces computational cost. It does not improve grading accuracy, and this site does not claim that it does.",
@@ -403,9 +419,36 @@ export const externalSetup = {
 } as const;
 
 export const externalCaveat = l(
-  "External results are reported as supporting evidence. Confidence intervals overlap for several comparisons and external superiority should not be overstated.",
-  "Hasil eksternal dilaporkan sebagai bukti pendukung. Interval kepercayaan saling tumpang-tindih pada beberapa perbandingan, sehingga keunggulan pada data eksternal tidak boleh dilebih-lebihkan.",
+  "External results are reported as supporting evidence. Most paired intervals on Set-C include zero, so no ranking among the student variants should be read from the bar heights alone.",
+  "Hasil eksternal dilaporkan sebagai bukti pendukung. Sebagian besar interval berpasangan pada Set-C memuat nol, sehingga urutan antarvarian *student* tidak boleh disimpulkan hanya dari tinggi batang.",
 );
+
+/**
+ * The only paired Set-C comparisons whose interval excludes zero, from
+ * `table_external_paired.csv`. Both go against the deployed QAT artifact, which
+ * is exactly why they are shown.
+ */
+export const externalCredibleFindings = [
+  {
+    pair: "QAT INT8 vs PTQ INT8",
+    metric: "QWK",
+    delta: -0.0384,
+    ciLow: -0.0826,
+    ciHigh: -0.0006,
+    meaning: l("QAT agrees less with the reference than PTQ", "QAT kurang sesuai dengan referensi dibandingkan PTQ"),
+  },
+  {
+    pair: "QAT INT8 vs FP32",
+    metric: "SER",
+    delta: 0.032,
+    ciLow: 0.001,
+    ciHigh: 0.069,
+    meaning: l(
+      "QAT misses by two or more grades more often than FP32",
+      "QAT lebih sering meleset dua *grade* atau lebih dibandingkan FP32",
+    ),
+  },
+] as const;
 
 /* -------------------------------------------------------------------------- */
 /* Limitations — reported deliberately, because they are what make the rest     */
@@ -430,15 +473,15 @@ export const limitations = [
   {
     title: l("Mild NPDR is the weakest grade", "NPDR ringan adalah *grade* terlemah"),
     body: l(
-      "Grade 1 recall is 0.111 on the external partition. Early NPDR is the grade the system misses most often, and it is also the grade with the lowest agreement among human readers.",
-      "*Recall* *Grade* 1 adalah 0,111 pada partisi eksternal. NPDR tahap awal adalah *grade* yang paling sering terlewat oleh sistem, sekaligus *grade* dengan tingkat kesepakatan terendah di antara pembaca manusia.",
+      "Grade 1 recall for the CSD student averages 0.068 on the internal test set and 0.044 on DeepDRiD Set-C; the teacher recalls none of the Mild NPDR eyes in either. Early NPDR is the grade the system misses most often, and it is also the grade on which human graders agree least.",
+      "*Recall* *Grade* 1 untuk *student* CSD rata-rata 0,068 pada data uji internal dan 0,044 pada DeepDRiD Set-C; *teacher* tidak mengenali satu pun mata NPDR ringan pada keduanya. NPDR tahap awal adalah *grade* yang paling sering terlewat oleh sistem, sekaligus *grade* yang paling jarang disepakati oleh *grader* manusia.",
     ),
   },
   {
-    title: l("Errors concentrate in adjacent grades", "Kesalahan terpusat pada *grade* yang berdekatan"),
+    title: l("Two-grade errors are still common", "Kesalahan dua *grade* masih sering terjadi"),
     body: l(
-      "Adjacent accuracy reaches 0.7418 and ordinal monotonicity violations are zero, so mistakes almost always land one grade away rather than jumping. Predictions two or more grades from the reference still occur, and in a clinical context those are the consequential errors.",
-      "*Adjacent accuracy* mencapai 0,7418 dan tidak ada pelanggaran monotonisitas ordinal, sehingga kesalahan hampir selalu hanya meleset satu *grade*, bukan melompat jauh. Prediksi yang meleset dua *grade* atau lebih dari referensi tetap terjadi, dan dalam konteks klinis kesalahan seperti itulah yang berdampak.",
+      "The CORAL head never produces an incoherent threshold order, and 74.2% of predictions land within one grade of the reference. But exact agreement is 50.3%, and 25.8% of internal test eyes are graded two or more steps away (teacher: 17.6%). In a clinical context those are the consequential errors.",
+      "*Head* CORAL tidak pernah menghasilkan urutan ambang yang tidak koheren, dan 74,2% prediksi berada dalam jarak satu *grade* dari referensi. Namun, kesesuaian tepat hanya 50,3%, dan 25,8% mata pada data uji internal dinilai meleset dua tingkat atau lebih (*teacher*: 17,6%). Dalam konteks klinis, kesalahan seperti itulah yang berdampak.",
     ),
   },
   {
@@ -460,6 +503,20 @@ export const limitations = [
     body: l(
       "All four distillation conditions fall within a narrow band, and the selected method differed between runs. This is why the mechanism axis, not the accuracy axis, is where the contribution is claimed.",
       "Keempat kondisi distilasi berada dalam rentang yang sempit, dan metode yang terpilih berbeda antar-*run*. Karena itulah kontribusi diklaim pada aspek mekanisme, bukan pada aspek akurasi.",
+    ),
+  },
+  {
+    title: l("Deployment choice and external result disagree", "Pilihan *deployment* dan hasil eksternal tidak sejalan"),
+    body: l(
+      "The frozen deployment rule chose QAT INT8 for its 99.0% validation retention. On DeepDRiD Set-C, that same artifact scored credibly below PTQ INT8 (ΔQWK −0.0384) and missed by two or more grades credibly more often than FP32. The rule was fixed before testing, so the choice stands — but an internal selection criterion did not predict external behaviour.",
+      "Aturan *deployment* yang telah dibekukan memilih QAT INT8 karena retensi validasinya 99,0%. Pada DeepDRiD Set-C, artefak yang sama justru secara kredibel lebih rendah daripada PTQ INT8 (ΔQWK −0,0384) dan secara kredibel lebih sering meleset dua *grade* atau lebih dibandingkan FP32. Aturan itu ditetapkan sebelum pengujian sehingga pilihannya tetap sah — tetapi kriteria seleksi internal tidak memprediksi perilaku eksternal.",
+    ),
+  },
+  {
+    title: l("Single teacher run, three-seed ablations", "*Teacher* dilatih sekali, ablasi tiga *seed*"),
+    body: l(
+      "The teacher was trained once, so its numbers are single values with no seed variance. The three CSD ablations used three seeds and were not tested statistically, so a higher ablation mean is not a claim.",
+      "*Teacher* hanya dilatih satu kali, sehingga angkanya adalah nilai tunggal tanpa variasi antar-*seed*. Tiga ablasi CSD menggunakan tiga *seed* dan tidak diuji secara statistik, sehingga rerata ablasi yang lebih tinggi bukanlah dasar klaim.",
     ),
   },
   {
@@ -530,16 +587,16 @@ export const pipelineStages = [
     step: "03",
     title: l("Dual-View Teacher", "*Teacher Dual-View*"),
     body: l(
-      "A ResNet-50 teacher learns from both fields jointly and reaches 0.7364 QWK.",
-      "*Teacher* ResNet-50 belajar dari kedua *field* secara bersamaan dan mencapai QWK 0,7364.",
+      "An ImageNet- and APTOS-initialised ResNet-50 teacher learns from both fields jointly and reaches 0.7364 test QWK.",
+      "*Teacher* ResNet-50 yang diinisialisasi dari ImageNet dan APTOS belajar dari kedua *field* secara bersamaan dan mencapai QWK uji 0,7364.",
     ),
   },
   {
     step: "04",
     title: l("Lightweight Student", "*Lightweight Student*"),
     body: l(
-      "A 328K-parameter dual-view student is trained from scratch.",
-      "*Student dual-view* dengan 328 ribu parameter dilatih dari awal.",
+      "A 328K-parameter dual-view student, with no ImageNet weights, is trained from its APTOS-pretrained backbone across five seeds.",
+      "*Student dual-view* dengan 328 ribu parameter, tanpa bobot ImageNet, dilatih dari *backbone* hasil pra-pelatihan APTOS pada lima *seed*.",
     ),
   },
   {
