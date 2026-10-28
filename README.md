@@ -1,277 +1,449 @@
+<div align="center">
+
+<img src="frontend/public/Images/logo.png" alt="GEMASTIK XIX 2026" width="130" />
+
 # DR-VERGE
 
-**View-Evidence Relational Grading Engine** — dual-view diabetic retinopathy grading
-through Complementarity-Shift Distillation and INT8 deployment.
+### View-Evidence Relational Grading Engine
 
-GEMASTIK XIX · Karya Tulis Ilmiah TIK · BINUS University
+**_Complementarity-Shift Distillation_ dan Kuantisasi INT8 untuk _Grading_ Retinopati Diabetik pada Fundus _Dual-View_**
 
-> **Research prototype. Not a medical device.** Every number in this repository is a
-> research artifact produced under a fixed evaluation protocol. Nothing here is validated
-> for clinical use, and no output may replace assessment by a qualified ophthalmologist.
+**🇮🇩 Bahasa Indonesia** · [🇬🇧 English](README.en.md)
+
+<br />
+
+[![GEMASTIK XIX 2026](https://img.shields.io/badge/GEMASTIK_XIX-2026-0B4F9C?style=for-the-badge)](https://gemastik.kemdiktisaintek.go.id/landing/tentang)
+[![Kategori](https://img.shields.io/badge/Karya_Tulis_Ilmiah-TIK-F39C12?style=for-the-badge)](#)
+[![SDG 3](https://img.shields.io/badge/SDG_3-Good_Health_%26_Well--being-4C9F38?style=for-the-badge)](https://sdgs.un.org/goals/goal3)
+[![Demo](https://img.shields.io/badge/Demo-dr--verge.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://dr-verge.vercel.app)
+
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.11-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-Web-005CED?style=flat-square&logo=onnx&logoColor=white)](https://onnxruntime.ai/)
+[![Google Colab](https://img.shields.io/badge/Google_Colab-A100-F9AB00?style=flat-square&logo=googlecolab&logoColor=white)](https://colab.research.google.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+[![Integrity gates](https://img.shields.io/badge/integrity_gates-36%2F36_passed-2EA44F?style=flat-square)](experiments/results/tables/table_gate_report.csv)
+[![Results audit](https://img.shields.io/badge/results_audit-265%2F265_matched-2EA44F?style=flat-square)](experiments/results/tables/table_results_audit.csv)
+[![Model size](https://img.shields.io/badge/model_INT8-0.95_MB-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
+[![CPU latency](https://img.shields.io/badge/latensi_CPU-11.35_ms-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
+[![Status](https://img.shields.io/badge/status-prototipe_riset-lightgrey?style=flat-square)](#-keterbatasan-dan-penafian)
+[![Not a medical device](https://img.shields.io/badge/bukan-alat_medis-C0392B?style=flat-square)](#-keterbatasan-dan-penafian)
+
+</div>
+
+> [!IMPORTANT]
+> **Prototipe riset, bukan alat medis.** Seluruh angka di repositori ini adalah artefak penelitian yang dihasilkan di bawah protokol evaluasi yang dikunci sejak awal. Tidak ada keluaran yang tervalidasi untuk penggunaan klinis, dan tidak ada hasil yang boleh menggantikan pemeriksaan oleh dokter spesialis mata.
 
 ---
 
-## What this project is
+## 📑 Daftar Isi
 
-Clinical DR screening uses **two-field fundus photography**: one photograph centred on the
-**macula**, one on the **optic disc**. The two fields are anatomically complementary — each
-shows lesions the other can miss — and models that read both outperform models that read
-either alone.
+- [Ringkasan](#-ringkasan)
+- [Latar Belakang](#-latar-belakang)
+- [Gagasan Utama: _Complementarity-Shift Distillation_](#-gagasan-utama-complementarity-shift-distillation)
+- [Pertanyaan Penelitian](#-pertanyaan-penelitian)
+- [Arsitektur dan Alur Penelitian](#-arsitektur-dan-alur-penelitian)
+- [Data dan Protokol Eksperimen](#-data-dan-protokol-eksperimen)
+- [Hasil Utama](#-hasil-utama)
+- [Keterbatasan dan Penafian](#-keterbatasan-dan-penafian)
+- [Kontribusi](#-kontribusi)
+- [Struktur Repositori](#-struktur-repositori)
+- [Reproduksi Eksperimen](#-reproduksi-eksperimen)
+- [Demo Web](#-demo-web)
+- [Tim](#-tim)
+- [Sitasi](#-sitasi)
 
-But accurate two-field models are heavy, and lightweight models read one field. That leaves
-an unexamined question:
+---
 
-> When a dual-view model is compressed, does the *specific advantage of combining two views*
-> survive — or is it the first thing lost?
+## ✨ Ringkasan
 
-DR-VERGE attacks this with a distillation signal aimed directly at that advantage.
+DR-VERGE adalah kerangka _grading_ retinopati diabetik (DR) lima tingkat berbasis **dua citra fundus dari mata yang sama** — satu berpusat pada **makula**, satu berpusat pada **diskus optik**. Kerangka ini menggabungkan pemodelan ordinal **CORAL**, _lightweight knowledge distillation_, metode distilasi baru bernama **_Complementarity-Shift Distillation_ (CSD)**, serta **kuantisasi INT8** agar model dapat berjalan cepat di CPU.
 
-### The idea in one equation
+<div align="center">
 
-A teacher predicts three times: from the macula view, from the disc view, and from both.
-The **complementarity shift** is what changes when it stops looking at one view and starts
-looking at two:
+| 🎯 QWK _teacher_ | 🪶 QWK _student_ CSD | 📦 Ukuran model INT8 | ⚡ Latensi CPU | 🗜️ Lebih kecil dari _teacher_ | 🚀 Lebih cepat dari _teacher_ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **0,7364** | **0,6018** | **0,9507 MB** | **11,35 ms** | **162,1×** | **55,3×** |
 
-```
-Δ = p_dual − (p_macula + p_disc) / 2
-```
+</div>
 
-Δ is not the prediction. It is *what the second view bought* — the direction and magnitude
-of the teacher's change of mind. **Complementarity-Shift Distillation (CSD)** trains a
-328K-parameter student to reproduce that shift, not merely the final logits:
+- **Premis _dual-view_ terbukti** — _student_ yang membaca dua _view_ (QWK 0,6042) mengungguli _student_ yang hanya membaca makula (0,5175) atau diskus optik (0,5502).
+- **RQ1 — disosiasi yang jujur.** CSD paling selaras dengan _prediction shift_ milik _teacher_ pada ketiga metrik (ShiftL1 0,3509 · CosAgree 0,4361 · BenefitCorr 0,3075), tetapi perbedaan QWK terhadap NoDistill, Logit-KD, dan Feature-KD **tidak signifikan secara statistik**.
+- **RQ2 — kompresi yang bertahan.** QAT INT8 mempertahankan **98,96%** QWK _student_ FP32 dengan artefak **< 1 MB** dan latensi **11,35 ms** pada satu _thread_ CPU.
+- **Generalisasi eksternal.** Pada DeepDRiD Set-C, _student_ FP32 mempertahankan **84,4%** QWK _teacher_.
+- **Dapat diaudit.** Pipeline memverifikasi dirinya sendiri: **36/36 _integrity gates_ lulus** dan **265/265 angka utama** cocok saat dihitung ulang dari prediksi per sampel.
 
-```
-L_CSD = SmoothL1( Δ_student / s , Δ_teacher / s )       s = E_train[ |Δ_teacher| ] = 0.1073
-```
+---
 
-The student is then quantized to INT8 and runs in the browser on CPU.
+## 🩺 Latar Belakang
 
-### Research questions
+<img align="right" src="frontend/public/Images/SDG3.png" alt="SDG 3" width="110" />
 
-| | Question | Answer |
+Sekitar **589 juta** orang dewasa hidup dengan diabetes pada 2024 dan jumlahnya diproyeksikan mencapai **853 juta** pada 2050. Prevalensi DR pada penyandang diabetes mencapai **22,27%**, dengan jumlah penderita diperkirakan naik dari **103,12 juta** (2020) menjadi **160,50 juta** (2045). Di Indonesia, tenaga dan sarana kesehatan mata masih terkonsentrasi di kota besar, sementara kondisi geografis kepulauan dan wilayah **3T** (tertinggal, terdepan, terluar) mempersulit akses skrining.
+
+Satu citra fundus (_single-field_) memiliki cakupan retina terbatas dan dapat melewatkan lesi di luar area yang terpotret. Pendekatan **_two-field_** — citra berpusat makula dan diskus optik dari mata yang sama — memperluas cakupan informasi, tetapi model _dual-view_ yang akurat cenderung berat. DR-VERGE menjawab pertanyaan yang belum banyak diteliti:
+
+> **Ketika model _dual-view_ dikompresi, apakah keuntungan spesifik dari menggabungkan dua _view_ ikut bertahan — atau justru menjadi hal pertama yang hilang?**
+
+Penelitian ini mendukung **SDG 3** (kehidupan sehat dan kesejahteraan), selaras dengan **Asta Cita keempat RPJMN 2025–2029**, dan menjawab tema GEMASTIK XIX 2026: inovasi TIK yang _"Berdampak, Inklusif, dan Berkelanjutan menuju Masyarakat Cerdas"_.
+
+<div align="center">
+<img src="research/paper-figures/dataset/figures/fig_twofield_pair_drtid_annotated.png" alt="Pasangan citra fundus two-field DRTiD" width="820" />
+<br />
+<sub><b>Gambar 1.</b> Satu mata yang sama dari DRTiD: (a) citra berpusat makula dan (b) citra berpusat diskus optik. Kedua <i>field</i> hanya tumpang-tindih sebagian, sehingga masing-masing menangkap area retina yang tidak terlihat pada yang lain.</sub>
+</div>
+
+---
+
+## 💡 Gagasan Utama: _Complementarity-Shift Distillation_
+
+Model _teacher_ menghasilkan tiga prediksi ordinal: dari _view_ makula, dari _view_ diskus optik, dan dari gabungan keduanya (_joint dual-view_). Dengan CORAL, setiap prediksi berbentuk empat probabilitas kumulatif:
+
+$$
+\mathbf{p} = \big[\,P(y>0),\; P(y>1),\; P(y>2),\; P(y>3)\,\big]
+$$
+
+**_Prediction shift_** adalah perubahan bertanda ketika model berpindah dari rata-rata dua prediksi _individual-view_ menuju prediksi _joint dual-view_:
+
+$$
+\bar{\mathbf{p}} = \frac{\mathbf{p}_{\text{mac}} + \mathbf{p}_{\text{disc}}}{2}, \qquad \Delta = \mathbf{p}_{\text{dual}} - \bar{\mathbf{p}}
+$$
+
+Δ **bukan** prediksinya — Δ adalah _apa yang "dibeli" oleh view kedua_: arah dan besar perubahan keputusan _teacher_. CSD melatih _student_ agar meniru perubahan tersebut, bukan sekadar meniru keluaran akhirnya:
+
+$$
+\mathcal{L}_{\text{CSD}} = \frac{1}{N}\sum_{i=1}^{N} \text{SmoothL1}\!\left(\frac{\Delta_i^{S}}{s},\, \frac{\Delta_i^{T}}{s}\right), \qquad s = \mathbb{E}_{\text{train}}\big[\,|\Delta^{T}|\,\big] = 0{,}1073
+$$
+
+Skala global _s_ dihitung **sekali** dari _teacher_ yang dibekukan pada seluruh data latih agar skala _loss_ stabil. Fungsi _loss_ total _student_:
+
+$$
+\mathcal{L} = \mathcal{L}_{\text{CORAL}} + \lambda\,\mathcal{L}_{\text{aux}} + \alpha\,\mathcal{L}_{\text{logitKD}} + \beta\,\mathcal{L}_{\text{CSD}}, \qquad \lambda = 0{,}5,\;\; \alpha = 0{,}5,\;\; \tau = 2,\;\; \beta = 0{,}1
+$$
+
+> [!NOTE]
+> Δ diperlakukan sebagai **_operational prediction-shift proxy_** — ukuran perilaku prediksi model — dan **tidak** mengukur komplementaritas anatomis atau biologis retina secara langsung.
+
+---
+
+## ❓ Pertanyaan Penelitian
+
+| | Pertanyaan | Jawaban singkat |
+|:---:|---|---|
+| **RQ1** | Sejauh mana CSD dapat mentransfer _prediction shift_ dari _teacher_ ke _lightweight student_ dibandingkan NoDistill, Logit-KD, dan Feature-KD? | **Disosiasi** — CSD terbaik secara deskriptif pada ketiga metrik _shift fidelity_, tetapi tidak unggul signifikan pada QWK |
+| **RQ2** | Sejauh mana PTQ dan QAT INT8 memengaruhi retensi QWK, ukuran artefak, dan latensi inferensi CPU pada model ringan terpilih? | **QAT mempertahankan 98,96% QWK**, artefak 0,9507 MB, 11,35 ms — 162,1× lebih kecil dan 55,3× lebih cepat dari _teacher_ |
+
+---
+
+## 🏗️ Arsitektur dan Alur Penelitian
+
+<div align="center">
+<img src="frontend/public/research/figures/fig_01_architecture.png" alt="Arsitektur DR-VERGE" width="860" />
+<br />
+<sub><b>Gambar 2.</b> Arsitektur DR-VERGE: <i>teacher</i> ResNet-50 <i>dual-view</i>, <i>lightweight student</i> dengan InteractionFusion, CSD, dan optimasi <i>deployment</i> PTQ/QAT INT8.</sub>
+</div>
+
+<br />
+
+| Komponen | _Teacher_ | _Student_ |
 |---|---|---|
-| **RQ1** | Does CSD transfer the dual-view complementarity shift to a lightweight student, against no-distillation, logit-KD and feature-KD? | **Dissociated** — wins 3/3 on mechanism, null on in-domain prediction |
-| **RQ2** | How do PTQ and QAT INT8 affect ordinal performance, artifact size, and CPU latency? | **98.96% QWK retained, 55.3× faster, 162.1× smaller than the teacher** |
+| _Backbone_ | ResNet-50 (_shared weights_ antar-_view_) | _Custom depthwise-separable CNN_ (_shared weights_) |
+| Prapelatihan | APTOS 2019 | APTOS 2019 |
+| Fusi | InteractionFusion atas $[\,z_m,\; z_d,\; \lvert z_m - z_d\rvert,\; z_m \odot z_d\,]$ | Sama |
+| _Head_ | 3 CORAL _heads_ (makula · diskus · _dual_) | Sama |
+| Parameter | 40.313.932 | **328.588** |
 
----
+**Grade DR bersifat ordinal, dan kodenya memperlakukannya demikian.** CORAL menghasilkan probabilitas kumulatif yang monoton, dan _grade_ akhir adalah **jumlah _threshold_ yang terlampaui** — bukan _argmax_. Salah membaca _grade_ 3 sebagai _grade_ 0 jauh lebih berbahaya daripada sebagai _grade_ 2, sehingga **Quadratic Weighted Kappa (QWK)** dipakai sebagai metrik utama.
 
-## Headline results
+Alur penelitian terdiri atas enam tahap. **Seluruh keputusan diambil hanya dari data validasi**; data uji internal dan data eksternal baru dibuka setelah semuanya dikunci.
 
-All numbers below come from the **enhanced run** — `experiments/results/enhanced-notebook/`,
-run ID `artifacts_enhanced_v1_20260811`, **36/36 integrity gates passed, 0 errors**, with 265
-headline values independently recomputed from per-sample predictions and **0 mismatches**.
+```mermaid
+flowchart LR
+    A["1 · Persiapan data<br/>DRTiD 800 / 200 / 550<br/>cek integritas APTOS"] --> B["2 · Stage A<br/>pilih resep input<br/>384 px · standard"]
+    B --> C["3 · Prapelatihan APTOS<br/>+ Teacher ResNet-50<br/>dual-view"]
+    C --> D["4 · Student + distilasi<br/>NoDistill · Logit-KD<br/>Feature-KD · CSD (RQ1)"]
+    D --> E["5 · Kuantisasi INT8<br/>PTQ · QAT · FT-PTQ<br/>pilih deployment (RQ2)"]
+    E --> F["6 · Evaluasi & verifikasi<br/>uji internal DRTiD<br/>DeepDRiD Set-C · ekspor ONNX"]
 
-> Numbers from the `simple-notebook/` and `efficient-notebook/` runs use different
-> resolutions, seed counts, and statistical protocols. **They are not comparable and must
-> never be mixed into one table.**
-
-### The premise holds first
-
-Before any distillation claim, dual-view has to be worth something:
-
-| Student trained on | Test QWK |
-|---|---:|
-| Macula view only | 0.5175 |
-| Optic-disc view only | 0.5502 |
-| **Both views, no distillation** | **0.6042** |
-
-The teacher's own dual-view gain over independently trained single-view models is **+0.1782
-QWK**. The premise is established at both model scales.
-
-### RQ1 — a genuine dissociation
-
-CSD reproduces the teacher's decision-shift structure better than every baseline, on all
-three mechanism metrics at once:
-
-| Condition | ShiftL1 ↓ | CosAgree ↑ | BenefitCorr ↑ |
-|---|---:|---:|---:|
-| No distillation | 0.3759 | +0.3509 | +0.2193 |
-| Logit-KD | 0.3840 | +0.2858 | +0.1795 |
-| Feature-KD | 0.3718 | +0.3815 | +0.1943 |
-| **CSD (proposed)** | **0.3509** | **+0.4361** | **+0.3075** |
-
-A clean monotone ordering — and **it replicated across all three independent runs** under
-different selection regimes. Note that logit-KD scores *worse than no distillation at all* on
-two of the three metrics: aligning final outputs can actively blur the cross-field interaction
-that CSD sharpens.
-
-CSD was also the method **selected on validation** by the pre-registered rule (val QWK 0.6490,
-ahead of feature-KD 0.6477, logit-KD 0.6308, no-distillation 0.6228), so the deployed model is
-the proposed method.
-
-**The mechanism advantage did not translate into predictive advantage in-domain.** All three
-pre-registered comparisons are null, every interval crossing zero:
-
-| Comparison | ΔQWK | 95% CI | p (Holm) | Verdict |
-|---|---:|---|---:|---|
-| CSD vs no-distillation | −0.0024 | [−0.0336, +0.0285] | 0.800 | null |
-| CSD vs logit-KD | +0.0077 | [−0.0304, +0.0463] | 0.728 | null |
-| CSD vs feature-KD | −0.0143 | [−0.0445, +0.0153] | 0.495 | null |
-
-**Both halves are the finding.** The mechanism transferred; the accuracy did not follow. Since
-between-method differences (0.0024–0.0143) are narrower than between-seed spread (0.0101–0.0290),
-the ranking in any single table is not evidence on its own. This repository reports both halves
-with equal weight, and so should any write-up drawn from it.
-
-### RQ2 — compression that holds
-
-| | Teacher | Student FP32 (M\*) | Deployed QAT INT8 |
-|---|---:|---:|---:|
-| Parameters | 40,313,932 | 328,588 | 328,588 |
-| Artifact size | 154.089 MB | 1.2935 MB | **0.9507 MB** |
-| CPU latency (1 thread) | 627.61 ms | 32.49 ms | **11.35 ms** |
-| Test QWK | 0.7364 | 0.6018 | 0.5956 |
-
-Against the teacher, the deployed artifact is **162.1× smaller and 55.3× faster**, retaining
-**81.7%** of the teacher's grading ability at **122.7× fewer parameters**.
-
-INT8 retention against the FP32 student: **QAT 98.96%** (CI includes zero — no credible
-degradation), **PTQ 97.27%**. Deployed variant: `qat_int8`, the only candidate to clear the
-pre-registered 95% validation-retention gate (99.04% vs PTQ 93.37% and FT-PTQ 93.64%), then
-frozen.
-
-**One result needs careful reading.** On the external confirmatory set the ranking flips: PTQ
-INT8 scores highest among student variants (0.6729) while the deployed QAT variant scores 0.6344,
-a credible gap of −0.0384 [−0.0826, −0.0006]. **The calibration that best preserves in-domain
-performance is not automatically the one that best preserves out-of-domain performance.** The
-pre-registered choice was kept anyway, because changing it after seeing external data would
-destroy the meaning of a confirmatory set. Both artifacts ship.
-
-### External generalisation
-
-Set-C of DeepDRiD — 100 patients, 200 eyes, 400 images, opened once, patient-clustered
-intervals:
-
-| Model | Set-C QWK |
-|---|---:|
-| Teacher | 0.7923 [0.7152, 0.8550] |
-| **Student CSD FP32 (M\*)** | **0.6688 ± 0.0415** |
-
-The student retains **84.4%** of the teacher across a genuine domain shift — and scores *higher*
-externally (0.6688) than internally (0.6018), which argues the learned representation is not
-tied to one dataset's acquisition characteristics.
-
-### Known limitations
-
-Stated plainly, because they belong next to the headline: Macro-F1 is modest (0.3362 internal);
-severe-error rate is 0.2582 — roughly one eye in four off by ≥2 grades; absolute QWK is moderate
-(students 0.5942–0.6161); **RQ1 is null in-domain**; grade-1 recall is 0.068, which alone
-disqualifies standalone clinical use. Notably the teacher's grade-1 recall is **0.0000** — every
-student beats it there, so capacity and minority-class sensitivity do not move together.
-Full account: [`experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md`](experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md).
-
----
-
-## Repository map
-
-```
-DR-Repo/
-│
-├── research/         What is being studied — the scientific argument
-│   ├── documentation/    the research design and rationale
-│   ├── knowledge/        deployment notes + dataset laterality findings
-│   └── paper-figures/    dataset figures prepared for the manuscript
-│
-├── experiments/      How it is proven
-│   ├── pipeline/         notebooks, src/, configs/, splits, verification scripts
-│   └── results/          executed runs + figures + written result overviews
-│       ├── enhanced-notebook/   FINAL RUN — 36/36 gates, source of every paper number
-│       ├── simple-notebook/     supporting run, earlier protocol
-│       ├── efficient-notebook/  supporting run, compute-frugal variant
-│       ├── final-results-documentation/   cross-run comparison
-│       └── knowledge/           analyses written during the research
-│
-├── dataset/          The data (DRTiD · APTOS · DeepDRiD) — not tracked by git
-├── frontend/         Public research demo (React · Vite · TypeScript · Tailwind)
-└── references/       Academic grounding: literature, past papers, bibliography
+    classDef sel fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+    classDef ev fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+    class A,B,C,D,E sel;
+    class F ev;
 ```
 
-Each directory carries its own `README.md` explaining what is inside and why it is there.
-
-Internal working material — prompts, chat transcripts, paper drafts, planning notes, and
-superseded trials — lives in a git-ignored `_private/` directory and is deliberately not
-published.
-
-**Reading order for a reviewer:**
-
-1. [`research/documentation/overview.md`](research/documentation/overview.md) — the research argument
-2. [`experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md`](experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md) — what was actually found
-3. [`experiments/results/final-results-documentation/final-comparison.md`](experiments/results/final-results-documentation/final-comparison.md) — why this run is the one
-4. [`experiments/pipeline/`](experiments/pipeline/) — how to reproduce it
-5. [`frontend/`](frontend/) — the live demo
-
 ---
 
-## Data
+## 🗂️ Data dan Protokol Eksperimen
 
-| Dataset | Role | Size |
+| Dataset | Peran | Ukuran |
 |---|---|---|
-| **DRTiD** | Primary — training and internal test | 1,550 examined eyes · 3,100 dual-view images · grades 0–4 |
-| **APTOS 2019** | Backbone pre-training | 3,662 single-view images |
-| **DeepDRiD** | External confirmatory validation | Set-C: 100 patients · 200 eyes · 400 images |
+| **DRTiD** | Utama — pelatihan, validasi, dan uji internal | 1.550 _examined-eye records_ · 3.100 citra _dual-view_ · _grade_ 0–4 |
+| **APTOS 2019** | Prapelatihan _backbone_ | 3.662 citra _single-view_ (2.930 latih · 366 validasi) |
+| **DeepDRiD** | Evaluasi konfirmatori eksternal | Set-C: 100 pasien · 200 mata · 400 citra |
 
-Split: **800 train / 200 validation / 550 test** eyes, eye-disjoint, using the dataset's
-official train/test division. The 550 test eyes were untouched until final evaluation.
+| Partisi DRTiD | Mata | _Grade_ 0 | _Grade_ 1 | _Grade_ 2 | _Grade_ 3 | _Grade_ 4 |
+|---|---:|---:|---:|---:|---:|---:|
+| Latih | 800 | 386 | 72 | 208 | 104 | 30 |
+| Validasi | 200 | 96 | 18 | 52 | 26 | 8 |
+| Uji internal | 550 | 265 | 50 | 146 | 69 | 20 |
 
-> **A dataset property that shaped the statistics.** DRTiD provides eye-level identifiers and an
-> L/R laterality flag but **no patient identifier** — verified across all 1,550 records, and
-> consecutive IDs pair as opposite eyes only 50.2% of the time, i.e. chance. Internal splits are
-> therefore eye-disjoint and the internal bootstrap clusters on eyes. DeepDRiD *does* carry
-> `patient_id`, so external intervals cluster on patients. Details and worked examples:
-> [`research/knowledge/drtid-laterality-examples/`](research/knowledge/drtid-laterality-examples/).
+**Protokol yang dikunci sebelum eksekusi:**
 
-DRTiD is the same dataset used by CrossFiT (2022), so the macula-only / disc-only / dual-view
-figures here are **directly comparable to that benchmark** rather than merely cited.
+- **Pembagian data** — partisi resmi DRTiD dipakai apa adanya; 1.000 _record_ latih dibagi terstratifikasi menjadi 800/200 (_seed_ 42). DRTiD **tidak memiliki pengenal pasien**, sehingga unit sampel internal adalah _examined-eye record_.
+- **Stage A** — empat resep (224/384 × _standard_/_balanced sampling_) dibandingkan tanpa distilasi pada tiga _seed_. Terpilih **384 × 384, _standard sampling_** (QWK validasi 0,6491 vs 0,5549).
+- **Augmentasi** — rotasi ±15° (p = 0,7) dengan transformasi geometris yang sama pada kedua _field_; kecerahan/kontras ±0,15 (p = 0,5) secara independen per _field_.
+- **_Seed_** — _tuning_ {42, 123, 2026}; perbandingan utama lima _core seeds_ {42, 123, 2026, 3407, 8888}.
+- **_Threshold_ keputusan** — satu _threshold_ global per kondisi dari rentang 0,35–0,65 (langkah 0,05), dipilih pada validasi.
+- **Pemilihan metode** — rerata QWK validasi lima _seed_; selisih < 0,005 dianggap seri, dengan urutan penentu Macro-F1 → _severe error rate_ → MAE → kompleksitas.
+- **Statistik** — 10.000 replikasi _hierarchical paired cluster bootstrap_ + 10.000 iterasi _paired permutation_, dengan koreksi Holm per keluarga hipotesis. **Selisih yang interval kepercayaan 95%-nya memuat nol tidak diklaim.**
+- **Kuantisasi** — _eager static quantization_ (engine x86) pada _backbone_; InteractionFusion dan CORAL _heads_ tetap FP32 (_mixed precision_). Kalibrasi PTQ deterministik pada 800 _record_ latih; QAT _learning rate_ 3 × 10⁻⁵.
+- **Kriteria _deployment_** — retensi QWK validasi ≥ 95% dan _severe error_ tidak memburuk secara kredibel; di antara kandidat yang lolos dipilih latensi median terendah. Ambang 95% adalah kriteria rekayasa, **bukan** margin non-inferioritas klinis.
+- **Latensi** — _batch size_ 1, satu _thread_ CPU, 50 inferensi pemanasan, lima blok × 500 inferensi, median.
 
-> Datasets are **not committed** — they are large and carry their own licences. See
-> [`dataset/README.md`](dataset/README.md) for the expected layout and where to obtain each one.
+Eksperimen final dijalankan di Google Colab dengan **NVIDIA A100-SXM4-80GB**, CPU host Intel Xeon @ 2,20 GHz, **PyTorch 2.11.0+cu128**.
 
 ---
 
-## Reproducing the experiments
+## 📊 Hasil Utama
 
-The notebooks are written for **Google Colab** and resolve data through Google Drive:
+Seluruh angka berasal dari satu run final (`enhanced_v1_20260811`) yang tersimpan utuh di [`experiments/results/`](experiments/results/). Setiap gambar disertai berkas `*_data.csv` berisi angka penyusunnya.
+
+### 1. Premis _dual-view_ terpenuhi
+
+```mermaid
+xychart-beta
+    title "QWK uji internal DRTiD (rerata 5 seed; teacher 1 seed)"
+    x-axis ["Makula", "Diskus", "NoDistill", "Logit-KD", "Feature-KD", "CSD", "Teacher"]
+    y-axis "QWK" 0.4 --> 0.8
+    bar [0.5175, 0.5502, 0.6042, 0.5942, 0.6161, 0.6018, 0.7364]
+```
+
+Pada validasi, prediksi _joint dual-view_ _teacher_ mengungguli _auxiliary head_ _single-view_ terbaiknya sebesar **+0,0469 QWK**, dan _teacher_ menunjukkan _prediction shift_ yang terukur — sinyal yang menjadi target CSD.
+
+<div align="center">
+<img src="experiments/results/figures/fig_06_dual_view_gain.png" alt="Dual-view gain" width="760" />
+</div>
+
+### 2. RQ1 — Performa prediktif (550 mata uji internal DRTiD)
+
+| Model / Kondisi | QWK ↑ | Macro-F1 ↑ | MAE ↓ | SER ↓ |
+|---|---:|---:|---:|---:|
+| ResNet-50 _teacher_ (_dual-view_, 1 _seed_) | 0,7364 | 0,3887 | 0,5909 | 0,1764 |
+| _Student_, hanya makula | 0,5175 ± 0,0193 | 0,3330 ± 0,0239 | 0,8524 ± 0,0240 | 0,2742 ± 0,0084 |
+| _Student_, hanya diskus optik | 0,5502 ± 0,0067 | 0,3422 ± 0,0139 | 0,8047 ± 0,0108 | 0,2549 ± 0,0122 |
+| _Dual-view_, tanpa distilasi | 0,6042 ± 0,0166 | 0,3355 ± 0,0119 | 0,8105 ± 0,0316 | 0,2505 ± 0,0127 |
+| Logit-KD | 0,5942 ± 0,0290 | **0,3589 ± 0,0278** | 0,7775 ± 0,0646 | 0,2487 ± 0,0187 |
+| Logit-KD + Feature-KD | **0,6161 ± 0,0101** | 0,3435 ± 0,0113 | **0,7702 ± 0,0278** | **0,2396 ± 0,0107** |
+| **Logit-KD + CSD (DR-VERGE)** | 0,6018 ± 0,0149 | 0,3362 ± 0,0152 | 0,7902 ± 0,0250 | 0,2582 ± 0,0081 |
+
+<sub>_Student_: rerata ± simpangan baku lima _core seeds_. SER = _severe error rate_, P(|y − ŷ| ≥ 2). Nilai tebal = terbaik di antara _student_.</sub>
+
+Dibandingkan _teacher_, CSD mempertahankan **81,7%** QWK dengan **122,7× lebih sedikit parameter**. Perbandingan berpasangan terhadap ketiga pembanding:
+
+| Perbandingan | ΔQWK | CI 95% | p (permutasi) | p (Holm) | Kesimpulan |
+|---|---:|---|---:|---:|---|
+| CSD vs tanpa distilasi | −0,0024 | [−0,0336; +0,0285] | 0,8003 | 0,8003 | tidak signifikan |
+| CSD vs Logit-KD | +0,0077 | [−0,0304; +0,0463] | 0,3640 | 0,7279 | tidak signifikan |
+| CSD vs Feature-KD | −0,0143 | [−0,0445; +0,0153] | 0,1650 | 0,4950 | tidak signifikan |
+
+<div align="center">
+<img src="experiments/results/figures/fig_12_forest.png" alt="Forest plot perbandingan berpasangan" width="760" />
+</div>
+
+### 3. RQ1 — Fidelitas transfer mekanisme
+
+CSD menghasilkan **ShiftL1 terendah serta CosAgree dan BenefitCorr tertinggi** — pola monoton yang konsisten, dan formulasi utama juga mengungguli ketiga varian ablasi.
+
+| Kondisi / Formulasi | QWK | ShiftL1 ↓ | CosAgree ↑ | BenefitCorr ↑ |
+|---|---:|---:|---:|---:|
+| _Dual-view_, tanpa distilasi | 0,6042 | 0,3759 | 0,3509 | 0,2193 |
+| Logit-KD | 0,5942 | 0,3840 | 0,2858 | 0,1795 |
+| Logit-KD + Feature-KD | 0,6161 | 0,3718 | 0,3815 | 0,1943 |
+| **Logit-KD + CSD (DR-VERGE)** | 0,6018 | **0,3509** | **0,4361** | **0,3075** |
+| Ablasi: tanpa penskalaan (_raw-Huber_, 3 _seed_) | 0,6178 | 0,3746 | 0,4017 | 0,2036 |
+| Ablasi: KL-_softmax_, kontrol negatif (3 _seed_) | 0,6099 | 0,3885 | 0,3274 | 0,1082 |
+| Ablasi: _counterfactual_ kepala sama (3 _seed_) | 0,6128 | 0,3576 | 0,4327 | 0,2544 |
+
+<div align="center">
+<img src="experiments/results/figures/fig_07_csd_mechanism.png" alt="Mekanisme CSD" width="860" />
+</div>
+
+> [!TIP]
+> **Kedua sisi adalah temuan.** Mekanisme berhasil ditransfer, tetapi akurasi tidak ikut meningkat secara signifikan. Fidelitas terhadap _prediction shift_ dan performa prediktif ternyata **tidak bergerak sejalan**, sehingga keduanya perlu dievaluasi sebagai dua aspek yang berbeda.
+
+### 4. RQ2 — Efisiensi dan kuantisasi
+
+| Model | Parameter | Ukuran (MB) | Latensi CPU (ms) | Retensi QWK | ΔQWK vs FP32 [CI 95%] |
+|---|---:|---:|---:|---:|---|
+| ResNet-50 _teacher_ | 40.313.932 | 154,089 | 627,610 | — | — |
+| _Student_ FP32 (M\*, CSD) | 328.588 | 1,2935 | 32,490 | 100,00% | — |
+| _Student_ PTQ INT8 | 328.588 | **0,9507** | **11,238** | 97,27% | −0,0164 [−0,0360; +0,0023] |
+| **_Student_ QAT INT8 (_deployment_)** | 328.588 | **0,9507** | 11,347 | **98,96%** | **−0,0063** [−0,0293; +0,0175] |
+
+QAT INT8 adalah satu-satunya kandidat yang lolos kriteria retensi validasi 95% (99,04% vs PTQ 93,37%), sehingga dipilih dan dikunci sebagai artefak _deployment_ **sebelum** data uji dibuka. Interval kepercayaan kedua varian memuat nol; namun uji permutasi terkoreksi Holm menunjukkan perbedaan PTQ vs FP32 (p = 0,0243), sedangkan QAT tidak (p Holm = 0,4854). Ketika kedua prosedur tidak sepakat, **keduanya dilaporkan dan tidak ada yang diklaim**.
+
+<table>
+<tr>
+<td width="50%"><img src="experiments/results/figures/fig_11_pareto.png" alt="Pareto QWK vs latensi" /></td>
+<td width="50%"><img src="experiments/results/figures/fig_10_efficiency.png" alt="Efisiensi" /></td>
+</tr>
+<tr>
+<td align="center"><sub><i>Trade-off</i> QWK vs latensi CPU</sub></td>
+<td align="center"><sub>Ukuran artefak dan latensi</sub></td>
+</tr>
+</table>
+
+### 5. Generalisasi eksternal — DeepDRiD Set-C
+
+Model **dibekukan** — tanpa _fine-tuning_, tanpa penyetelan _threshold_. Interval _bootstrap_ dikelompokkan per **pasien**.
+
+| Model | QWK Set-C |
+|---|---:|
+| ResNet-50 _teacher_ (1 _seed_) | 0,7923 [0,7152; 0,8550] |
+| _Student_ PTQ INT8 | **0,6729 ± 0,0365** |
+| _Student_ FP32 (M\*) | 0,6688 ± 0,0415 |
+| _Fine-tune_ FP32 (kontrol) | 0,6567 ± 0,0364 |
+| _Student_ FT-PTQ INT8 | 0,6513 ± 0,0315 |
+| _Student_ QAT INT8 (_deployment_) | 0,6344 ± 0,0326 |
+
+_Student_ FP32 mempertahankan **84,4%** QWK _teacher_ pada domain eksternal. Pada Set-C urutannya berbalik: QAT lebih rendah daripada PTQ (ΔQWK −0,0384, CI 95% [−0,0826; −0,0006]). Varian yang optimal pada validasi internal **belum tentu** terbaik di domain eksternal — pilihan pra-registrasi tetap dipertahankan, karena mengubahnya setelah melihat data eksternal akan menghilangkan makna set konfirmatori.
+
+<div align="center">
+<img src="experiments/results/figures/fig_14_internal_vs_external.png" alt="Internal vs eksternal" width="760" />
+</div>
+
+<details>
+<summary><b>🖼️ Galeri lengkap 14 gambar hasil</b></summary>
+
+<br />
+
+| | |
+|:---:|:---:|
+| <img src="experiments/results/figures/fig_01_dataset.png" width="400" /><br/><sub>01 · Dataset</sub> | <img src="experiments/results/figures/fig_02_performance.png" width="400" /><br/><sub>02 · Performa</sub> |
+| <img src="experiments/results/figures/fig_03_ordinal_safety.png" width="400" /><br/><sub>03 · Keamanan ordinal</sub> | <img src="experiments/results/figures/fig_04_per_grade_recall.png" width="400" /><br/><sub>04 · _Recall_ per _grade_</sub> |
+| <img src="experiments/results/figures/fig_05_confusion.png" width="400" /><br/><sub>05 · Matriks konfusi</sub> | <img src="experiments/results/figures/fig_06_dual_view_gain.png" width="400" /><br/><sub>06 · _Dual-view gain_</sub> |
+| <img src="experiments/results/figures/fig_07_csd_mechanism.png" width="400" /><br/><sub>07 · Mekanisme CSD</sub> | <img src="experiments/results/figures/fig_08_csd_gradient.png" width="400" /><br/><sub>08 · Gradien CSD</sub> |
+| <img src="experiments/results/figures/fig_09_retention.png" width="400" /><br/><sub>09 · Retensi kuantisasi</sub> | <img src="experiments/results/figures/fig_10_efficiency.png" width="400" /><br/><sub>10 · Efisiensi</sub> |
+| <img src="experiments/results/figures/fig_11_pareto.png" width="400" /><br/><sub>11 · Pareto</sub> | <img src="experiments/results/figures/fig_12_forest.png" width="400" /><br/><sub>12 · _Forest plot_</sub> |
+| <img src="experiments/results/figures/fig_13_external_setc.png" width="400" /><br/><sub>13 · Eksternal Set-C</sub> | <img src="experiments/results/figures/fig_14_internal_vs_external.png" width="400" /><br/><sub>14 · Internal vs eksternal</sub> |
+
+</details>
+
+---
+
+## ⚠️ Keterbatasan dan Penafian
+
+- **RQ1 tidak signifikan secara prediktif** — keunggulan CSD hanya pada fidelitas mekanisme, bukan QWK.
+- **QWK absolut masih moderat** (_student_ 0,5942–0,6161) dan Macro-F1 rendah (0,3362 untuk CSD).
+- **_Severe error rate_ 0,2582** — kira-kira satu dari empat mata meleset ≥ 2 _grade_.
+- **_Recall grade_ 1 sangat rendah**, sehingga model tidak layak dipakai sebagai alat diagnosis mandiri.
+- **Tanpa pengenal pasien di DRTiD** — pembagian dan _bootstrap_ internal berbasis mata, bukan pasien.
+- **Evaluasi masih komputasional** — belum ada validasi prospektif, pengujian berbagai kamera fundus, pengujian pada perangkat CPU target, maupun uji klinis.
+- **Tidak ada klaim generalitas** ke domain pencitraan lain.
+
+DR-VERGE adalah prototipe riset dan **tidak ditujukan untuk diagnosis klinis mandiri**.
+
+---
+
+## 🧩 Kontribusi
+
+1. **Algoritmik** — merumuskan CSD, yang memakai _signed joint-vs-individual cumulative ordinal prediction shift_ sebagai target distilasi; berbeda dari Logit-KD (keluaran akhir) maupun distilasi fitur/relasional.
+2. **Pengukuran** — tiga metrik _shift fidelity_ (ShiftL1, CosAgree, BenefitCorr) plus kontrol _counterfactual_, sehingga transfer mekanisme diuji langsung, terpisah dari akurasi.
+3. **Empiris** — uji terkontrol CSD vs NoDistill, Logit-KD, dan Feature-KD di bawah satu protokol pra-registrasi, dilaporkan apa adanya sebagai disosiasi.
+4. **Praktis** — karakterisasi dampak INT8 pada _grader_ DR _dual-view_ ringan, menghasilkan model 0,95 MB / 11,35 ms yang berjalan di browser.
+
+---
+
+## 📁 Struktur Repositori
+
+```text
+DR-VERGE/
+├── README.md                 dokumentasi utama (Bahasa Indonesia)
+├── README.en.md              dokumentasi utama (English)
+│
+├── experiments/              eksperimen — kode dan bukti
+│   ├── notebooks/            full_pipeline_notebook_enhanced.ipynb  ← notebook final
+│   ├── results/              keluaran run final: tabel, gambar, prediksi per sampel, konfigurasi
+│   ├── src/                  komponen modular: model, loss, dataset, prapelatihan
+│   ├── configs/              konfigurasi YAML per kondisi pelatihan
+│   ├── scripts/              make_splits.py + verification/
+│   └── requirements.txt
+│
+├── research/                 argumen ilmiah, turunan matematis, catatan deployment, gambar paper
+├── references/               literatur dan daftar pustaka
+├── dataset/                  tata letak dan sumber dataset (data tidak di-commit)
+└── frontend/                 demo web (React · Vite · TypeScript · ONNX Runtime Web)
+```
+
+Setiap direktori memiliki `README.md` (Indonesia) dan `README.en.md` (English) — atau `README.md` tunggal untuk direktori yang sudah stabil — yang menjelaskan isi dan fungsinya.
+
+**Urutan membaca yang disarankan:**
+
+1. Dokumen ini — gambaran utuh penelitian.
+2. [`experiments/README.md`](experiments/README.md) — bagaimana eksperimen disusun dan dijalankan.
+3. [`experiments/results/README.md`](experiments/results/README.md) — peta seluruh keluaran run final.
+4. [`research/math.md`](research/math.md) — turunan matematis lengkap.
+5. [`frontend/`](frontend/) — demo yang menjalankan model di browser.
+
+---
+
+## 🔁 Reproduksi Eksperimen
+
+Seluruh eksperimen ada dalam **satu notebook mandiri**: [`experiments/notebooks/full_pipeline_notebook_enhanced.ipynb`](experiments/notebooks/full_pipeline_notebook_enhanced.ipynb). Notebook ini dirancang untuk **Google Colab** dan membaca data dari Google Drive.
+
+**1. Siapkan dataset di Google Drive**
+
+```text
+MyDrive/DR-VERGE/
+└── dataset/
+    ├── DRTiD/                ← "Original Images/" + "Ground Truths/DR_grade/"
+    ├── APTOS/
+    └── DeepDRiD-master/      ← regular_fundus_images/
+```
+
+Lokasi DRTiD dan DeepDRiD dicari otomatis, sehingga notebook **tidak bergantung** pada tata letak repositori ini. Lihat [`dataset/README.md`](dataset/README.md) untuk sumber dan detail setiap dataset.
+
+**2. Atur konfigurasi pada sel _Configuration_**
 
 ```python
 DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"
+RUN_TAG    = "enhanced_v1_YYYYMMDD"   # gunakan tag baru untuk setiap run baru
+QUICK      = False                    # True = gladi singkat (1 seed, sedikit epoch)
+RESUME     = True                     # lanjutkan run yang terputus pada RUN_TAG yang sama
+USE_AMP    = False
 ```
 
-They locate DRTiD by search (`_find_drtid`), so they do **not** depend on this repository's
-directory layout.
+**3. Jalankan seluruh sel (_Run All_)**
 
-| Notebook | Status | Runtime |
-|---|---|---|
-| `pipeline/notebooks/full_pipeline_notebook_enhanced.ipynb` | **Executed — final run, all paper numbers** | ~12.5 h (A100) |
-| `pipeline/notebooks/full_pipeline_notebook_simple.ipynb` | Executed — supporting run | ~6 h (L4) |
-| `pipeline/notebooks/full_pipeline_notebook_final_last_efficient.ipynb` | Executed — supporting run | ~4 h |
+Disarankan gladi singkat dulu dengan `QUICK = True` pada `RUN_TAG` sementara. Run penuh membutuhkan **±12,5 jam pada A100**. Jika Colab terputus, buka kembali dengan `RUN_TAG` yang sama dan _Run All_ lagi — pekerjaan yang sudah selesai tidak dilatih ulang.
+
+Run yang berhasil menulis `artifacts_<RUN_TAG>/FINAL_RUN_COMPLETE.txt` **hanya jika semua _blocking gate_ lulus**. Untuk lingkungan lokal:
 
 ```bash
-pip install -r experiments/pipeline/requirements.txt
+pip install -r experiments/requirements.txt
 ```
 
-Exact package versions used by the final run are recorded in
-`experiments/results/enhanced-notebook/outputs/configs/requirements_exact.txt`.
+Versi paket persis dari run final tercatat di [`experiments/results/configs/requirements_exact.txt`](experiments/results/configs/requirements_exact.txt).
 
-Full protocol: [`experiments/pipeline/notebooks-result-explanation/FINAL_PROTOCOL.md`](experiments/pipeline/notebooks-result-explanation/FINAL_PROTOCOL.md) ·
-per-notebook notes in the same directory.
+### Integritas pipeline
 
-### Integrity gates
-
-The pipeline is self-verifying. **36 assertion gates** check data schema, split disjointness,
-metric correctness, ordinal-head monotonicity (violation rate 0.00), grid completeness, seed
-completeness, quantization-scope equality across PTQ/QAT/FT-PTQ, ONNX export fidelity
-(max |diff| 7.15 × 10⁻⁷ against a 1 × 10⁻⁴ tolerance), and statistical procedure. A run that
-fails a blocking gate stops rather than reporting a number.
-
-The final gate recomputes every headline value from the raw per-sample prediction files. The
-final run reports **36/36 gates and 265/265 values matched**.
+Pipeline memverifikasi dirinya sendiri melalui **36 _integrity gates_** — skema data, keterpisahan partisi, kebenaran metrik, monotonisitas _head_ ordinal, kelengkapan _grid_ dan _seed_, kesetaraan cakupan kuantisasi PTQ/QAT/FT-PTQ, fidelitas ekspor ONNX, hingga prosedur statistik. Run yang gagal pada _blocking gate_ akan berhenti alih-alih melaporkan angka. _Gate_ terakhir menghitung ulang setiap angka utama dari berkas prediksi per sampel: **265/265 cocok**.
 
 ---
 
-## Demo website
+## 🌐 Demo Web
 
-A frontend showcase lives in [`frontend/`](frontend/) — React · Vite · TypeScript · TailwindCSS ·
-Recharts, in a strictly monochrome design system.
+<div align="center">
+
+[![Buka Demo](https://img.shields.io/badge/Buka_Demo-dr--verge.vercel.app-1565C0?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dr-verge.vercel.app)
+
+</div>
+
+Prototipe web di [`frontend/`](frontend/) dibangun dengan React, Vite, TypeScript, Tailwind CSS, dan Recharts, dengan dua bahasa (Indonesia/English) serta tema monokrom dan berwarna. **Model berjalan sungguhan di browser** melalui `onnxruntime-web` — tanpa server, tanpa API, dan tidak ada citra yang meninggalkan perangkat pengguna. Konstanta _preprocessing_ dibaca dari `metadata.json` hasil ekspor, dan _grade_ dihitung sebagai jumlah _threshold_ CORAL yang terlampaui, persis seperti di notebook.
 
 ```bash
 cd frontend
@@ -279,89 +451,50 @@ npm install
 npm run dev
 ```
 
-**The model runs for real, entirely in the browser.** The exported student is bundled as ONNX
-and executed client-side with `onnxruntime-web` — no server, no API key, no image ever leaves
-the visitor's machine. Preprocessing constants come from the exported `metadata.json` rather than
-being hardcoded, and the grade is computed as the **count of CORAL thresholds passed**, exactly
-as in the notebook.
-
-Verification: running the shipped ONNX model over all 200 Set-C eyes reproduced **QWK 0.7307**
-against the notebook's **0.7298** for the same seed — a 0.0009 difference attributable to image
-resampling, confirming the browser pipeline is faithful to the research. See
-[`frontend/README.md`](frontend/README.md).
+Detail lengkap: [`frontend/README.md`](frontend/README.md).
 
 ---
 
-## Method summary
+## 👥 Tim
 
+<div align="center">
+
+| <img src="frontend/public/Images/Stanley.jpg" width="110" /> | <img src="frontend/public/Images/Seline.jpeg" width="110" /> | <img src="frontend/public/Images/Hamra.jpeg" width="110" /> | <img src="frontend/public/Images/Nikita.jpg" width="110" /> |
+|:---:|:---:|:---:|:---:|
+| **Stanley Nathanael Wijaya** | **Seline Loewel** | **Ahmad Hamra** | **Nikita Ananda Putri Masaling** |
+| Ketua Tim · Pengembangan AI & Model | Penulisan Paper Riset | Riset & Dokumentasi Video | Dosen Pembimbing |
+| Computer Science | Business Engineering | Computer Science | School of Computer Science |
+| [GitHub](https://github.com/StyNW7) · [LinkedIn](https://www.linkedin.com/in/stanley-nathanael-wijaya/) | [GitHub](https://github.com/selineloewel8-prog) · [LinkedIn](https://www.linkedin.com/in/seline-loewel/) | [GitHub](https://github.com/Ahamra1120) · [LinkedIn](https://www.linkedin.com/in/ahmad-hamra/) | [LinkedIn](https://www.linkedin.com/in/nikita-masaling/) |
+
+**Universitas Bina Nusantara (BINUS University)** · GEMASTIK XIX 2026 · Karya Tulis Ilmiah TIK
+
+</div>
+
+---
+
+## 📝 Sitasi
+
+Jika repositori ini bermanfaat untuk penelitian Anda, silakan sitasi:
+
+```bibtex
+@article{wijaya2026drverge,
+  title   = {DR-VERGE: Complementarity-Shift Distillation dan Kuantisasi untuk
+             Grading Retinopati Diabetik pada Fundus Dual-View},
+  author  = {Wijaya, Stanley Nathanael and Loewel, Seline and Hamra, Ahmad and
+             Masaling, Nikita Ananda Putri},
+  journal = {Buletin Pagelaran Mahasiswa Nasional Bidang Teknologi Informasi dan Komunikasi},
+  volume  = {1},
+  year    = {2026},
+  note    = {GEMASTIK XIX 2026, Karya Tulis Ilmiah TIK}
+}
 ```
-STAGE A — RECIPE SELECTION (before the teacher exists)
-  224/384 × standard/balanced sampling, chosen on validation only
-  → 384 / standard selected (val QWK 0.6491 vs 0.5549), then frozen
-
-STAGE 1 — TEACHER
-  ResNet-50, shared weights across views
-  Fusion: InteractionFusion over [z_m, z_d, |z_m − z_d|, z_m ⊙ z_d]
-  Head: CORAL ordinal + 2 auxiliary single-view heads
-  Outputs p_dual, p_macula, p_disc  →  gives Δ_teacher
-
-STAGE 2 — STUDENT
-  Lightweight depthwise-separable backbone, shared weights
-  L = L_ordinal(CORAL) + α·L_logitKD + β·L_CSD        α = 0.5, β = 0.1
-
-STAGE 3 — QUANTIZATION
-  FP32 → INT8 (PTQ / QAT / fine-tuned PTQ), matched operator scope
-  Backbone to INT8; fusion and CORAL head stay FP32 to protect monotonicity
-```
-
-**Grades are ordinal, and the code treats them that way.** The CORAL head emits monotone
-cumulative probabilities `P(Y > k)`, and the predicted grade is the **count of thresholds
-passed** — never an argmax. Grade 3 misread as Grade 0 is a far worse error than Grade 3
-misread as Grade 2, and QWK is the primary metric for exactly that reason.
-
-**Primary metric:** QWK. **Also reported:** ordinal MAE, severe-error rate P(|y−ŷ|≥2),
-Macro-F1, per-grade recall, dual-view gain G, mechanism fidelity (ShiftL1 / CosAgree /
-BenefitCorr), artifact size, and CPU latency.
 
 ---
 
-## Contribution claims
+## 📄 Lisensi dan Penggunaan Data
 
-Deliberately bounded to what the experiments support:
+Kode dan dokumentasi ini disusun untuk penelitian dan kompetisi akademik. Dataset **tidak didistribusikan ulang** melalui repositori ini; setiap dataset tetap berada di bawah lisensi pemiliknya dan harus diperoleh langsung dari penyedianya (lihat [`dataset/README.md`](dataset/README.md)).
 
-1. **Measurement** — three metrics that test whether the dual-view interaction actually
-   transfers (ShiftL1, CosAgree, BenefitCorr), plus a counterfactual control that receives the
-   same teacher guidance without the shift target. This lets transfer be tested directly rather
-   than inferred from accuracy.
-2. **Algorithmic** — CSD, a distillation mechanism transferring the *probability-shift pattern*
-   caused by combining two views, distinct from logit-KD (final output) and relational KD
-   (feature structure). Ablations show the effect is specific to the formulation, not a
-   by-product of adding a loss term.
-3. **Empirical** — a controlled test of CSD against no-distillation, logit-KD and feature-KD
-   under one pre-registered protocol, reporting a dissociation rather than a win.
-4. **Practical** — characterisation of how INT8 affects a lightweight dual-view DR grader, with
-   a working 0.95 MB / 11.35 ms CPU model that runs in a browser.
-
-**No claim of generality to other imaging domains** is made — that was never tested. Novelty is
-phrased as *"in the literature reviewed, we did not identify prior work that…"*, never as
-"the first ever".
-
----
-
-## Conventions
-
-- Directories: lowercase `kebab-case`.
-- Executed runs are immutable — outputs are historical evidence and are never regenerated in place.
-- Superseded material moves to `_private/archive/`, never to deletion.
-- `dataset/`, `_private/`, model weights (`*.pt`, `*.pth`, `*.ckpt`) and `__pycache__/` are
-  git-ignored. `_private/` holds prompts, drafts, and working notes that are kept locally but
-  never published.
-
----
-
-## Licence and use
-
-Research code and documentation for an academic competition submission. Datasets remain under
-their original licences and are not redistributed here.
-
-DR-VERGE is a research prototype and is **not intended for standalone clinical diagnosis**.
+<div align="center">
+<sub>Dibuat dengan ❤️ oleh Tim DR-VERGE · BINUS University · 2026</sub>
+</div>

@@ -1,36 +1,65 @@
-.claude/
+# =====================================================================
+# DR-VERGE — .gitignore
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Internal working material — kept locally, never published.
+#   _private/archive/ holds superseded notebooks, supporting runs and
+#   AI-assisted working notes (moved there, never deleted).
+# ---------------------------------------------------------------------
+_private/
 prompts/
+draft/
+revision/
+revisions/
+archive/
+archieved/
+past-papers/
+past-paper-reference/
+big-reference/
+CrossFiT/
+
+# AI assistant configuration and notes
+.claude/
+claude.md
+CLAUDE.md
+
+# ---------------------------------------------------------------------
+# Datasets — large and licensed by their owners (see dataset/README.md)
+# ---------------------------------------------------------------------
 DRTiD/
 APTOS/
 DeepDRiD/
-APTOS/
 DeepDRiD-master/
-past-paper-reference/
-big-reference/
-claude.md
-archieved/
-revision/
 
-# experiment/ — generated artifacts, not source
-__pycache__/
-*.pyc
-experiment/checkpoints/
-experiment/results/
-
-
+# ---------------------------------------------------------------------
+# Generated artifacts — weights, checkpoints, local splits, run folders
+# ---------------------------------------------------------------------
 *.pt
 *.pth
 *.ckpt
+*.pt2
+experiments/checkpoints/
+experiments/data/
+experiments/artifacts_*/
+experiment/checkpoints/
+experiment/results/
 
-prompts/
-past-papers/
-revisions/
-archive/
-CrossFiT/
+# ---------------------------------------------------------------------
+# Python / Jupyter
+# ---------------------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
 
-.gitignore
-
-draft/
-
-# _private/ — internal working material kept locally, never published.
-_private/
+# ---------------------------------------------------------------------
+# OS / editor
+# ---------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

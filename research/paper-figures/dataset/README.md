@@ -201,4 +201,3 @@ Lokasi dataset asli di repositori — keduanya berada di `.gitignore` sehingga t
 Dokumen terkait:
 
 - `research/knowledge/drtid-laterality-examples/README.md` — pembahasan lateralitas dan ketiadaan identitas pasien pada DRTiD.
-- `experiments/results/enhanced-notebook/PENGUATAN-PAPER-BAB1-BAB4.md` — panduan revisi Bab I dan Bab IV, termasuk rekomendasi gambar hasil eksperimen.

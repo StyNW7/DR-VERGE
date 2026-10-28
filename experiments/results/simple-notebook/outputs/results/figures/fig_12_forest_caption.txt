@@ -1,1 +1,0 @@
-Forest plot of every pre-registered QWK comparison. The point is the OBSERVED paired difference; the bar is the bootstrap interval. An interval crossing zero is not a claim.

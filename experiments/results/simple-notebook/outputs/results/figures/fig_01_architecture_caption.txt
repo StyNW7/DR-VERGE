@@ -1,1 +1,0 @@
-DR-VERGE architecture. Teacher produces dual and single-view cumulative probabilities; their difference is the complementarity shift distilled into the lightweight student.

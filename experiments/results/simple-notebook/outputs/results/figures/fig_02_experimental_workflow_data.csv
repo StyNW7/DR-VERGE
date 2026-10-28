@@ -1,9 +1,0 @@
-step
-DRTiD official train (1000 eyes)
-stratified split -> train 800 / val 200
-train all conditions (5 seeds)
-pre-registered grids -> select on VALIDATION only
-M* = best FP32 (validation-selected)
-PTQ INT8 / QAT INT8 / FP32-FT control
-DRTiD official test (no selection here)
-"DeepDRiD external -- FROZEN, evaluated last"

@@ -1,125 +1,76 @@
-# dataset/
+# 🗃️ dataset/
 
-Three datasets back DR-VERGE. **None are committed to git** — they are large and carry their
-own licences. This file documents the expected layout and where to obtain each.
+**🇮🇩 Bahasa Indonesia** · [🇬🇧 English](README.en.md)
 
-```
+DR-VERGE menggunakan tiga dataset publik. **Tidak ada yang di-commit ke git** — ukurannya besar dan masing-masing memiliki lisensi sendiri. Dokumen ini menjelaskan tata letak yang diharapkan dan tempat memperoleh setiap dataset.
+
+```text
 dataset/
-├── DRTiD/           primary — training and internal test
-├── APTOS/           backbone pre-training
-├── DeepDRiD-master/ external validation
-└── reference.md     source notes
+├── DRTiD/              utama — pelatihan, validasi, dan uji internal
+├── APTOS/              prapelatihan backbone
+└── DeepDRiD-master/    evaluasi konfirmatori eksternal
 ```
 
-`.gitignore` excludes `DRTiD/`, `APTOS/`, `DeepDRiD/` and `DeepDRiD-master/` by basename, so
-they stay untracked wherever they sit.
+`.gitignore` mengecualikan `DRTiD/`, `APTOS/`, `DeepDRiD/`, dan `DeepDRiD-master/` berdasarkan nama folder, sehingga ketiganya tetap tidak terlacak di mana pun letaknya.
+
+| Dataset | Peran | Ukuran | Sumber |
+|---|---|---|---|
+| **DRTiD** | Utama | 1.550 _examined-eye records_ · 3.100 citra · _grade_ 0–4 | [github.com/fdu-vts/drtid](https://github.com/fdu-vts/drtid) |
+| **APTOS 2019** | Prapelatihan _backbone_ | 3.662 citra _single-view_ | [Kaggle — APTOS 2019 Blindness Detection](https://www.kaggle.com/competitions/aptos2019-blindness-detection) |
+| **DeepDRiD** | Evaluasi eksternal | Set-C: 100 pasien · 200 mata · 400 citra | [github.com/deepdrdoc/DeepDRiD](https://github.com/deepdrdoc/DeepDRiD) |
 
 ---
 
-## DRTiD — primary
+## 👁️ DRTiD — dataset utama
 
-**1,550 patient-eyes · 3,100 images · grades 0–4 · genuinely dual-view.**
+**1.550 mata · 3.100 citra · _grade_ 0–4 · benar-benar _dual-view_.** Setiap mata memiliki dua foto — satu berpusat makula, satu berpusat diskus optik. Pasangan inilah objek penelitian; tanpa pasangan ini tidak ada komplementaritas yang dapat didistilasi.
 
-Each eye contributes two photographs — one macula-centred, one optic-disc-centred. This
-pairing *is* the research object; without it there is no complementarity to distil.
-
-```
+```text
 DRTiD/
 ├── Original Images/
 └── Ground Truths/
-    └── DR_grade/
-        ├── a. DR_grade_Training.csv    1,000 rows
-        └── b. DR_grade_Testing.csv       550 rows
+    ├── DR_grade/
+    │   ├── a. DR_grade_Training.csv    1.000 baris
+    │   └── b. DR_grade_Testing.csv       550 baris
+    └── Optic_Macula_Localization/
 ```
 
-The official train/test division is used **as provided**. The 1,000 training rows are split
-into **800 train / 200 validation**; the 550 test rows were untouched until final
-evaluation. Prepared splits are committed at
-[`../experiments/pipeline/data/splits/`](../experiments/pipeline/data/splits/) and regenerated
-by `scripts/make_splits.py`.
+Partisi resmi dipakai **apa adanya**. 1.000 baris latih dibagi terstratifikasi menjadi **800 latih / 200 validasi** (_seed_ 42); 550 baris uji tidak disentuh hingga evaluasi akhir. Partisi persis yang dipakai run final ada di [`../experiments/results/splits/`](../experiments/results/splits/).
 
-**Why DRTiD and not something larger:** it is the dataset used by **CrossFiT (2022)**, the
-source of the 80.47% / 77.87% / 84.21% macula-only / disc-only / dual-view figures that motivate
-this work. Training on it makes DR-VERGE's numbers *directly comparable* to that benchmark
-rather than merely adjacent to it.
+**Mengapa DRTiD:** dataset ini juga dipakai oleh **CrossFiT (2022)**, sehingga hasil makula-saja / diskus-saja / _dual-view_ DR-VERGE dapat dibandingkan langsung dengan _benchmark_ tersebut.
 
-### Field order and laterality — verified, not assumed
+### Urutan _field_ dan lateralitas — diverifikasi, bukan diasumsikan
 
-The `Macula` and `Optic disc` columns name the two files per eye, and the suffix convention is
-**`_1` = macula-centred, `_2` = disc-centred**. Checked against
-`Ground Truths/Optic_Macula_Localization/op_ma_localization.csv` across all 3,100 images: in
-`_1` the macula sits nearer the frame centre than the disc in **99.4%** of cases, and the
-reverse holds in `_2` for **99.3%**. The `LR` column is likewise consistent with image geometry
-on **1,550 of 1,550** records.
+Kolom `Macula` dan `Optic disc` menunjuk dua berkas per mata, dengan konvensi akhiran **`_1` = berpusat makula, `_2` = berpusat diskus optik**. Diperiksa terhadap `op_ma_localization.csv` pada seluruh 3.100 citra: pada `_1` makula lebih dekat ke pusat bingkai daripada diskus pada **99,4%** kasus, dan sebaliknya pada `_2` untuk **99,3%** kasus. Kolom `LR` konsisten dengan geometri citra pada **1.550 dari 1.550** _record_.
 
-**DRTiD carries no patient identifier.** Every ID belongs to exactly one eye (1,550 IDs for
-1,550 eyes), and consecutive IDs pair as opposite eyes only **50.2%** of the time — chance.
-Patient grouping cannot be recovered, so internal splits are **eye-disjoint** and the internal
-bootstrap clusters on eyes. This is a property of the source data and applies equally to every
-study using DRTiD. Worked examples:
-[`../research/knowledge/drtid-laterality-examples/`](../research/knowledge/drtid-laterality-examples/).
+**DRTiD tidak memiliki pengenal pasien.** Setiap ID milik tepat satu mata (1.550 ID untuk 1.550 mata), dan ID berurutan berpasangan sebagai mata kiri–kanan hanya **50,2%** — setara peluang acak. Pengelompokan pasien tidak dapat dipulihkan, sehingga _split_ internal bersifat **_eye-disjoint_** dan _bootstrap_ internal berklaster pada mata. Contoh kasus: [`../research/knowledge/drtid-laterality-examples/`](../research/knowledge/drtid-laterality-examples/).
 
 ---
 
-## APTOS 2019 — pre-training
+## 🧠 APTOS 2019 — prapelatihan
 
-**3,662 single-view fundus images** (Kaggle), split 2,930 train / 366 validation.
-
-Used only to give the backbone a strong retinal representation before dual-view fine-tuning.
-DRTiD alone is far too small to train a backbone from scratch. APTOS is single-view and never
-used for dual-view evaluation.
+**3.662 citra fundus _single-view_**, dibagi 2.930 latih / 366 validasi. Dipakai hanya untuk memberi _backbone_ representasi retina yang kuat sebelum _fine-tuning_ _dual-view_ — DRTiD terlalu kecil untuk melatih _backbone_ dari nol. APTOS tidak pernah dipakai untuk evaluasi _dual-view_.
 
 ---
 
-## DeepDRiD — external validation
+## 🌍 DeepDRiD — evaluasi eksternal
 
-Held out entirely from training; used to test generalisation under distribution shift.
+Sepenuhnya dipisahkan dari pelatihan; dipakai untuk menguji generalisasi di bawah pergeseran distribusi. Dibagi menjadi **Set-A / Set-B / Set-C**, dengan **Set-C ditetapkan sejak awal sebagai partisi konfirmatori** (100 pasien · 200 mata · 400 citra, partisi saling lepas). Set-A dan Set-B bersifat suplementer.
 
-Partitioned into **Set-A / Set-B / Set-C**, with **Set-C pre-registered as the confirmatory
-partition** (100 patients · 200 eyes · 400 images, 0 exclusions, partitions disjoint). Set-A and
-Set-B are supplementary.
-
-> **Why it is not training data.** DeepDRiD's public CSV does not label which field (`_l1` /
-> `_l2` per eye) is macula- vs disc-centred — the exact distinction DR-VERGE depends on — and
-> its "evaluation" subset ships with empty labels for an online challenge. Both facts are
-> disqualifying for training, neither for held-out evaluation under a stated field ordering.
-> External results are reported **under both field orderings**, since the mapping is inferred.
-
-> **Field order runs opposite to DRTiD.** Visual inspection of DeepDRiD pairs shows `_1` is
-> **disc**-centred and `_2` is **macula**-centred — the reverse of DRTiD's convention. No
-> localization file ships with DeepDRiD, so this cannot be verified automatically at scale: a
-> brightness-based disc detector calibrated against DRTiD's ground truth reached only **81%**
-> pairwise accuracy, which is enough to shortlist candidates but not to label anything
-> authoritatively. Reporting both field orderings is what makes the external result safe
-> regardless.
-
-**What DeepDRiD does provide that DRTiD does not:** a `patient_id` column, with separate DR
-grades for the left and right eye. External confidence intervals therefore cluster on
-**patients** — the stricter standard — while internal ones cluster on eyes. The two datasets
-cover each other's gap.
+- **Bukan data latih.** CSV publik DeepDRiD tidak menandai _field_ mana (`_1`/`_2`) yang berpusat makula atau diskus — perbedaan yang menjadi dasar DR-VERGE. Karena pemetaannya disimpulkan, hasil eksternal dilaporkan pada **kedua urutan _field_**, dengan `_1 = makula` sebagai urutan utama.
+- **Memiliki `patient_id`.** Interval kepercayaan eksternal karenanya berklaster pada **pasien** — standar yang lebih ketat — sementara internal berklaster pada mata. Kedua dataset saling menutupi kekurangan masing-masing.
 
 ---
 
-## Obtaining the data
+## ☁️ Notebook tidak membaca dari folder ini
 
-| Dataset | Source |
-|---|---|
-| DRTiD | Public research release — see `reference.md` |
-| APTOS 2019 | Kaggle: *APTOS 2019 Blindness Detection* |
-| DeepDRiD | Public challenge release — see `reference.md` |
-
-Each retains its original licence. **Nothing is redistributed through this repository.**
-
----
-
-## Notebooks do not read from here
-
-The pipeline runs on Google Colab and resolves data through Google Drive:
+Pipeline berjalan di Google Colab dan membaca data dari Google Drive:
 
 ```python
-DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"
+DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"   # dataset diletakkan di DRIVE_BASE/dataset/
 ```
 
-DRTiD is then found by search (`_find_drtid`). This directory is the **local working copy**;
-moving or renaming it cannot break the notebooks.
-</content>
+Lokasi DRTiD dan DeepDRiD dicari otomatis. Folder `dataset/` di repositori ini adalah **salinan kerja lokal** untuk [`../experiments/scripts/make_splits.py`](../experiments/scripts/make_splits.py) dan modul [`../experiments/src/`](../experiments/src/); memindahkan atau mengganti namanya tidak akan merusak notebook.
+
+> [!IMPORTANT]
+> **Tidak ada data yang didistribusikan ulang melalui repositori ini.** Akses ke setiap dataset harus diperoleh langsung dari penyedianya sesuai ketentuan penggunaan yang berlaku.

@@ -1,182 +1,100 @@
-# experiments/
+# 🧪 experiments/
 
-Everything that turns the DR-VERGE hypothesis into evidence.
+**🇮🇩 Bahasa Indonesia** · [🇬🇧 English](README.en.md)
 
-```
+Seluruh bagian yang mengubah hipotesis DR-VERGE menjadi bukti: notebook yang dijalankan, kode pendukung, dan keluaran lengkap dari run final.
+
+```text
 experiments/
-├── pipeline/   the code — notebooks, src/, configs/, splits, verification
-└── results/    the evidence — executed runs, figures, written overviews
+├── notebooks/            notebook final — satu-satunya sumber seluruh angka paper
+│   └── full_pipeline_notebook_enhanced.ipynb
+├── results/              keluaran run final: tabel, gambar, prediksi per sampel, konfigurasi terkunci
+├── src/                  komponen modular: model, loss, dataset, prapelatihan, smoke test
+├── configs/              konfigurasi YAML per kondisi pelatihan
+├── scripts/              make_splits.py + verification/ (pemeriksaan statis notebook)
+└── requirements.txt      dependensi Python
 ```
 
-The separation is deliberate: **`pipeline/` is what you run, `results/` is what came out.**
-Results are historical artifacts and are never regenerated in place.
+Pemisahannya disengaja: **`notebooks/` adalah apa yang dijalankan, `results/` adalah apa yang dihasilkan.** Keluaran di `results/` adalah artefak historis dari satu eksekusi dan tidak pernah dibuat ulang di tempat.
 
 ---
 
-## Which run should I trust?
+## 📓 Notebook final
 
-**`results/enhanced-notebook/`.** It is the final run and the single source of truth for every
-number in the paper.
-
-| | enhanced | simple | efficient |
-|---|---|---|---|
-| Role | **FINAL** | supporting | supporting |
-| Integrity gates | **36/36** | 32/32 | partial |
-| Headline values recomputed from raw predictions | **265/265 matched** | ✗ | ✗ |
-| Input resolution | **384** (selected in Stage A) | 224 | 224 |
-| Core seeds | **5** | 5 | 3 |
-| Hyperparameter selection | **3 seeds** | 3 seeds | 1 seed |
-| Threshold calibration on validation | ✅ | ✗ | ✗ |
-| Confirmatory external evaluation (Set-C) | ✅ | ✅ | ✗ |
-| Verified deployment artifact | ✅ | ✅ | ✗ |
-
-> **Never mix numbers across runs.** The three runs use different resolutions, seed counts, and
-> statistical protocols, so their values are not comparable. A table combining them is wrong even
-> if every individual number in it is correct.
-
-The supporting runs matter because of what they **agree** on: the RQ1 mechanism ordering — CSD
-best on all three metrics — replicated across all three, from independent training under
-different selection regimes. Three runs agreeing on the mechanism is stronger evidence than any
-one alone.
-
-Where they **disagree** — predictive rankings, which model was selected as M\*, INT8 retention
-figures — the disagreement is itself reported. Selection-regime instability is a real property
-of this task, not something to hide. See
-[`results/final-results-documentation/final-comparison.md`](results/final-results-documentation/final-comparison.md).
-
----
-
-## pipeline/
-
-```
-pipeline/
-├── notebooks/        the four pipeline notebooks (source form)
-├── notebooks-result-explanation/   protocol and per-notebook documentation
-├── src/              datasets · losses · models · pretrain_aptos · utils · smoke_test
-├── configs/          one YAML per training condition
-├── data/splits/      drtid_train / drtid_val / drtid_test CSVs
-├── scripts/          make_splits.py + verification/
-└── requirements.txt
-```
-
-### Documentation
-
-All of it lives in [`pipeline/notebooks-result-explanation/`](pipeline/notebooks-result-explanation/):
-
-| File | Read it for |
+| | |
 |---|---|
-| `FINAL_PROTOCOL.md` | The frozen evaluation protocol — pre-registered rules |
-| `ENHANCED_NOTEBOOK.md` | The final run: its four protocol changes, decision order, known limits |
-| `SIMPLE_NOTEBOOK.md` | Walkthrough of the earlier notebook |
-| `comparison.md` | How the notebooks differ |
-| `documentation.md` · `results.md` · `resource.md` | Implementation notes, results notes, compute budget |
+| Berkas | [`notebooks/full_pipeline_notebook_enhanced.ipynb`](notebooks/full_pipeline_notebook_enhanced.ipynb) |
+| Run | `enhanced_v1_20260811` (mode **FULL RUN**) |
+| Lingkungan | Google Colab · NVIDIA A100-SXM4-80GB · Python 3.12 · PyTorch 2.11.0+cu128 |
+| Durasi | ± 12,5 jam |
+| Status | **36/36 _integrity gates_ lulus** · **265/265 angka utama** cocok dengan hasil hitung ulang |
+| Metode terpilih (M\*) | `dual_csd` (_seed_ 3407) |
+| Artefak _deployment_ | `qat_int8` (_seed_ 42), terverifikasi |
 
-> Some cross-references inside these documents point at paths from an earlier repository layout
-> (`docs/…`, `experiment-result/…`). The documents themselves are unchanged and remain accurate
-> in content; only the paths are historical.
+Notebook bersifat **mandiri** — seluruh implementasi (data, model, _loss_, metrik, statistik, kuantisasi, ekspor) berada di dalamnya, sehingga dapat dijalankan langsung di Colab tanpa mengimpor `src/`. Panduan lengkap ada di [`notebooks/README.md`](notebooks/README.md).
 
-### Running it
+### Alur notebook
 
-Notebooks target **Google Colab** and resolve data via Google Drive:
-
-```python
-DRIVE_BASE = "/content/drive/MyDrive/DR-VERGE"
+```mermaid
+flowchart TD
+    S1["§1–3 · Lingkungan, konfigurasi,<br/>utilitas & gates"] --> S2["§4–6 · Split DRTiD, cek APTOS,<br/>cache citra & transformasi"]
+    S2 --> S3["§7–10 · Model CORAL, loss,<br/>metrik, smoke test"]
+    S3 --> S4["§13a · Stage A<br/>pilih resolusi & sampling"]
+    S4 --> S5["§11 · §13b · Prapelatihan APTOS<br/>+ teacher ResNet-50"]
+    S5 --> S6["§12–13 · Student, grid<br/>Logit-KD · Feature-KD · CSD · ablasi"]
+    S6 --> S7["§13c–14 · Kalibrasi threshold<br/>+ seleksi metode (validasi)"]
+    S7 --> S8["§15–16 · Kuantisasi PTQ/QAT<br/>+ keputusan deployment (dikunci)"]
+    S8 --> S9["§17–19 · Uji internal DRTiD,<br/>statistik, DeepDRiD Set-C"]
+    S9 --> S10["§20–22 · Ekspor ONNX, gambar,<br/>tabel, self-audit, laporan gate"]
 ```
 
-DRTiD is located by search (`_find_drtid`), so the notebooks **do not depend on this
-repository's folder layout** — restructuring the repo cannot break them.
+---
+
+## 📂 Isi setiap folder
+
+| Folder | Isi | Dokumentasi |
+|---|---|---|
+| [`notebooks/`](notebooks/) | Notebook final yang sudah dieksekusi beserta seluruh keluarannya | [ID](notebooks/README.md) · [EN](notebooks/README.en.md) |
+| [`results/`](results/) | 34 tabel CSV, 14 gambar (PNG + _caption_ + data), prediksi per sampel, diagnostik, konfigurasi terkunci | [ID](results/README.md) · [EN](results/README.en.md) |
+| [`src/`](src/) | Versi modular komponen pipeline (model, _loss_, dataset, prapelatihan) | [ID](src/README.md) · [EN](src/README.en.md) |
+| [`configs/`](configs/) | Satu YAML per kondisi pelatihan | [ID](configs/README.md) · [EN](configs/README.en.md) |
+| [`scripts/`](scripts/) | Pembuat _split_ DRTiD dan skrip verifikasi statis notebook | [ID](scripts/README.md) · [EN](scripts/README.en.md) |
+
+> [!NOTE]
+> Nilai konfigurasi yang **benar-benar dipakai** run final tercatat di [`results/configs/`](results/configs/) — itulah catatan otoritatif. YAML di `configs/` dan modul di `src/` adalah versi modular yang menjelaskan setiap kondisi; bila ada perbedaan, `results/configs/` yang berlaku.
+
+---
+
+## ▶️ Menjalankan eksperimen
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Exact versions used by the final run:
-`../results/enhanced-notebook/outputs/configs/requirements_exact.txt`.
+1. Unggah dataset ke `MyDrive/DR-VERGE/dataset/` (lihat [`../dataset/README.md`](../dataset/README.md)).
+2. Buka notebook di Google Colab dengan GPU.
+3. Atur `RUN_TAG`, `QUICK`, dan `RESUME` pada sel _Configuration_.
+4. Gladi singkat dengan `QUICK = True` pada `RUN_TAG` sementara, lalu jalankan run penuh dengan `QUICK = False`.
+5. Run selesai dengan benar hanya jika `artifacts_<RUN_TAG>/FINAL_RUN_COMPLETE.txt` tertulis.
 
-### What the enhanced run changed
-
-Four changes on top of the simple run, all fixed **before** execution:
-
-1. **Stage A recipe selection** — 224/384 × standard/balanced, chosen before the teacher exists
-   → selected **384 / standard** (val QWK 0.6491 vs 0.5549), then frozen
-2. **Threshold calibration** — one global `t*` per condition, from validation only
-3. **`sqrt` class-balanced sampling** on training loaders
-4. **Two new integrity gates**, including a blocking self-audit that recomputes every headline
-   value from the raw prediction files
-
-The reporting rule was fixed before any run: **if runs disagree, both are reported.**
-
-### Verification scripts
-
-`scripts/verification/` statically checks a notebook before a multi-hour run is committed to:
-`verify_enhanced.py` (structural), `dryrun_enhanced.py` (logic), plus name-ordering and
-unbound-variable passes.
-
-These exist because of a real near-miss. An earlier draft placed Stage A **after** teacher
-training — a 384-trained teacher would have distilled into 224 students. Nothing would have
-crashed; every number would simply have been wrong. Compile, name-order and unbound checks all
-passed *while the bug was present*. Only an explicit ordering assertion caught it.
-
-**Lesson encoded here: a pipeline that runs is not a pipeline that is correct.**
+Sebelum menjalankan run yang memakan waktu berjam-jam, periksa notebook secara statis dengan skrip di [`scripts/verification/`](scripts/).
 
 ---
 
-## results/
+## 📐 Protokol statistik
 
-```
-results/
-├── enhanced-notebook/            FINAL — notebook, 14 figures, RESULTS_OVERVIEW.md
-├── simple-notebook/              supporting — notebook, figures, overviews (EN + ID)
-├── efficient-notebook/           supporting — notebook, archived outputs
-├── final-results-documentation/  cross-run comparison and per-run summaries
-└── knowledge/                    analyses written during the research
-```
+Ditetapkan sebelum run dan diterapkan tanpa pengecualian:
 
-Each `RESULTS_OVERVIEW.md` is a complete written account of its run: verdict, gate report, RQ1,
-RQ2, and the weaknesses to state. **Read those before reading any figure.**
-
-### Figures
-
-Each figure ships as **`.png` + `.svg` + `.pdf` + `_caption.txt` + `_data.csv`** — the caption as
-written for the paper, and the exact numbers behind the plot. A figure whose underlying CSV is
-present can be audited; one without it can only be trusted.
-
-The exhibits that carry the paper, all from the enhanced run:
-
-| Figure | Shows |
-|---|---|
-| `fig_06_dual_view_gain` | The premise: dual-view beats either single view |
-| `fig_07_csd_mechanism` | CSD best on all three mechanism panels — the strongest single figure |
-| `fig_12_forest` | All pre-registered comparisons with CIs, RQ1 nulls shown honestly |
-| `fig_11_pareto` | QWK against CPU latency — the whole of RQ2 in one plot |
-| `fig_14_internal_vs_external` | Generalisation across a real domain shift |
-
-✅ The enhanced run's figure folder is **clean**: `fig_01_dataset` … `fig_14_internal_vs_external`,
-no duplicates, safe to cite directly.
-
-> ⚠ **Hazard in the *simple* run only.** Three figures in that run's folder were produced by the
-> *efficient* run, leaving two different `fig_13`s side by side. Check the filename against the
-> canonical list before citing anything from `simple-notebook/`. Nothing was deleted — the hazard
-> is flagged rather than silently resolved. Details in that run's `RESULTS_OVERVIEW.md` §7.
+- **_Hierarchical paired cluster bootstrap_** atas pasangan _seed_ yang sesuai — B = 10.000. Klaster adalah **mata** pada data internal (DRTiD tidak memiliki ID pasien) dan **pasien** pada data eksternal (DeepDRiD memilikinya).
+- **Uji permutasi berpasangan** — P = 10.000.
+- **Koreksi Holm di dalam setiap keluarga** perbandingan.
+- **Selisih yang CI 95%-nya memuat nol bukan klaim.** Bila _bootstrap_ dan uji permutasi tidak sepakat — seperti PTQ vs FP32 pada run final (CI memuat nol, p Holm = 0,0243) — **keduanya dilaporkan dan tidak ada yang diklaim**.
 
 ---
 
-## Statistical protocol
+## 🔗 Terkait
 
-Fixed before the runs, applied without exception:
-
-- **Paired clustered bootstrap** over matched seed pairs — B = 10,000. Clusters are **eyes**
-  internally (DRTiD has no patient IDs) and **patients** externally (DeepDRiD does).
-- **Permutation tests** — P = 10,000, exchangeability within clusters
-- **Holm correction within each family** of comparisons, not across all 45
-- **A difference whose CI includes zero is not a claim.** Where the bootstrap CI and the
-  permutation test disagree — as they do for PTQ vs FP32 in the final run: CI includes zero,
-  p = 0.024 — **both are reported and neither is claimed.** The convenient one is not selected.
-
----
-
-## Related
-
-- Research argument → [`../research/`](../research/)
-- Data layout → [`../dataset/README.md`](../dataset/README.md)
-- Demo → [`../frontend/`](../frontend/)
+- Dokumentasi utama → [`../README.md`](../README.md)
+- Argumen ilmiah dan turunan matematis → [`../research/`](../research/)
+- Tata letak dataset → [`../dataset/README.md`](../dataset/README.md)
+- Demo web → [`../frontend/`](../frontend/)

@@ -1,1 +1,0 @@
-DRTiD eye counts per split and grade. Grade 4 is ~3.9% of training, which is why the train/val split is stratified.

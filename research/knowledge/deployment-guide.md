@@ -54,7 +54,7 @@ Ini keputusan terpenting, dan jawabannya bergantung pada arsitektur yang Anda pi
 > *"Demo menjalankan varian FP32 (seed 3407). Model yang dilaporkan di paper adalah QAT INT8
 > (seed 42); keduanya berbagi metode yang sama (dual_csd) tetapi bukan artefak yang sama."*
 >
-> Ini sejalan dengan aturan keselamatan di `prompts/dr-verge-fe.md` — jangan sampai demo
+> Prinsipnya: jangan sampai demo
 > menyiratkan angka paper padahal menjalankan model lain.
 
 ---
@@ -76,7 +76,7 @@ m.load_state_dict(load_weights(ck))     # baru bobot INT8 asli dimasukkan
 Artinya untuk menyajikan model INT8 Anda butuh **empat** hal, bukan satu:
 
 1. `selected_deployment/checkpoint.pt` — bobot INT8
-2. **Kode kelas arsitektur** (`Student`, `QuantizableBackbone`, dst.) dari `experiments/pipeline/src/`
+2. **Kode kelas arsitektur** (`Student`, `QuantizableBackbone`, dst.) dari `experiments/src/`
 3. **`BEST_CKPT`** — checkpoint FP32 `dual_csd/seed3407.pt`, hanya untuk membangun rangkanya
 4. PyTorch dengan **quant engine x86/fbgemm** — INT8 ini **CPU-only** dan arsitektur-spesifik
 
@@ -334,5 +334,4 @@ bahwa demo menjalankan varian FP32, bukan artefak INT8 yang dilaporkan.
 
 - Format berkas model → [`model-files-for-deployment.md`](model-files-for-deployment.md)
 - Sampel uji → [`../../frontend/public/samples/README.md`](../../frontend/public/samples/README.md)
-- Hasil run → [`../../experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md`](../../experiments/results/enhanced-notebook/RESULTS_OVERVIEW.md)
-- Aturan keselamatan demo → `project/prompts/dr-verge-fe.md`
+- Hasil run → [`../../experiments/results/README.md`](../../experiments/results/README.md)

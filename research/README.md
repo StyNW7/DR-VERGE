@@ -35,7 +35,7 @@ but a specific claim about which distillation mechanism has not been tried:
 > the final run confirms this mattered, since the KL-softmax variant scores *worst* of all on
 > mechanism fidelity. RQ1's outcome was also a **dissociation, not the improvement the plan
 > anticipated**. Where plan and results differ, the results in
-> [`../experiments/results/enhanced-notebook/`](../experiments/results/enhanced-notebook/) are
+> [`../experiments/results/`](../experiments/results/) are
 > authoritative.
 
 ---
@@ -74,7 +74,7 @@ reading any statistics:
 These are the *dataset* figures. Figures produced by the experiments themselves — performance,
 CSD mechanism, forest plot, efficiency Pareto, external validation — live with the run that
 generated them, at
-[`../experiments/results/enhanced-notebook/outputs/results/figures/`](../experiments/results/enhanced-notebook/outputs/results/figures/),
+[`../experiments/results/figures/`](../experiments/results/figures/),
 each shipped with its caption and the exact CSV behind the plot.
 
 ---

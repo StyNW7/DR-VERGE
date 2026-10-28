@@ -6,10 +6,10 @@ Setiap baris menjelaskan **apa simbolnya**, **bagaimana rumusnya**, dan **apa ma
 penelitian ini.
 
 > **Sumber kebenaran.** Rumus diambil dari kode yang benar-benar dieksekusi pada run final
-> (`experiments/pipeline/notebooks/full_pipeline_notebook_enhanced.ipynb`, run
+> (`experiments/notebooks/full_pipeline_notebook_enhanced.ipynb`, run
 > `artifacts_enhanced_v1_20260811`). Angka contoh diambil dari
-> `experiments/results/enhanced-notebook/`. Kalau rencana awal (`research/documentation/overview.md`)
-> atau kode lama (`experiments/pipeline/src/`) berbeda, perbedaannya dicatat di
+> `experiments/results/`. Kalau rencana awal (`research/documentation/overview.md`)
+> atau kode lama (`experiments/src/`) berbeda, perbedaannya dicatat di
 > [§19](#19-evolusi-rumus-rencana--kode-lama--run-final).
 
 **Cara membaca tabel**
@@ -22,7 +22,7 @@ penelitian ini.
 | **Lokasi** | Tempat rumus itu didefinisikan di repositori |
 
 Singkatan lokasi: **NB-E** = notebook enhanced (run final), **NB-S** = notebook simple,
-**NB-Ef** = notebook efficient, **src** = `experiments/pipeline/src/`, **FE** = `frontend/src/`.
+**NB-Ef** = notebook efficient, **src** = `experiments/src/`, **FE** = `frontend/src/`.
 
 ---
 
@@ -507,7 +507,7 @@ Semua keputusan diambil di **validasi**, lalu **dibekukan** sebelum keputusan be
 Supaya tidak salah kutip: tiga sumber di repo memakai rumus yang **berbeda**. Yang berlaku untuk
 paper adalah kolom **run final**.
 
-| Komponen | Rencana (`research/documentation/overview.md`) | Kode lama (`experiments/pipeline/src/`) | **Run final (NB-E)** |
+| Komponen | Rencana (`research/documentation/overview.md`) | Kode lama (`experiments/src/`) | **Run final (NB-E)** |
 |---|---|---|---|
 | Loss CSD | $\operatorname{KL}\big(\operatorname{softmax}(\Delta^T/\tau)\,\Vert\,\operatorname{softmax}(\Delta^S/\tau)\big)$ | $\operatorname{SmoothL1}(\Delta^S, \Delta^T)$ tanpa skala; varian `direction_magnitude` $= 0.5(1-\cos) + 0.5\,\operatorname{SmoothL1}$ | $\operatorname{SmoothL1}(\Delta^S/s, \Delta^T/s)$ dengan $s = \mathbb{E}_{\mathrm{train}}\lvert\Delta^T\rvert$ |
 | Dimensi $\Delta$ | ditulis "5 dimensi, satu per grade" | $K-1 = 4$ (kumulatif) | $K-1 = 4$ (kumulatif) |

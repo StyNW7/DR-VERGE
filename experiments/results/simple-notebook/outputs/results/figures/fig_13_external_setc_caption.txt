@@ -1,1 +1,0 @@
-Confirmatory external evaluation on the DeepDRiD partition reserved for final evaluation. No tuning, threshold adjustment or selection happened here.
