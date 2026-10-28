@@ -33,6 +33,12 @@
 [![Status](https://img.shields.io/badge/status-research_prototype-lightgrey?style=flat-square)](#-limitations-and-disclaimer)
 [![Not a medical device](https://img.shields.io/badge/not_a-medical_device-C0392B?style=flat-square)](#-limitations-and-disclaimer)
 
+<br />
+
+<a href="https://dr-verge.vercel.app"><img src="docs/screenshots/en/hero-light-dark.webp" alt="DR-VERGE web prototype in light and dark mode" width="100%" /></a>
+
+<sub>The DR-VERGE web prototype — <b>light mode</b> (left) and <b>dark mode</b> (right). The model runs directly in the browser. <a href="#-dr-verge-web-prototype">See more ↓</a></sub>
+
 </div>
 
 > [!IMPORTANT]
@@ -53,7 +59,7 @@
 - [Contributions](#-contributions)
 - [Repository Structure](#-repository-structure)
 - [Reproducing the Experiments](#-reproducing-the-experiments)
-- [Web Demo](#-web-demo)
+- [DR-VERGE Web Prototype](#-dr-verge-web-prototype)
 - [Team](#-team)
 - [Citation](#-citation)
 
@@ -376,7 +382,8 @@ DR-VERGE/
 ├── research/                 scientific argument, mathematical derivation, deployment notes, paper figures
 ├── references/               literature and bibliography
 ├── dataset/                  dataset layout and sources (data is not committed)
-└── frontend/                 web demo (React · Vite · TypeScript · ONNX Runtime Web)
+├── frontend/                 web prototype (React · Vite · TypeScript · ONNX Runtime Web)
+└── docs/screenshots/         web prototype screenshots (id/ · en/)
 ```
 
 Each directory carries a `README.md` (Indonesian) and a `README.en.md` (English) — or a single `README.md` for directories that are already stable — explaining what it contains and why.
@@ -387,7 +394,7 @@ Each directory carries a `README.md` (Indonesian) and a `README.en.md` (English)
 2. [`experiments/README.en.md`](experiments/README.en.md) — how the experiments are organised and run.
 3. [`experiments/results/README.en.md`](experiments/results/README.en.md) — a map of every output of the final run.
 4. [`research/math.md`](research/math.md) — the full mathematical derivation.
-5. [`frontend/`](frontend/) — the demo that runs the model in the browser.
+5. [`frontend/`](frontend/) — the web prototype that runs the model in the browser.
 
 ---
 
@@ -435,23 +442,187 @@ The pipeline verifies itself through **36 integrity gates** — data schema, par
 
 ---
 
-## 🌐 Web Demo
+## 🌐 DR-VERGE Web Prototype
 
 <div align="center">
 
-[![Open Demo](https://img.shields.io/badge/Open_Demo-dr--verge.vercel.app-1565C0?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dr-verge.vercel.app)
+[![Open Prototype](https://img.shields.io/badge/Open_Prototype-dr--verge.vercel.app-1565C0?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dr-verge.vercel.app)
+[![Frontend Code](https://img.shields.io/badge/Code-frontend%2F-24292F?style=for-the-badge&logo=github&logoColor=white)](frontend/)
 
 </div>
 
-The web prototype in [`frontend/`](frontend/) is built with React, Vite, TypeScript, Tailwind CSS and Recharts, in two languages (Indonesian/English) with monochrome and colourful themes. **The model really runs in the browser** through `onnxruntime-web` — no server, no API, and no image ever leaves the user's device. Preprocessing constants are read from the exported `metadata.json`, and the grade is computed as the number of CORAL thresholds passed, exactly as in the notebook.
+The DR-VERGE web prototype bridges the research and its audience: anyone can **try the model directly**, understand the idea behind CSD without reading the paper, and then inspect the experimental evidence. The site has three pages — **Home**, **Model Demo** and **Research** — in two languages, two display modes and two colour palettes.
+
+> [!NOTE]
+> **The model really runs in your browser.** The ONNX model is downloaded once and executed on the device through `onnxruntime-web` (WebAssembly) — no server, no API, and **images are never uploaded anywhere**. Preprocessing constants are read from the exported `metadata.json`, and the grade is computed as the number of CORAL thresholds passed — exactly as in the notebook.
+
+### 🌗 Light and dark mode
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/hero-light.webp" alt="Home — light mode" /></td>
+<td width="50%"><img src="docs/screenshots/en/hero-dark.webp" alt="Home — dark mode" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Light mode</b> — Home with the <i>Colorful</i> palette</sub></td>
+<td align="center"><sub><b>Dark mode</b> — Home with the <i>Colorful</i> palette</sub></td>
+</tr>
+</table>
+
+Switching modes plays a circular-reveal animation that grows from the toggle button (View Transitions API), with a smooth colour cross-fade as a fallback on browsers that do not support it yet. The visitor's choice is remembered for the next visit.
+
+### 🎨 Two colour palettes: Colorful and Monochrome
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/hero-mono-light.webp" alt="Monochrome palette — light" /></td>
+<td width="50%"><img src="docs/screenshots/en/hero-mono-dark.webp" alt="Monochrome palette — dark" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Monochrome</b> palette — light mode</sub></td>
+<td align="center"><sub><b>Monochrome</b> palette — dark mode</sub></td>
+</tr>
+</table>
+
+The **Colorful** palette uses a blue gradient as its primary colour, with red and yellow accents for severity; the **Monochrome** palette presents a calm black-and-white design. Both palettes work in light and dark mode, with text-to-background contrast kept high so everything stays easy to read.
+
+### 🔬 Model Demo — three steps
+
+```mermaid
+flowchart LR
+    A["1 · Choose an eye<br/>12 DeepDRiD samples<br/>or upload your own"] --> B["2 · Run the analysis<br/>the ONNX model runs<br/>on your device"]
+    B --> C["3 · Read the result<br/>ordinal grade · threshold scores<br/>· reference comparison"]
+
+    classDef step fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+    class A,B,C step;
+```
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/demo-upload-light.webp" alt="Step 1 — choosing a dual-view pair" /></td>
+<td width="50%"><img src="docs/screenshots/en/demo-result-light.webp" alt="Step 3 — analysis result" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Step 1</b> — pick one of 12 samples or upload a macula + optic-disc pair</sub></td>
+<td align="center"><sub><b>Step 3</b> — the predicted grade on the ordinal severity scale</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/demo-detail-light.webp" alt="Result details — threshold scores and reference" /></td>
+<td width="50%"><img src="docs/screenshots/en/demo-result-dark.webp" alt="Analysis result — dark mode" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Result details — four threshold scores <i>P(y &gt; k)</i>, relative per-grade scores, and the comparison with the reference grade</sub></td>
+<td align="center"><sub>The same result in dark mode</sub></td>
+</tr>
+</table>
+
+In the example above, sample **p24-R** is predicted as **Grade 3 (Severe NPDR)**, matching its reference grade — 3 of the 4 ordinal thresholds are passed at a 0.5 threshold. The result can be printed or saved as a summary.
+
+### 🏠 Home — the research story from problem to impact
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/home-problem-light.webp" alt="The problem" /></td>
+<td width="50%"><img src="docs/screenshots/en/home-two-views-dark.webp" alt="Why two views" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>The problem</b> — limited coverage, heavy models, ordinal severity</sub></td>
+<td align="center"><sub><b>Why two views</b> — the macula and optic disc complement each other</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/home-csd-light.webp" alt="The CSD method" /></td>
+<td width="50%"><img src="docs/screenshots/en/home-pipeline-dark.webp" alt="Research stages" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Method</b> — how the CSD signal is formed, step by step</sub></td>
+<td align="center"><sub><b>Research stages</b> — 10 stages in a locked order</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/home-findings-light.webp" alt="Research findings" /></td>
+<td width="50%"><img src="docs/screenshots/en/home-rq1-dark.webp" alt="RQ1" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Findings</b> — headline numbers from the final run</sub></td>
+<td align="center"><sub><b>RQ1</b> — three shift-fidelity metrics, CSD best on all three</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/en/home-rq2-light.webp" alt="RQ2" /></td>
+<td width="50%"><img src="docs/screenshots/en/home-sdg-light.webp" alt="SDG 3" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>RQ2</b> — teacher vs student model size and CPU latency</sub></td>
+<td align="center"><sub><b>SDG 3</b> — a contribution to good health and well-being</sub></td>
+</tr>
+</table>
+
+### 📚 Research page — the paper in interactive form
+
+<table>
+<tr>
+<td width="33%"><img src="docs/screenshots/en/research-top-dark.webp" alt="Research page" /></td>
+<td width="33%"><img src="docs/screenshots/en/research-method-dark.webp" alt="Method" /></td>
+<td width="33%"><img src="docs/screenshots/en/research-rq1-light.webp" alt="RQ1 results" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Run summary: 36/36 gates, 265 audited values</sub></td>
+<td align="center"><sub>Dual-view architecture diagram</sub></td>
+<td align="center"><sub>RQ1 results — the mechanism worked, the predictive edge is unproven</sub></td>
+</tr>
+</table>
+
+This page presents the abstract, research questions, research gap, method, RQ1 and RQ2 results, external validation, a figure gallery, limitations and the SDG 3 impact — every number comes from the same final run as this README.
+
+### 📱 Responsive on mobile
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/en/mobile-light.webp" alt="Mobile view — light" width="260" /></td>
+<td align="center"><img src="docs/screenshots/en/mobile-dark.webp" alt="Mobile view — dark" width="260" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Mobile — light mode</sub></td>
+<td align="center"><sub>Mobile — dark mode</sub></td>
+</tr>
+</table>
+
+### ✨ Key features
+
+| Feature | Description |
+|---|---|
+| 🧠 **On-device inference** | The CSD student model (FP32, seed 3407; `model.onnx` ≈190 KB + ≈1.3 MB of weights) is executed by ONNX Runtime Web. No image is sent to a server. |
+| 🖼️ **12 ready-to-use sample pairs** | 12 eyes (24 images) from DeepDRiD, CC BY-SA 4.0. Folder names do not leak the grade, so results can be judged honestly. |
+| 📤 **Upload your own images** | A macula + optic-disc image pair (JPG/PNG, up to 12 MB per image). |
+| 📊 **Transparent ordinal results** | The predicted grade, its position on the severity scale, the four threshold scores _P(y > k)_, relative per-grade scores, and the comparison with the reference grade for samples. |
+| 🌐 **Two languages** | Bahasa Indonesia and English; common technical terms stay in English and are italicised in the Indonesian version. |
+| 🌗 **Light / dark** | A circular-reveal animation when switching modes; the choice is remembered. |
+| 🎨 **Colorful / Monochrome** | A blue gradient with red-yellow accents, or a black-and-white design. |
+| ♿ **Accessibility mode** | Larger text and stronger contrast — friendly for older users. |
+| 📱 **Responsive** | The layout adapts from phones to desktops. |
+| ⚖️ **Honest about its limits** | A "research prototype" label on every result, and a note that the demo runs the FP32 variant (seed 3407) while the paper's deployment artifact is the QAT INT8 variant (seed 42) of the same method. |
+
+**Fidelity to the notebook.** Running the bundled ONNX model over all 200 DeepDRiD Set-C eyes gives **QWK 0.7307**, against **0.7298** in the notebook for the same seed. The 0.0009 difference comes from image resampling, confirming that the in-browser pipeline is faithful to the research.
+
+### 🧰 Technology
+
+| Layer | Technology |
+|---|---|
+| UI framework | React 18 · TypeScript 5.8 · Vite 6 · React Router 7 |
+| Styling | Tailwind CSS 3.4 · Radix UI · Framer Motion · Lucide Icons |
+| Charts | Recharts |
+| Inference | ONNX Runtime Web (WebAssembly) |
+| Hosting | Vercel |
+
+### ▶️ Running locally
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev            # development server at http://localhost:5173
+npm run build          # production build
+npm run verify:model   # checks the ONNX model files and runs one forward pass
 ```
 
-Full details: [`frontend/README.md`](frontend/README.md).
+Frontend architecture, `.env` configuration and deployment guide: [`frontend/README.md`](frontend/README.md). All screenshots are in [`docs/screenshots/`](docs/screenshots/).
 
 ---
 

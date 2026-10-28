@@ -33,6 +33,12 @@
 [![Status](https://img.shields.io/badge/status-prototipe_riset-lightgrey?style=flat-square)](#-keterbatasan-dan-penafian)
 [![Not a medical device](https://img.shields.io/badge/bukan-alat_medis-C0392B?style=flat-square)](#-keterbatasan-dan-penafian)
 
+<br />
+
+<a href="https://dr-verge.vercel.app"><img src="docs/screenshots/id/hero-light-dark.webp" alt="Prototipe web DR-VERGE dalam mode terang dan gelap" width="100%" /></a>
+
+<sub>Prototipe web DR-VERGE — <b>mode terang</b> (kiri) dan <b>mode gelap</b> (kanan). Model berjalan langsung di browser. <a href="#-prototipe-web-dr-verge">Lihat selengkapnya ↓</a></sub>
+
 </div>
 
 > [!IMPORTANT]
@@ -53,7 +59,7 @@
 - [Kontribusi](#-kontribusi)
 - [Struktur Repositori](#-struktur-repositori)
 - [Reproduksi Eksperimen](#-reproduksi-eksperimen)
-- [Demo Web](#-demo-web)
+- [Prototipe Web DR-VERGE](#-prototipe-web-dr-verge)
 - [Tim](#-tim)
 - [Sitasi](#-sitasi)
 
@@ -376,7 +382,8 @@ DR-VERGE/
 ├── research/                 argumen ilmiah, turunan matematis, catatan deployment, gambar paper
 ├── references/               literatur dan daftar pustaka
 ├── dataset/                  tata letak dan sumber dataset (data tidak di-commit)
-└── frontend/                 demo web (React · Vite · TypeScript · ONNX Runtime Web)
+├── frontend/                 prototipe web (React · Vite · TypeScript · ONNX Runtime Web)
+└── docs/screenshots/         tangkapan layar prototipe web (id/ · en/)
 ```
 
 Setiap direktori memiliki `README.md` (Indonesia) dan `README.en.md` (English) — atau `README.md` tunggal untuk direktori yang sudah stabil — yang menjelaskan isi dan fungsinya.
@@ -387,7 +394,7 @@ Setiap direktori memiliki `README.md` (Indonesia) dan `README.en.md` (English) �
 2. [`experiments/README.md`](experiments/README.md) — bagaimana eksperimen disusun dan dijalankan.
 3. [`experiments/results/README.md`](experiments/results/README.md) — peta seluruh keluaran run final.
 4. [`research/math.md`](research/math.md) — turunan matematis lengkap.
-5. [`frontend/`](frontend/) — demo yang menjalankan model di browser.
+5. [`frontend/`](frontend/) — prototipe web yang menjalankan model di browser.
 
 ---
 
@@ -435,23 +442,187 @@ Pipeline memverifikasi dirinya sendiri melalui **36 _integrity gates_** — skem
 
 ---
 
-## 🌐 Demo Web
+## 🌐 Prototipe Web DR-VERGE
 
 <div align="center">
 
-[![Buka Demo](https://img.shields.io/badge/Buka_Demo-dr--verge.vercel.app-1565C0?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dr-verge.vercel.app)
+[![Buka Prototipe](https://img.shields.io/badge/Buka_Prototipe-dr--verge.vercel.app-1565C0?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dr-verge.vercel.app)
+[![Kode Frontend](https://img.shields.io/badge/Kode-frontend%2F-24292F?style=for-the-badge&logo=github&logoColor=white)](frontend/)
 
 </div>
 
-Prototipe web di [`frontend/`](frontend/) dibangun dengan React, Vite, TypeScript, Tailwind CSS, dan Recharts, dengan dua bahasa (Indonesia/English) serta tema monokrom dan berwarna. **Model berjalan sungguhan di browser** melalui `onnxruntime-web` — tanpa server, tanpa API, dan tidak ada citra yang meninggalkan perangkat pengguna. Konstanta _preprocessing_ dibaca dari `metadata.json` hasil ekspor, dan _grade_ dihitung sebagai jumlah _threshold_ CORAL yang terlampaui, persis seperti di notebook.
+Prototipe web DR-VERGE menjembatani penelitian dan pengguna: siapa pun dapat **mencoba model secara langsung**, memahami gagasan CSD tanpa membaca makalah, lalu memeriksa bukti eksperimennya. Situs ini terdiri atas tiga halaman — **Beranda**, **Demo Model**, dan **Penelitian** — dalam dua bahasa, dua mode tampilan, dan dua palet warna.
+
+> [!NOTE]
+> **Model berjalan sungguhan di browser Anda.** Model ONNX diunduh satu kali lalu dijalankan di perangkat melalui `onnxruntime-web` (WebAssembly) — tanpa server, tanpa API, dan **citra tidak pernah diunggah ke mana pun**. Konstanta _preprocessing_ dibaca dari `metadata.json` hasil ekspor, dan _grade_ dihitung sebagai jumlah _threshold_ CORAL yang terlampaui — persis seperti di notebook.
+
+### 🌗 Mode terang dan gelap
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/hero-light.webp" alt="Beranda — mode terang" /></td>
+<td width="50%"><img src="docs/screenshots/id/hero-dark.webp" alt="Beranda — mode gelap" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Mode terang</b> — Beranda dengan palet <i>Colorful</i></sub></td>
+<td align="center"><sub><b>Mode gelap</b> — Beranda dengan palet <i>Colorful</i></sub></td>
+</tr>
+</table>
+
+Perpindahan mode memakai animasi _circular reveal_ yang tumbuh dari tombol pengalih (View Transitions API), dengan transisi warna halus sebagai cadangan pada browser yang belum mendukungnya. Pilihan pengguna diingat untuk kunjungan berikutnya.
+
+### 🎨 Dua palet warna: _Colorful_ dan Monokrom
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/hero-mono-light.webp" alt="Palet monokrom — terang" /></td>
+<td width="50%"><img src="docs/screenshots/id/hero-mono-dark.webp" alt="Palet monokrom — gelap" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Palet <b>Monokrom</b> — mode terang</sub></td>
+<td align="center"><sub>Palet <b>Monokrom</b> — mode gelap</sub></td>
+</tr>
+</table>
+
+Palet **_Colorful_** memakai gradien biru sebagai warna utama dengan aksen merah dan kuning untuk tingkat keparahan; palet **Monokrom** menampilkan desain hitam-putih yang tenang. Kedua palet bekerja di mode terang maupun gelap, dengan kontras teks dan latar yang dijaga agar tetap mudah dibaca.
+
+### 🔬 Demo Model — tiga langkah
+
+```mermaid
+flowchart LR
+    A["1 · Pilih mata<br/>12 sampel DeepDRiD<br/>atau unggah citra sendiri"] --> B["2 · Jalankan analisis<br/>model ONNX berjalan<br/>di perangkat Anda"]
+    B --> C["3 · Baca hasilnya<br/>grade ordinal · skor ambang<br/>· perbandingan referensi"]
+
+    classDef step fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+    class A,B,C step;
+```
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/demo-upload-light.webp" alt="Langkah 1 — memilih pasangan dual-view" /></td>
+<td width="50%"><img src="docs/screenshots/id/demo-result-light.webp" alt="Langkah 3 — hasil analisis" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Langkah 1</b> — pilih satu dari 12 sampel atau unggah citra makula + diskus optik</sub></td>
+<td align="center"><sub><b>Langkah 3</b> — <i>grade</i> prediksi pada skala keparahan ordinal</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/demo-detail-light.webp" alt="Detail hasil — skor ambang dan referensi" /></td>
+<td width="50%"><img src="docs/screenshots/id/demo-result-dark.webp" alt="Hasil analisis — mode gelap" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Detail hasil — empat skor ambang <i>P(y &gt; k)</i>, skor relatif per <i>grade</i>, dan perbandingan dengan <i>grade</i> referensi</sub></td>
+<td align="center"><sub>Hasil yang sama dalam mode gelap</sub></td>
+</tr>
+</table>
+
+Pada contoh di atas, sampel **p24-R** diprediksi **_Grade_ 3 (NPDR Berat)** dan cocok dengan _grade_ referensinya — 3 dari 4 ambang ordinal terlampaui pada _threshold_ 0,5. Hasil dapat dicetak atau disimpan sebagai ringkasan.
+
+### 🏠 Beranda — cerita penelitian dari masalah hingga dampak
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/home-problem-light.webp" alt="Permasalahan" /></td>
+<td width="50%"><img src="docs/screenshots/id/home-two-views-dark.webp" alt="Mengapa dua view" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Permasalahan</b> — cakupan terbatas, model berat, keparahan ordinal</sub></td>
+<td align="center"><sub><b>Mengapa dua <i>view</i></b> — makula dan diskus optik saling melengkapi</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/home-csd-light.webp" alt="Metode CSD" /></td>
+<td width="50%"><img src="docs/screenshots/id/home-pipeline-dark.webp" alt="Tahapan penelitian" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Metode</b> — bagaimana sinyal CSD terbentuk, langkah demi langkah</sub></td>
+<td align="center"><sub><b>Tahapan penelitian</b> — 10 tahap dalam urutan yang terkunci</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/home-findings-light.webp" alt="Temuan penelitian" /></td>
+<td width="50%"><img src="docs/screenshots/id/home-rq1-dark.webp" alt="RQ1" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>Temuan</b> — angka utama dari run final</sub></td>
+<td align="center"><sub><b>RQ1</b> — tiga metrik <i>shift fidelity</i>, CSD terbaik di ketiganya</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/screenshots/id/home-rq2-light.webp" alt="RQ2" /></td>
+<td width="50%"><img src="docs/screenshots/id/home-sdg-light.webp" alt="SDG 3" /></td>
+</tr>
+<tr>
+<td align="center"><sub><b>RQ2</b> — ukuran model dan latensi CPU <i>teacher</i> vs <i>student</i></sub></td>
+<td align="center"><sub><b>SDG 3</b> — kontribusi pada kehidupan sehat dan sejahtera</sub></td>
+</tr>
+</table>
+
+### 📚 Halaman Penelitian — makalah dalam bentuk interaktif
+
+<table>
+<tr>
+<td width="33%"><img src="docs/screenshots/id/research-top-dark.webp" alt="Halaman penelitian" /></td>
+<td width="33%"><img src="docs/screenshots/id/research-method-dark.webp" alt="Metode" /></td>
+<td width="33%"><img src="docs/screenshots/id/research-rq1-light.webp" alt="Hasil RQ1" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Ringkasan run: 36/36 <i>gates</i>, 265 nilai teraudit</sub></td>
+<td align="center"><sub>Diagram arsitektur <i>dual-view</i></sub></td>
+<td align="center"><sub>Hasil RQ1 — mekanisme berhasil, keunggulan prediktif belum terbukti</sub></td>
+</tr>
+</table>
+
+Halaman ini menyajikan abstrak, pertanyaan penelitian, celah riset, metode, hasil RQ1 dan RQ2, validasi eksternal, galeri gambar, keterbatasan, serta dampak SDG 3 — seluruh angkanya berasal dari run final yang sama dengan README ini.
+
+### 📱 Responsif di perangkat seluler
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/id/mobile-light.webp" alt="Tampilan seluler — terang" width="260" /></td>
+<td align="center"><img src="docs/screenshots/id/mobile-dark.webp" alt="Tampilan seluler — gelap" width="260" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Seluler — mode terang</sub></td>
+<td align="center"><sub>Seluler — mode gelap</sub></td>
+</tr>
+</table>
+
+### ✨ Fitur utama
+
+| Fitur | Penjelasan |
+|---|---|
+| 🧠 **Inferensi di perangkat** | Model _student_ CSD (FP32, _seed_ 3407; `model.onnx` ±190 KB + bobot ±1,3 MB) dijalankan oleh ONNX Runtime Web. Tidak ada citra yang dikirim ke server. |
+| 🖼️ **12 pasangan sampel siap pakai** | 12 mata (24 citra) dari DeepDRiD, CC BY-SA 4.0. Nama folder tidak membocorkan _grade_, sehingga hasil dapat dinilai secara jujur. |
+| 📤 **Unggah citra sendiri** | Pasangan citra makula + diskus optik (JPG/PNG, maksimal 12 MB per citra). |
+| 📊 **Hasil ordinal yang transparan** | _Grade_ prediksi, posisi pada skala keparahan, empat skor ambang _P(y > k)_, skor relatif per _grade_, dan perbandingan dengan _grade_ referensi untuk sampel. |
+| 🌐 **Dua bahasa** | Bahasa Indonesia dan English; istilah teknis yang lazim tetap dalam bahasa Inggris dan dicetak miring. |
+| 🌗 **Terang / gelap** | Animasi _circular reveal_ saat berganti mode; pilihan diingat. |
+| 🎨 **_Colorful_ / Monokrom** | Gradien biru dengan aksen merah-kuning, atau desain hitam-putih. |
+| ♿ **Mode aksesibilitas** | Teks lebih besar dan kontras lebih tegas — ramah untuk pengguna lanjut usia. |
+| 📱 **Responsif** | Tata letak menyesuaikan dari ponsel hingga desktop. |
+| ⚖️ **Jujur tentang batasannya** | Label "prototipe penelitian" di setiap hasil, dan penjelasan bahwa demo menjalankan varian FP32 (_seed_ 3407), sedangkan artefak _deployment_ di makalah adalah QAT INT8 (_seed_ 42) dari metode yang sama. |
+
+**Kesetiaan terhadap notebook.** Menjalankan model ONNX yang dibundel pada seluruh 200 mata DeepDRiD Set-C menghasilkan **QWK 0,7307**, dibandingkan **0,7298** di notebook untuk _seed_ yang sama. Selisih 0,0009 itu berasal dari perbedaan _resampling_ citra, sehingga _pipeline_ di browser terbukti setia pada penelitian.
+
+### 🧰 Teknologi
+
+| Lapisan | Teknologi |
+|---|---|
+| Kerangka UI | React 18 · TypeScript 5.8 · Vite 6 · React Router 7 |
+| Tampilan | Tailwind CSS 3.4 · Radix UI · Framer Motion · Lucide Icons |
+| Grafik | Recharts |
+| Inferensi | ONNX Runtime Web (WebAssembly) |
+| _Hosting_ | Vercel |
+
+### ▶️ Menjalankan secara lokal
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev            # server pengembangan di http://localhost:5173
+npm run build          # build produksi
+npm run verify:model   # memeriksa berkas model ONNX dan satu forward pass
 ```
 
-Detail lengkap: [`frontend/README.md`](frontend/README.md).
+Detail arsitektur frontend, konfigurasi `.env`, dan panduan _deployment_: [`frontend/README.md`](frontend/README.md). Seluruh tangkapan layar ada di [`docs/screenshots/`](docs/screenshots/).
 
 ---
 
