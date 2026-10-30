@@ -34,7 +34,9 @@ results/
 ├── metrics/       5 diagnostic files (raw per-run metrics, collapse warnings, CSD gradient, ...)
 ├── predictions/   per-sample predictions: test/ (70 files) · validation/ (30 files)
 ├── configs/       configuration locked before the run + environment record
-└── splits/        the exact eye-level partition used (train 800 · val 200 · test 550)
+├── splits/        the exact eye-level partition used (train 800 · val 200 · test 550)
+│
+└── supplementary/ v2 supplementary analysis (inference-only, exploratory) — see its README
 ```
 
 ---
@@ -56,6 +58,8 @@ results/
 | Stage A (resolution & sampling) | [`tables/table_stage_a_recipe_selection.csv`](tables/table_stage_a_recipe_selection.csv) |
 | When the CI and the permutation test disagree | [`tables/table_ci_permutation_disagreement.csv`](tables/table_ci_permutation_disagreement.csv) |
 | Official label of every condition | [`tables/table_condition_labels.csv`](tables/table_condition_labels.csv) |
+| Is CSD's mechanism advantage supported inferentially? | [`supplementary/`](supplementary/) — [`table_mechanism_internal_stats.csv`](supplementary/tables/table_mechanism_internal_stats.csv) (exploratory) |
+| Why does mechanism fidelity not raise QWK? | [`supplementary/tables/table_mechanism_decomposition.csv`](supplementary/tables/table_mechanism_decomposition.csv) |
 
 ---
 

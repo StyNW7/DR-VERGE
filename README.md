@@ -28,6 +28,7 @@
 
 [![Integrity gates](https://img.shields.io/badge/integrity_gates-36%2F36_passed-2EA44F?style=flat-square)](experiments/results/tables/table_gate_report.csv)
 [![Results audit](https://img.shields.io/badge/results_audit-265%2F265_matched-2EA44F?style=flat-square)](experiments/results/tables/table_results_audit.csv)
+[![Supplementary gates](https://img.shields.io/badge/supplementary_v2-56%2F56_gates-2EA44F?style=flat-square)](experiments/results/supplementary/logs/gate_report.csv)
 [![Model size](https://img.shields.io/badge/model_INT8-0.95_MB-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
 [![CPU latency](https://img.shields.io/badge/latensi_CPU-11.35_ms-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
 [![Status](https://img.shields.io/badge/status-prototipe_riset-lightgrey?style=flat-square)](#-keterbatasan-dan-penafian)
@@ -55,6 +56,7 @@
 - [Arsitektur dan Alur Penelitian](#-arsitektur-dan-alur-penelitian)
 - [Data dan Protokol Eksperimen](#-data-dan-protokol-eksperimen)
 - [Hasil Utama](#-hasil-utama)
+- [Analisis Suplementer v2: Bukti Inferensial Mekanisme](#-analisis-suplementer-v2-bukti-inferensial-mekanisme)
 - [Keterbatasan dan Penafian](#-keterbatasan-dan-penafian)
 - [Kontribusi](#-kontribusi)
 - [Struktur Repositori](#-struktur-repositori)
@@ -78,10 +80,12 @@ DR-VERGE adalah kerangka _grading_ retinopati diabetik (DR) lima tingkat berbasi
 </div>
 
 - **Premis _dual-view_ terbukti** — _student_ yang membaca dua _view_ (QWK 0,6042) mengungguli _student_ yang hanya membaca makula (0,5175) atau diskus optik (0,5502).
-- **RQ1 — disosiasi yang jujur.** CSD paling selaras dengan _prediction shift_ milik _teacher_ pada ketiga metrik (ShiftL1 0,3509 · CosAgree 0,4361 · BenefitCorr 0,3075), tetapi perbedaan QWK terhadap NoDistill, Logit-KD, dan Feature-KD **tidak signifikan secara statistik**.
+- **RQ1 — mekanisme ditransfer, akurasi tidak ikut naik.** CSD paling selaras dengan _prediction shift_ milik _teacher_ pada ketiga metrik (ShiftL1 0,3509 · CosAgree 0,4361 · BenefitCorr 0,3075), tetapi perbedaan QWK terhadap NoDistill, Logit-KD, dan Feature-KD **tidak konklusif** (seluruh CI 95% memuat nol).
+- **Bukti inferensial mekanisme (analisis suplementer v2, eksploratori).** ShiftL1 CSD **lebih rendah daripada ketiga pembanding dengan CI 95% yang tidak memuat nol**, CosAgree lebih tinggi daripada Logit-KD, dan **tidak ada satu pun kontras yang menguntungkan pembanding**. Pada DeepDRiD Set-C, CSD tetap **peringkat pertama pada ketiga metrik**.
+- **Disosiasi kini punya penjelasan matematis.** Identitas eksak _selisih output = selisih agregasi dasar + selisih shift_ menunjukkan CSD hanya menyelaraskan suku kedua — itulah sebabnya fidelitas mekanisme tidak otomatis menjadi QWK.
 - **RQ2 — kompresi yang bertahan.** QAT INT8 mempertahankan **98,96%** QWK _student_ FP32 dengan artefak **< 1 MB** dan latensi **11,35 ms** pada satu _thread_ CPU.
 - **Generalisasi eksternal.** Pada DeepDRiD Set-C, _student_ FP32 mempertahankan **84,4%** QWK _teacher_.
-- **Dapat diaudit.** Pipeline memverifikasi dirinya sendiri: **36/36 _integrity gates_ lulus** dan **265/265 angka utama** cocok saat dihitung ulang dari prediksi per sampel.
+- **Dapat diaudit.** Run utama: **36/36 _integrity gates_** dan **265/265 angka utama** cocok saat dihitung ulang. Analisis suplementer: **56/56 _gates_**, **156/156** cek reproduksi, dan SHA-256 seluruh _checkpoint_ identik sebelum dan sesudah analisis.
 
 ---
 
@@ -140,7 +144,7 @@ $$
 
 | | Pertanyaan | Jawaban singkat |
 |:---:|---|---|
-| **RQ1** | Sejauh mana CSD dapat mentransfer _prediction shift_ dari _teacher_ ke _lightweight student_ dibandingkan NoDistill, Logit-KD, dan Feature-KD? | **Disosiasi** — CSD terbaik secara deskriptif pada ketiga metrik _shift fidelity_, tetapi tidak unggul signifikan pada QWK |
+| **RQ1** | Sejauh mana CSD dapat mentransfer _prediction shift_ dari _teacher_ ke _lightweight student_ dibandingkan NoDistill, Logit-KD, dan Feature-KD? | **Mekanisme ditransfer, akurasi setara** — CSD terbaik pada ketiga metrik _shift fidelity_; ShiftL1 lebih rendah dari ketiga pembanding dengan CI 95% tidak memuat nol (eksploratori); QWK tidak berbeda secara konklusif |
 | **RQ2** | Sejauh mana PTQ dan QAT INT8 memengaruhi retensi QWK, ukuran artefak, dan latensi inferensi CPU pada model ringan terpilih? | **QAT mempertahankan 98,96% QWK**, artefak 0,9507 MB, 11,35 ms — 162,1× lebih kecil dan 55,3× lebih cepat dari _teacher_ |
 
 ---
@@ -165,7 +169,7 @@ $$
 
 **Grade DR bersifat ordinal, dan kodenya memperlakukannya demikian.** CORAL menghasilkan probabilitas kumulatif yang monoton, dan _grade_ akhir adalah **jumlah _threshold_ yang terlampaui** — bukan _argmax_. Salah membaca _grade_ 3 sebagai _grade_ 0 jauh lebih berbahaya daripada sebagai _grade_ 2, sehingga **Quadratic Weighted Kappa (QWK)** dipakai sebagai metrik utama.
 
-Alur penelitian terdiri atas enam tahap. **Seluruh keputusan diambil hanya dari data validasi**; data uji internal dan data eksternal baru dibuka setelah semuanya dikunci.
+Alur penelitian terdiri atas enam tahap utama ditambah satu tahap analisis suplementer. **Seluruh keputusan diambil hanya dari data validasi**; data uji internal dan data eksternal baru dibuka setelah semuanya dikunci. Tahap 7 hanya **membaca** model yang sudah dibekukan.
 
 ```mermaid
 flowchart LR
@@ -174,11 +178,14 @@ flowchart LR
     C --> D["4 · Student + distilasi<br/>NoDistill · Logit-KD<br/>Feature-KD · CSD (RQ1)"]
     D --> E["5 · Kuantisasi INT8<br/>PTQ · QAT · FT-PTQ<br/>pilih deployment (RQ2)"]
     E --> F["6 · Evaluasi & verifikasi<br/>uji internal DRTiD<br/>DeepDRiD Set-C · ekspor ONNX"]
+    F -.-> G["7 · Analisis suplementer v2<br/>inference-only · eksploratori<br/>bukti inferensial mekanisme"]
 
     classDef sel fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
     classDef ev fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+    classDef sup fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
     class A,B,C,D,E sel;
     class F ev;
+    class G sup;
 ```
 
 ---
@@ -205,7 +212,7 @@ flowchart LR
 - **_Seed_** — _tuning_ {42, 123, 2026}; perbandingan utama lima _core seeds_ {42, 123, 2026, 3407, 8888}.
 - **_Threshold_ keputusan** — satu _threshold_ global per kondisi dari rentang 0,35–0,65 (langkah 0,05), dipilih pada validasi.
 - **Pemilihan metode** — rerata QWK validasi lima _seed_; selisih < 0,005 dianggap seri, dengan urutan penentu Macro-F1 → _severe error rate_ → MAE → kompleksitas.
-- **Statistik** — 10.000 replikasi _hierarchical paired cluster bootstrap_ + 10.000 iterasi _paired permutation_, dengan koreksi Holm per keluarga hipotesis. **Selisih yang interval kepercayaan 95%-nya memuat nol tidak diklaim.**
+- **Statistik** — 10.000 replikasi _hierarchical paired cluster bootstrap_ (klaster = mata pada DRTiD, pasien pada DeepDRiD) + 10.000 iterasi _paired permutation_, dengan koreksi Holm per keluarga hipotesis. **Selisih yang interval kepercayaan 95%-nya memuat nol tidak diklaim.**
 - **Kuantisasi** — _eager static quantization_ (engine x86) pada _backbone_; InteractionFusion dan CORAL _heads_ tetap FP32 (_mixed precision_). Kalibrasi PTQ deterministik pada 800 _record_ latih; QAT _learning rate_ 3 × 10⁻⁵.
 - **Kriteria _deployment_** — retensi QWK validasi ≥ 95% dan _severe error_ tidak memburuk secara kredibel; di antara kandidat yang lolos dipilih latensi median terendah. Ambang 95% adalah kriteria rekayasa, **bukan** margin non-inferioritas klinis.
 - **Latensi** — _batch size_ 1, satu _thread_ CPU, 50 inferensi pemanasan, lima blok × 500 inferensi, median.
@@ -252,9 +259,9 @@ Dibandingkan _teacher_, CSD mempertahankan **81,7%** QWK dengan **122,7× lebih 
 
 | Perbandingan | ΔQWK | CI 95% | p (permutasi) | p (Holm) | Kesimpulan |
 |---|---:|---|---:|---:|---|
-| CSD vs tanpa distilasi | −0,0024 | [−0,0336; +0,0285] | 0,8003 | 0,8003 | tidak signifikan |
-| CSD vs Logit-KD | +0,0077 | [−0,0304; +0,0463] | 0,3640 | 0,7279 | tidak signifikan |
-| CSD vs Feature-KD | −0,0143 | [−0,0445; +0,0153] | 0,1650 | 0,4950 | tidak signifikan |
+| CSD vs tanpa distilasi | −0,0024 | [−0,0336; +0,0285] | 0,8003 | 0,8003 | tidak konklusif |
+| CSD vs Logit-KD | +0,0077 | [−0,0304; +0,0463] | 0,3640 | 0,7279 | tidak konklusif |
+| CSD vs Feature-KD | −0,0143 | [−0,0445; +0,0153] | 0,1650 | 0,4950 | tidak konklusif |
 
 <div align="center">
 <img src="experiments/results/figures/fig_12_forest.png" alt="Forest plot perbandingan berpasangan" width="760" />
@@ -279,7 +286,7 @@ CSD menghasilkan **ShiftL1 terendah serta CosAgree dan BenefitCorr tertinggi** �
 </div>
 
 > [!TIP]
-> **Kedua sisi adalah temuan.** Mekanisme berhasil ditransfer, tetapi akurasi tidak ikut meningkat secara signifikan. Fidelitas terhadap _prediction shift_ dan performa prediktif ternyata **tidak bergerak sejalan**, sehingga keduanya perlu dievaluasi sebagai dua aspek yang berbeda.
+> **Kedua sisi adalah temuan.** Mekanisme berhasil ditransfer, tetapi akurasi tidak ikut meningkat secara konklusif. Fidelitas terhadap _prediction shift_ dan performa prediktif ternyata **tidak bergerak sejalan**, sehingga keduanya perlu dievaluasi sebagai dua aspek yang berbeda. Analisis suplementer v2 [di bawah](#-analisis-suplementer-v2-bukti-inferensial-mekanisme) menguji keunggulan mekanisme ini secara inferensial dan menjelaskan disosiasinya secara matematis.
 
 ### 4. RQ2 — Efisiensi dan kuantisasi
 
@@ -341,13 +348,127 @@ _Student_ FP32 mempertahankan **84,4%** QWK _teacher_ pada domain eksternal. Pad
 
 ---
 
+## 🔬 Analisis Suplementer v2: Bukti Inferensial Mekanisme
+
+Hasil RQ1 di atas menunjukkan CSD **terbaik secara deskriptif** pada ketiga metrik mekanisme. Analisis suplementer v2 menjawab pertanyaan lanjutannya: apakah keunggulan itu **didukung secara statistik**, apakah **bertahan di data eksternal**, dan **mengapa** tidak berubah menjadi QWK yang lebih tinggi.
+
+> [!IMPORTANT]
+> **_Inference-only_ dan eksploratori.** Analisis ini hanya membaca 21 _checkpoint_ beku dari run utama — tanpa pelatihan, penyetelan, perubahan ambang, maupun pemilihan ulang model. Sebelum statistik baru dihitung, hasil asli direproduksi lebih dulu: **156/156** cek cocok (QWK _teacher_ 0,736401 identik; selisih maksimum 1,2 × 10⁻⁴). SHA-256 21 _checkpoint_ dan 59 berkas sumber identik sebelum dan sesudah analisis; **56/56 _gates_ lulus**. Karena dirancang setelah hasil utama diketahui, seluruh hasil di bagian ini berlabel **eksploratori pasca-hoc**. Tabel I–III, hasil RQ2, dan keputusan _deployment_ **tidak berubah**.
+
+### 1. CSD paling selaras dengan _shift_ teacher — kini secara inferensial
+
+Selisih CSD − pembanding pada 550 mata uji DRTiD, lima _seed_ berpasangan, CI 95% _hierarchical paired bootstrap_ (B = 10.000) yang meresampling _examined-eye records_ **dan** _seed_ secara bersamaan:
+
+| Pembanding | ΔShiftL1 ↓ | ΔCosAgree ↑ | ΔBenefitCorr ↑ |
+|---|---|---|---|
+| NoDistill | **−0,0249\*** [−0,0477; −0,0043] | +0,0852 [−0,0134; +0,1870] | +0,0882 [−0,0342; +0,2329] |
+| Logit-KD | **−0,0331\*** [−0,0567; −0,0103] | **+0,1503\*** [+0,0263; +0,3011] | +0,1280 [−0,0038; +0,2643] |
+| Feature-KD | **−0,0209\*** [−0,0408; −0,0012] | +0,0546 [−0,0225; +0,1407] | +0,1132 [−0,0390; +0,2662] |
+| _Seed_ searah CSD | 5/5 · 4/5 · 4/5 | 3/5 · 4/5 · 4/5 | 3/5 · 4/5 · 3/5 |
+
+<sub>\* CI 95% tidak memuat nol dan menguntungkan CSD. Baris _seed_ berurutan NoDistill · Logit-KD · Feature-KD. Sumber: [`table_mechanism_internal_stats.csv`](experiments/results/supplementary/tables/table_mechanism_internal_stats.csv).</sub>
+
+| Lapisan bukti | Hasil | Makna |
+|---|---|---|
+| _Hierarchical bootstrap_ (utama) | **4/9** kontras konklusif, semuanya menguntungkan CSD · **0/9** menguntungkan pembanding | Bukti inferensial utama |
+| Arah per _seed_ | **34/45** pasangan _seed_-kontras searah CSD | Bukan efek dari satu _seed_ |
+| _Leave-one-seed-out_ | **9/9** kontras tetap searah | Estimasi titik stabil |
+| Bootstrap record saja (model tetap) | **9/9** CI tidak memuat nol | Untuk model terlatih yang sama, selisihnya nyata |
+| Permutasi bersyarat + Holm (9 kontras) | **9/9** p<sub>Holm</sub> ≤ 0,0034 | Konsisten dengan baris di atas |
+| BenefitCorr dengan Spearman | Konklusif vs Logit-KD: +0,1637 [+0,0411; +0,3170] | Mendukung arah BenefitCorr |
+
+**ShiftL1 — metrik yang paling langsung mengukur target CSD — konklusif terhadap ketiga pembanding.** BenefitCorr searah pada ketiganya (+0,09 hingga +0,13), tetapi CI-nya masih memuat nol. Karena analisis dengan model tetap konklusif 9/9 sedangkan analisis hierarkis 4/9, ketidakpastian yang tersisa hampir seluruhnya berasal dari **jumlah _seed_ pelatihan** (lima model per kondisi), bukan dari ukuran data uji.
+
+<div align="center">
+<img src="experiments/results/supplementary/figures/fig_internal_external_mechanism.png" alt="Selisih fidelitas CSD terhadap tiga pembanding, internal dan eksternal" width="860" />
+<br />
+<sub>Selisih fidelitas CSD − pembanding pada DRTiD internal (lingkaran) dan DeepDRiD Set-C (persegi). Penanda terisi = CI 95% tidak memuat nol.</sub>
+</div>
+
+### 2. Pola mekanisme bertahan di DeepDRiD Set-C
+
+Model FP32, ambang, dan urutan _field_ yang sama; _bootstrap_ **berklaster pasien** (100 pasien · 200 mata).
+
+| Metrik | NoDistill | Logit-KD | Feature-KD | **CSD** | Peringkat CSD (internal → Set-C) |
+|---|---:|---:|---:|---:|:---:|
+| ShiftL1 ↓ | 0,3128 | 0,3079 | 0,3044 | **0,2975** | 1 → **1** |
+| CosAgree ↑ | 0,2548 | 0,2223 | 0,3312 | **0,3831** | 1 → **1** |
+| BenefitCorr ↑ | 0,1161 | 0,1251 | 0,1466 | **0,2357** | 1 → **1** |
+
+CosAgree CSD konklusif lebih tinggi daripada NoDistill (+0,1283 [+0,0250; +0,2505]) dan Logit-KD (+0,1608 [+0,0358; +0,3036]), keduanya searah di 5/5 _seed_. ShiftL1 eksternal belum konklusif karena sinyal yang dapat ditiru melemah: di Set-C, rerata |Δ<sub>T</sub>| _teacher_ turun dari 0,4097 menjadi 0,2659, dan keunggulan _dual-view_ _teacher_ atas _auxiliary head_ terbaiknya turun dari +0,0500 menjadi +0,0073.
+
+### 3. Mengapa fidelitas mekanisme tidak otomatis menaikkan QWK
+
+Untuk setiap mata berlaku identitas eksak (residual numerik 0):
+
+$$
+\underbrace{p^{S}_{\text{dual}} - p^{T}_{\text{dual}}}_{\text{selisih output akhir}} \;=\; \underbrace{\big(\bar p^{S} - \bar p^{T}\big)}_{\text{selisih agregasi dasar}} \;+\; \underbrace{\big(\Delta^{S} - \Delta^{T}\big)}_{\text{selisih shift — target CSD}}, \qquad \bar p = \tfrac{1}{2}\,(p_{\text{mac}} + p_{\text{disc}})
+$$
+
+| Kondisi (DRTiD internal) | Selisih _shift_ ↓ | Selisih agregasi dasar ↓ | Selisih output _joint_ ↓ | _Grade_ sama dengan _teacher_ | QWK |
+|---|---:|---:|---:|---:|---:|
+| NoDistill | 0,376 | 0,427 | **0,545** | 61,4% | 0,604 |
+| Logit-KD | 0,384 | 0,448 | 0,587 | 64,8% | 0,594 |
+| Feature-KD | 0,372 | **0,422** | 0,569 | **66,1%** | **0,616** |
+| **CSD** | **0,351** | 0,436 | 0,558 | 65,5% | 0,602 |
+
+CSD paling unggul pada suku yang ditargetkannya (_shift_), tetapi selisih agregasi dasarnya — seberapa mirip prediksi tiap _view_ student dengan milik teacher — tidak menjadi target CSD dan justru sedikit lebih besar daripada Feature-KD. Di 20 model _student_, QWK lebih berkaitan dengan selisih agregasi dasar (ρ = −0,52) daripada dengan ShiftL1 (ρ = −0,35). **Disosiasi "mekanisme ≠ prediksi" kini memiliki penjelasan matematis, bukan sekadar observasi.**
+
+### 4. Kapan CSD paling bermanfaat
+
+| Kuartil \|Δ<sub>T</sub>\| (DRTiD) | n mata | Rerata \|Δ<sub>T</sub>\| | ShiftL1 relatif\* | Kontras konklusif menguntungkan CSD |
+|---|---:|---:|---|:---:|
+| Q1 (terkecil) | 138 | 0,103 | 2,24–2,38 | 1 dari 6 |
+| Q2 | 137 | 0,274 | 0,93–0,97 | 0 dari 6 |
+| Q3 | 137 | 0,461 | 0,73–0,81 | 0 dari 6 |
+| Q4 (terbesar) | 138 | 0,801 | 0,73–0,83 | **4 dari 6** |
+
+<sub>\* Kesalahan _shift_ student dibagi besar _shift_ teacher (rentang empat kondisi). Nilai > 1 berarti kesalahannya lebih besar daripada sinyalnya.</sub>
+
+- Pada **kuartil _shift_ teacher terbesar**, ShiftL1 CSD lebih rendah daripada NoDistill (−0,0557 [−0,1042; −0,0093]) dan Logit-KD (−0,0842 [−0,1360; −0,0416]). Pola yang sama muncul di Set-C (vs NoDistill −0,0620 [−0,1113; −0,0083]).
+- Pada kuartil terkecil, kesalahan _shift_ semua student 2,2–2,4× lebih besar daripada _shift_ teacher itu sendiri — sinyalnya didominasi _noise_.
+- Pada 325 mata yang **diprediksi benar oleh teacher**, CSD konklusif mengungguli Logit-KD pada **ketiga** metrik, termasuk BenefitCorr (+0,1170 [+0,0122; +0,2199]).
+
+### 5. Grade 1, sensitivitas, dan kalibrasi
+
+- **Grade 1 (NPDR ringan) sulit bagi semua model, termasuk _teacher_.** _Recall_ Grade 1: _teacher_ 0,000, CSD 0,068, Feature-KD 0,080. Kesalahannya **sistematis ke arah lebih ringan**: 72% mata Grade 1 diprediksi Grade 0 oleh _teacher_ dan 65,2% oleh CSD.
+- **Stabil terhadap pilihan metrik.** CSD tetap peringkat pertama BenefitCorr dengan Pearson (0,3075) maupun Spearman (0,4532) di DRTiD, dan di Set-C (0,2357 / 0,2964).
+- **Kalibrasi skor ambang ordinal** CSD (ECE 0,056) berada dalam kisaran _student_ lain (0,050–0,060); _teacher_ paling terkalibrasi (0,038). Ini diagnostik skor ambang, **bukan** probabilitas klinis.
+
+<table>
+<tr>
+<td width="50%"><img src="experiments/results/supplementary/figures/fig_mechanism_decomposition.png" alt="Dekomposisi mekanisme dan prediksi" /></td>
+<td width="50%"><img src="experiments/results/supplementary/figures/fig_confusion_core_models.png" alt="Matriks konfusi model inti" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Dekomposisi: selisih <i>shift</i> vs selisih agregasi dasar vs selisih output <i>joint</i></sub></td>
+<td align="center"><sub>Matriks konfusi ternormalisasi baris — <i>teacher</i> dan empat kondisi inti</sub></td>
+</tr>
+</table>
+
+| Klaim | Status bukti |
+|---|---|
+| CSD terbaik secara deskriptif pada 3 metrik mekanisme | Terverifikasi ulang (156/156) |
+| ShiftL1 CSD lebih rendah dari ketiga pembanding | **Inferensial**, eksploratori |
+| CosAgree CSD lebih tinggi dari Logit-KD | **Inferensial**, eksploratori |
+| BenefitCorr CSD lebih tinggi | Searah, **belum konklusif** |
+| Pola mekanisme bertahan di Set-C | Deskriptif 3/3 + inferensial 2/9, eksploratori |
+| Fidelitas ≠ akurasi | **Identitas matematis** + data |
+| CSD meningkatkan QWK | **Tidak didukung** — tetap seperti hasil utama |
+
+Seluruh tabel, gambar, log reproduksi, dan _claim ledger_: [`experiments/results/supplementary/`](experiments/results/supplementary/).
+
+---
+
 ## ⚠️ Keterbatasan dan Penafian
 
-- **RQ1 tidak signifikan secara prediktif** — keunggulan CSD hanya pada fidelitas mekanisme, bukan QWK.
+- **RQ1 tidak konklusif secara prediktif** — keunggulan CSD ada pada fidelitas mekanisme, bukan QWK; seluruh CI ΔQWK memuat nol.
+- **Analisis suplementer bersifat eksploratori pasca-hoc** dan didasarkan pada **lima model per kondisi**. Resampling data tidak menambah jumlah model, sehingga BenefitCorr belum konklusif walaupun arahnya konsisten. Sembilan CI utama belum dikoreksi multiplisitas, dan analisis kuartil/subgrup menambah perbandingan.
+- **Δ adalah proksi operasional** pergeseran prediksi, bukan ukuran komplementaritas anatomis; Δ juga dipengaruhi perbedaan _head_ dan kalibrasi.
 - **QWK absolut masih moderat** (_student_ 0,5942–0,6161) dan Macro-F1 rendah (0,3362 untuk CSD).
 - **_Severe error rate_ 0,2582** — kira-kira satu dari empat mata meleset ≥ 2 _grade_.
-- **_Recall grade_ 1 sangat rendah**, sehingga model tidak layak dipakai sebagai alat diagnosis mandiri.
-- **Tanpa pengenal pasien di DRTiD** — pembagian dan _bootstrap_ internal berbasis mata, bukan pasien.
+- **_Recall grade_ 1 sangat rendah pada seluruh model, termasuk _teacher_** (CSD 0,068; _teacher_ 0,000) dan kesalahannya condong ke Grade 0, sehingga model tidak layak dipakai sebagai alat diagnosis mandiri.
+- **Tanpa pengenal pasien di DRTiD** — pembagian dan _bootstrap_ internal berbasis _examined-eye record_; hanya Set-C yang berklaster pasien, dan dengan 100 pasien presisinya terbatas.
 - **Evaluasi masih komputasional** — belum ada validasi prospektif, pengujian berbagai kamera fundus, pengujian pada perangkat CPU target, maupun uji klinis.
 - **Tidak ada klaim generalitas** ke domain pencitraan lain.
 
@@ -359,8 +480,10 @@ DR-VERGE adalah prototipe riset dan **tidak ditujukan untuk diagnosis klinis man
 
 1. **Algoritmik** — merumuskan CSD, yang memakai _signed joint-vs-individual cumulative ordinal prediction shift_ sebagai target distilasi; berbeda dari Logit-KD (keluaran akhir) maupun distilasi fitur/relasional.
 2. **Pengukuran** — tiga metrik _shift fidelity_ (ShiftL1, CosAgree, BenefitCorr) plus kontrol _counterfactual_, sehingga transfer mekanisme diuji langsung, terpisah dari akurasi.
-3. **Empiris** — uji terkontrol CSD vs NoDistill, Logit-KD, dan Feature-KD di bawah satu protokol pra-registrasi, dilaporkan apa adanya sebagai disosiasi.
+3. **Empiris** — uji terkontrol CSD vs NoDistill, Logit-KD, dan Feature-KD di bawah satu protokol pra-registrasi, dilaporkan apa adanya sebagai disosiasi; diperkuat analisis suplementer _inference-only_ yang memberi bukti inferensial (eksploratori) pada ShiftL1, menguji ulang pola mekanisme di data eksternal, dan menjelaskan disosiasi melalui identitas dekomposisi eksak.
 4. **Praktis** — karakterisasi dampak INT8 pada _grader_ DR _dual-view_ ringan, menghasilkan model 0,95 MB / 11,35 ms yang berjalan di browser.
+
+Dengan demikian DR-VERGE memisahkan secara tegas empat aspek: **mekanisme yang ditransfer** (beserta bukti statistiknya), **ketahanan lintas domain**, **mengapa mekanisme tidak otomatis menjadi akurasi**, dan **efisiensi _deployment_**.
 
 ---
 
@@ -372,8 +495,10 @@ DR-VERGE/
 ├── README.en.md              dokumentasi utama (English)
 │
 ├── experiments/              eksperimen — kode dan bukti
-│   ├── notebooks/            full_pipeline_notebook_enhanced.ipynb  ← notebook final
+│   ├── notebooks/            full_pipeline_notebook_enhanced.ipynb        ← notebook final (run utama)
+│   │                         DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb ← analisis suplementer
 │   ├── results/              keluaran run final: tabel, gambar, prediksi per sampel, konfigurasi
+│   │   └── supplementary/    keluaran analisis suplementer v2 (inference-only, 56/56 gates)
 │   ├── src/                  komponen modular: model, loss, dataset, prapelatihan
 │   ├── configs/              konfigurasi YAML per kondisi pelatihan
 │   ├── scripts/              make_splits.py + verification/
@@ -393,8 +518,9 @@ Setiap direktori memiliki `README.md` (Indonesia) dan `README.en.md` (English) �
 1. Dokumen ini — gambaran utuh penelitian.
 2. [`experiments/README.md`](experiments/README.md) — bagaimana eksperimen disusun dan dijalankan.
 3. [`experiments/results/README.md`](experiments/results/README.md) — peta seluruh keluaran run final.
-4. [`research/math.md`](research/math.md) — turunan matematis lengkap.
-5. [`frontend/`](frontend/) — prototipe web yang menjalankan model di browser.
+4. [`experiments/results/supplementary/README.md`](experiments/results/supplementary/README.md) — bukti inferensial mekanisme dan dekomposisinya.
+5. [`research/math.md`](research/math.md) — turunan matematis lengkap.
+6. [`frontend/`](frontend/) — prototipe web yang menjalankan model di browser.
 
 ---
 
@@ -439,6 +565,10 @@ Versi paket persis dari run final tercatat di [`experiments/results/configs/requ
 ### Integritas pipeline
 
 Pipeline memverifikasi dirinya sendiri melalui **36 _integrity gates_** — skema data, keterpisahan partisi, kebenaran metrik, monotonisitas _head_ ordinal, kelengkapan _grid_ dan _seed_, kesetaraan cakupan kuantisasi PTQ/QAT/FT-PTQ, fidelitas ekspor ONNX, hingga prosedur statistik. Run yang gagal pada _blocking gate_ akan berhenti alih-alih melaporkan angka. _Gate_ terakhir menghitung ulang setiap angka utama dari berkas prediksi per sampel: **265/265 cocok**.
+
+### Analisis suplementer (_inference-only_)
+
+[`experiments/notebooks/DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb`](experiments/notebooks/DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb) membaca artefak run utama (`artifacts_enhanced_v1_20260811/`) secara **read-only** dan menulis hanya ke folder keluaran baru. Notebook ini tidak memiliki fungsi _training_, mematikan autograd secara global, dan berhenti bila salah satu hal berikut gagal: _strict load_ 21 _checkpoint_, kecocokan hash _split_, atau reproduksi QWK dan metrik mekanisme asli. Fase P0–P6 (_preflight_ → inferensi internal → Set-C → dekomposisi → per-_grade_ → sensitivitas → ringkasan _deployment_) diamankan oleh **56 _gates_**, termasuk uji metode identik (efek = 0), pembalikan kontras, pengacakan urutan baris, reproduksibilitas RNG, dan klaster pasien yang tidak terpecah. Pada A100, run final selesai dalam ± 3 menit karena memakai ulang _cache_ inferensi yang hash-nya tervalidasi. Keluarannya: [`experiments/results/supplementary/`](experiments/results/supplementary/).
 
 ---
 
@@ -570,7 +700,7 @@ Pada contoh di atas, sampel **p24-R** diprediksi **_Grade_ 3 (NPDR Berat)** dan 
 </tr>
 </table>
 
-Halaman ini menyajikan abstrak, pertanyaan penelitian, celah riset, metode, hasil RQ1 dan RQ2, validasi eksternal, galeri gambar, keterbatasan, serta dampak SDG 3 — seluruh angkanya berasal dari run final yang sama dengan README ini.
+Halaman ini menyajikan abstrak, pertanyaan penelitian, celah riset, metode, hasil RQ1 dan RQ2, **bukti inferensial mekanisme dari analisis suplementer v2** (tabel sembilan kontras, generalisasi Set-C, identitas dekomposisi, dan kapan CSD paling bermanfaat), validasi eksternal, galeri gambar, keterbatasan, serta dampak SDG 3 — seluruh angkanya berasal dari run final dan analisis suplementer yang sama dengan README ini.
 
 ### 📱 Responsif di perangkat seluler
 

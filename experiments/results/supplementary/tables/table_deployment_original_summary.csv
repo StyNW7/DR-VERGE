@@ -1,0 +1,7 @@
+condition,ParamCount,CheckpointSize_MB,Latency_median_ms,Latency_p95_ms,Latency_p99_ms,Latency_block_IQR_ms,Speedup_vs_teacher,CompressionRatio_vs_teacher,source,deployment_choice
+teacher,40313932.0,154.089,627.6097,650.1068,663.9327,1.6133,1.0,1.0,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8
+dual_csd,328588.0,1.2939,32.5535,36.5155,37.9994,0.4932,19.28,119.09,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8
+best_fp32,328588.0,1.2935,32.4902,35.8755,37.2251,0.1549,19.32,119.13,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8
+ptq_int8,328588.0,0.9507,11.2378,11.7112,12.0831,0.0496,55.85,162.08,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8
+ft_ptq_int8,328588.0,0.9509,11.2592,11.6778,11.9305,0.0495,55.74,162.05,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8
+qat_int8,328588.0,0.9507,11.3468,11.8359,12.4924,0.1028,55.31,162.08,"original Enhanced run benchmark (single CPU thread, batch 1); NOT re-measured",qat_int8

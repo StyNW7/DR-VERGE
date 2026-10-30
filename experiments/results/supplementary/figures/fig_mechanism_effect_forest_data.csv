@@ -1,0 +1,10 @@
+series,contrast,metric,effect_point,ci_low,ci_high,ci_excludes_zero,B,n_units,unit
+DRTiD internal,CSD - NoDistill,ShiftL1,-0.024933166941014,-0.0476579387129292,-0.0042937972207106,True,10000,550,examined-eye record
+DRTiD internal,CSD - NoDistill,CosAgree,0.0851521397321679,-0.0133887469826787,0.1870137591358004,False,10000,550,examined-eye record
+DRTiD internal,CSD - NoDistill,BenefitCorr,0.0882263264395727,-0.0342423862344285,0.2328724915224103,False,10000,550,examined-eye record
+DRTiD internal,CSD - Logit-KD,ShiftL1,-0.0331184946257324,-0.0567203963016252,-0.0103487646098045,True,10000,550,examined-eye record
+DRTiD internal,CSD - Logit-KD,CosAgree,0.1503092487232715,0.0262669276623329,0.3011055985799792,True,10000,550,examined-eye record
+DRTiD internal,CSD - Logit-KD,BenefitCorr,0.1279984358920797,-0.0038452421334567,0.2643331058739878,False,10000,550,examined-eye record
+DRTiD internal,CSD - Feature-KD,ShiftL1,-0.0209047390630638,-0.0408467769028081,-0.0012360598567698,True,10000,550,examined-eye record
+DRTiD internal,CSD - Feature-KD,CosAgree,0.0545720415460954,-0.0225082655096906,0.1407449680226699,False,10000,550,examined-eye record
+DRTiD internal,CSD - Feature-KD,BenefitCorr,0.1132076315641948,-0.0390274935343172,0.266232044724985,False,10000,550,examined-eye record

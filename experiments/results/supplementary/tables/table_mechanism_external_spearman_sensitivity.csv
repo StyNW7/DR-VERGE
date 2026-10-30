@@ -1,0 +1,4 @@
+dataset,contrast,baseline,metric,analysis,effect,ci_low,ci_high,excludes_zero,p_value,note
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09099857496437412,-0.016511800025258004,0.19405291868177782,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09219800495012379,-0.029677183050753602,0.23023732566877048,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.0422359558988975,-0.03564542272603582,0.12272594645260909,False,,B=10000

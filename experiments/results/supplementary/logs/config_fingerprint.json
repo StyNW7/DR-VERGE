@@ -1,0 +1,95 @@
+{
+  "preprocessing": {
+    "input_size": [
+      384,
+      384
+    ],
+    "resize": "albumentations.Resize (cv2 INTER_LINEAR)",
+    "normalize_mean": [
+      0.372487,
+      0.217266,
+      0.119367
+    ],
+    "normalize_std": [
+      0.281526,
+      0.179457,
+      0.109162
+    ],
+    "max_pixel_value": 255.0,
+    "horizontal_flip": false,
+    "augmentation": null,
+    "albumentations_pin": "1.4.21",
+    "drtid_views": {
+      "macula": "macula_filename",
+      "disc": "disc_filename"
+    },
+    "deepdrid_field_order": "_1=macula"
+  },
+  "preprocessing_fingerprint": "1c8ed918d509544027da995ddd1286ad00e45b418f7728e14687658a4a069870",
+  "img_size": 384,
+  "sampling": "standard",
+  "seeds": [
+    42,
+    123,
+    2026,
+    3407,
+    8888
+  ],
+  "conditions": [
+    "dual_no_distill",
+    "dual_logitkd",
+    "dual_featkd",
+    "dual_csd"
+  ],
+  "thresholds": {
+    "dual_no_distill": 0.4,
+    "dual_logitkd": 0.5,
+    "dual_featkd": 0.5,
+    "dual_csd": 0.5
+  },
+  "teacher_threshold": 0.5,
+  "hyperparameters": {
+    "logitkd": {
+      "alpha": 0.5,
+      "tau_kd": 2.0
+    },
+    "featkd": {
+      "gamma_feat": 2.0
+    },
+    "csd_variant": "smoothl1_norm",
+    "csd_beta": 0.1
+  },
+  "selected_method": "dual_csd",
+  "config_file_sha256": {
+    "config": "e8b61e30b0fd9bc81e141a87a76b02ce963e50461d1c872c72297f570dd77673",
+    "threshold_calibration": "0d4cf65267f80ca9fa48344ca6062c9924b004ea3483ea9c811887b5716b4ee3",
+    "model_selection": "1fef0c89d8b0df2626d3d6c949820a18a11b0b40313aa8beb68a8f51c1d069f3",
+    "selected_hyperparameters": "ecbf59d02a2a69b73da3d1fd85e428298d3327b9695f26115733bbec5bca8a00",
+    "split_manifest": "90f6429110103b486aeacd89d23f251a9efc1a197adb78a977871e34bbd94082",
+    "csd_scale": "41cf6bb1d9ecae8eeeb33e16cedc704d4918bfd72181234748cf86abca1a5f5f"
+  },
+  "cache_schema": "drverge-supp-cache-v2",
+  "source_notebook": {
+    "repo_copy_sha256": "72398b3377ae195796b9a359aeee97b4884c51c6bd19246cc0a1277a2b95f1cb",
+    "drive_copy": "/content/drive/MyDrive/DR-VERGE/full_pipeline_notebook_enhanced.ipynb",
+    "drive_copy_sha256": "07bcf2de5d9cebf6a26bce0aed76e02f3e0869eebc876060274e73709284522f"
+  },
+  "tolerances": {
+    "prob_max": 0.01,
+    "prob_mean": 0.0005,
+    "grade_agree_min": 0.995,
+    "flip_margin": 0.005,
+    "flip_max_frac": 0.02,
+    "mech_seed": 0.002,
+    "mech_mean": 0.0005,
+    "qwk_seed": 0.005,
+    "qwk_mean": 0.001,
+    "paper_round": 0.0005,
+    "impl_crosscheck": 5e-05,
+    "ext_grade_agree_min": 0.99,
+    "ext_qwk_seed": 0.01,
+    "ext_qwk_mean": 0.002,
+    "calib_brier": 0.0002,
+    "calib_ece": 0.003
+  }
+}

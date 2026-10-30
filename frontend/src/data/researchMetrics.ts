@@ -4,7 +4,12 @@
  * Source of truth: the ENHANCED run, `artifacts_enhanced_v1_20260811` — the
  * primary result of the study (36/36 integrity gates, self-audit recomputed 265
  * headline values from per-sample predictions with zero mismatches). Values are
- * transcribed from `outputs/results/tables/*.csv`, not from prose.
+ * transcribed from `experiments/results/tables/*.csv`, not from prose.
+ *
+ * The mechanism-inference block further down comes from the inference-only
+ * supplementary analysis, `artifacts_enhanced_supplementary_v2_20261029`
+ * (56/56 gates), transcribed from `experiments/results/supplementary/tables/`.
+ * It is exploratory and never changes a main-run number.
  *
  * Nothing here may be duplicated inside a component: when the paper's numbers
  * move, this file is the only edit.
@@ -30,6 +35,18 @@ export const runProvenance = {
   seedsPerCondition: 5,
   bootstrapResamples: 10_000,
   permutations: 10_000,
+} as const;
+
+/** Provenance of the inference-only supplementary analysis (v2). */
+export const supplementaryProvenance = {
+  runId: "artifacts_enhanced_supplementary_v2_20261029",
+  gatesPassed: 56,
+  gatesTotal: 56,
+  reproductionChecks: 156,
+  checkpointsHashed: 21,
+  bootstrapResamples: 10_000,
+  internalRecords: 550,
+  externalPatients: 100,
 } as const;
 
 export const DISCLAIMER_METRICS = l(
@@ -177,18 +194,149 @@ export const mechanismResults: MechanismRow[] = [
   },
 ];
 
+/* -------------------------------------------------------------------------- */
+/* RQ1 — mechanism inference (supplementary analysis v2, exploratory)           */
+/* -------------------------------------------------------------------------- */
+
+export type BaselineKey = "noDistill" | "logitKd" | "featureKd";
+
+export interface MechanismContrast {
+  metric: MechanismMetricKey;
+  baseline: BaselineKey;
+  /** CSD − baseline, mean of the five matched seeds. */
+  delta: number;
+  ciLow: number;
+  ciHigh: number;
+  /** 95% CI excludes zero in CSD's favour. No contrast favours a baseline. */
+  conclusive: boolean;
+  /** Seeds (of 5) on which CSD is better than the baseline. */
+  seedsFavouringCsd: number;
+}
+
+export const baselineLabels: Record<BaselineKey, string> = {
+  noDistill: "NoDistill",
+  logitKd: "Logit-KD",
+  featureKd: "Feature-KD",
+};
+
 /**
- * The mechanism ordering held in all three independent runs — 9 of 9
- * measurements, across different resolutions, hardware and selection regimes.
- * This replication is the strongest evidence in the study.
+ * Hierarchical paired bootstrap (B = 10,000) over 550 examined-eye records AND
+ * the five seeds, from `table_mechanism_internal_stats.csv`.
  */
-export const mechanismReplication = {
-  runs: 3,
-  measurements: 9,
-  wins: 9,
-  note: l(
-    "CSD ranked best on all three mechanism metrics in every independent run, at 224 and 384 pixels, under different hyperparameter-selection regimes.",
-    "CSD menempati peringkat terbaik pada ketiga metrik mekanisme di setiap *run* independen, pada resolusi 224 dan 384 piksel, dengan rezim pemilihan *hyperparameter* yang berbeda.",
+export const mechanismInferenceInternal: MechanismContrast[] = [
+  { metric: "shiftL1", baseline: "noDistill", delta: -0.0249, ciLow: -0.0477, ciHigh: -0.0043, conclusive: true, seedsFavouringCsd: 5 },
+  { metric: "shiftL1", baseline: "logitKd", delta: -0.0331, ciLow: -0.0567, ciHigh: -0.0103, conclusive: true, seedsFavouringCsd: 4 },
+  { metric: "shiftL1", baseline: "featureKd", delta: -0.0209, ciLow: -0.0408, ciHigh: -0.0012, conclusive: true, seedsFavouringCsd: 4 },
+  { metric: "cosAgree", baseline: "noDistill", delta: 0.0852, ciLow: -0.0134, ciHigh: 0.187, conclusive: false, seedsFavouringCsd: 3 },
+  { metric: "cosAgree", baseline: "logitKd", delta: 0.1503, ciLow: 0.0263, ciHigh: 0.3011, conclusive: true, seedsFavouringCsd: 4 },
+  { metric: "cosAgree", baseline: "featureKd", delta: 0.0546, ciLow: -0.0225, ciHigh: 0.1407, conclusive: false, seedsFavouringCsd: 4 },
+  { metric: "benefitCorr", baseline: "noDistill", delta: 0.0882, ciLow: -0.0342, ciHigh: 0.2329, conclusive: false, seedsFavouringCsd: 3 },
+  { metric: "benefitCorr", baseline: "logitKd", delta: 0.128, ciLow: -0.0038, ciHigh: 0.2643, conclusive: false, seedsFavouringCsd: 4 },
+  { metric: "benefitCorr", baseline: "featureKd", delta: 0.1132, ciLow: -0.039, ciHigh: 0.2662, conclusive: false, seedsFavouringCsd: 3 },
+];
+
+/** Same design on DeepDRiD Set-C, patient-clustered, from `table_mechanism_external_stats.csv`. */
+export const mechanismInferenceExternal: MechanismContrast[] = [
+  { metric: "shiftL1", baseline: "noDistill", delta: -0.0152, ciLow: -0.0486, ciHigh: 0.0182, conclusive: false, seedsFavouringCsd: 3 },
+  { metric: "shiftL1", baseline: "logitKd", delta: -0.0103, ciLow: -0.0435, ciHigh: 0.0254, conclusive: false, seedsFavouringCsd: 2 },
+  { metric: "shiftL1", baseline: "featureKd", delta: -0.0069, ciLow: -0.0394, ciHigh: 0.0284, conclusive: false, seedsFavouringCsd: 3 },
+  { metric: "cosAgree", baseline: "noDistill", delta: 0.1283, ciLow: 0.025, ciHigh: 0.2505, conclusive: true, seedsFavouringCsd: 5 },
+  { metric: "cosAgree", baseline: "logitKd", delta: 0.1608, ciLow: 0.0358, ciHigh: 0.3036, conclusive: true, seedsFavouringCsd: 5 },
+  { metric: "cosAgree", baseline: "featureKd", delta: 0.0519, ciLow: -0.0294, ciHigh: 0.132, conclusive: false, seedsFavouringCsd: 4 },
+  { metric: "benefitCorr", baseline: "noDistill", delta: 0.1196, ciLow: -0.0278, ciHigh: 0.2573, conclusive: false, seedsFavouringCsd: 5 },
+  { metric: "benefitCorr", baseline: "logitKd", delta: 0.1106, ciLow: -0.0105, ciHigh: 0.256, conclusive: false, seedsFavouringCsd: 5 },
+  { metric: "benefitCorr", baseline: "featureKd", delta: 0.0891, ciLow: -0.0461, ciHigh: 0.2485, conclusive: false, seedsFavouringCsd: 4 },
+];
+
+/** The supporting layers behind the nine internal contrasts. */
+export const mechanismEvidence = {
+  contrasts: 9,
+  conclusiveForCsd: 4,
+  conclusiveForBaseline: 0,
+  seedPairsFavouringCsd: 34,
+  seedPairs: 45,
+  looStable: 9,
+  fixedModelConclusive: 9,
+  maxPHolm: 0.0034,
+  headline: l(
+    "ShiftL1 — the metric that most directly measures what CSD optimises — is lower for CSD than for all three baselines, with 95% intervals that exclude zero.",
+    "ShiftL1 — metrik yang paling langsung mengukur apa yang dioptimalkan CSD — lebih rendah pada CSD dibandingkan ketiga pembanding, dengan interval 95% yang tidak memuat nol.",
+  ),
+  seedNote: l(
+    "When the trained models are held fixed, all nine contrasts separate from zero; once seed-to-seed variation is resampled too, four do. The remaining uncertainty comes from having five models per condition, not from the size of the test set.",
+    "Bila model terlatih dianggap tetap, kesembilan kontras memisah dari nol; setelah variasi antar-*seed* ikut diresampling, empat kontras yang bertahan. Ketidakpastian yang tersisa berasal dari jumlah model (lima per kondisi), bukan dari ukuran data uji.",
+  ),
+  method: l(
+    "Hierarchical paired bootstrap, B = 10,000: every replicate resamples examined-eye records (DRTiD) or patients (Set-C) and the five seeds jointly, with the same draw for CSD, the baseline and the teacher, and recomputes each metric. Exploratory post-hoc analysis on frozen checkpoints.",
+    "*Hierarchical paired bootstrap*, B = 10.000: setiap replikasi meresampling *examined-eye record* (DRTiD) atau pasien (Set-C) dan lima *seed* secara bersamaan, dengan penarikan yang sama untuk CSD, pembanding, dan *teacher*, lalu menghitung ulang setiap metrik. Analisis eksploratori pasca-hoc pada *checkpoint* beku.",
+  ),
+} as const;
+
+/** Set-C mechanism values (mean of 5 seeds); CSD ranks first on all three. */
+export const mechanismExternal: MechanismRow[] = [
+  { method: l("No Distillation", "Tanpa Distilasi"), shortMethod: "No KD", shiftL1: 0.3128, cosAgree: 0.2548, benefitCorr: 0.1161, isProposed: false },
+  { method: l("Logit KD", "*Logit* KD"), shortMethod: "Logit KD", shiftL1: 0.3079, cosAgree: 0.2223, benefitCorr: 0.1251, isProposed: false },
+  { method: l("Feature KD", "*Feature* KD"), shortMethod: "Feature KD", shiftL1: 0.3044, cosAgree: 0.3312, benefitCorr: 0.1466, isProposed: false },
+  { method: l("CSD (proposed)", "CSD (usulan)"), shortMethod: "CSD", shiftL1: 0.2975, cosAgree: 0.3831, benefitCorr: 0.2357, isProposed: true },
+];
+
+/** Why the external ShiftL1 contrasts are weaker: the teacher's own shift shrinks. */
+export const teacherShiftProfile = {
+  internalMeanShift: 0.4097,
+  externalMeanShift: 0.2659,
+  internalDualGain: 0.05,
+  externalDualGain: 0.0073,
+} as const;
+
+/**
+ * Exact identity p_dual^S − p_dual^T = (p̄^S − p̄^T) + (Δ^S − Δ^T), DRTiD internal,
+ * mean per-eye L1 over 5 seeds, from `table_mechanism_decomposition.csv`.
+ */
+export const decompositionRows = [
+  { shortMethod: "No KD", shiftGap: 0.376, baseGap: 0.427, outputGap: 0.545, gradeAgreementPct: 61.4, qwk: 0.604, isProposed: false },
+  { shortMethod: "Logit KD", shiftGap: 0.384, baseGap: 0.448, outputGap: 0.587, gradeAgreementPct: 64.8, qwk: 0.594, isProposed: false },
+  { shortMethod: "Feature KD", shiftGap: 0.372, baseGap: 0.422, outputGap: 0.569, gradeAgreementPct: 66.1, qwk: 0.616, isProposed: false },
+  { shortMethod: "CSD", shiftGap: 0.351, baseGap: 0.436, outputGap: 0.558, gradeAgreementPct: 65.5, qwk: 0.602, isProposed: true },
+] as const;
+
+export const decompositionAssociation = {
+  baseGapVsQwk: -0.52,
+  shiftL1VsQwk: -0.35,
+  models: 20,
+} as const;
+
+/** Quartiles of the teacher's own |Δ_T|; conclusive ShiftL1/CosAgree contrasts out of 6. */
+export const shiftQuartiles = [
+  { bin: "Q1", eyes: 138, meanShift: 0.103, relativeLow: 2.24, relativeHigh: 2.38, conclusive: 1 },
+  { bin: "Q2", eyes: 137, meanShift: 0.274, relativeLow: 0.93, relativeHigh: 0.97, conclusive: 0 },
+  { bin: "Q3", eyes: 137, meanShift: 0.461, relativeLow: 0.73, relativeHigh: 0.81, conclusive: 0 },
+  { bin: "Q4", eyes: 138, meanShift: 0.801, relativeLow: 0.73, relativeHigh: 0.83, conclusive: 4 },
+] as const;
+
+export const supplementaryFindings = {
+  decomposition: l(
+    "The final-output gap to the teacher splits exactly into a base-aggregation gap and a shift gap. CSD has the smallest shift gap — the term it targets — but a slightly larger base-aggregation gap than Feature KD, so its final grades agree with the teacher about as often (65.5% vs 66.1%). Across 20 student models, QWK tracks the base-aggregation gap (ρ = −0.52) more than ShiftL1 (ρ = −0.35).",
+    "Selisih output akhir terhadap *teacher* terurai tepat menjadi selisih agregasi dasar dan selisih *shift*. CSD memiliki selisih *shift* terkecil — suku yang ditargetkannya — tetapi selisih agregasi dasarnya sedikit lebih besar daripada *Feature* KD, sehingga kesesuaian *grade* akhirnya dengan *teacher* setara (65,5% vs 66,1%). Di 20 model *student*, QWK lebih berkaitan dengan selisih agregasi dasar (ρ = −0,52) daripada dengan ShiftL1 (ρ = −0,35).",
+  ),
+  whenItHelps: l(
+    "CSD's advantage concentrates where the teacher's shift is large: in the top quartile 4 of 6 ShiftL1/CosAgree contrasts are conclusive, against 1 in the bottom quartile, where every student's shift error exceeds the teacher's own shift. On the 325 eyes the teacher grades correctly, CSD beats Logit KD on all three metrics, including BenefitCorr (+0.1170 [+0.0122, +0.2199]).",
+    "Keunggulan CSD terkonsentrasi ketika *shift teacher* besar: pada kuartil teratas 4 dari 6 kontras ShiftL1/CosAgree konklusif, dibandingkan 1 pada kuartil terbawah, tempat kesalahan *shift* semua *student* melampaui *shift teacher* itu sendiri. Pada 325 mata yang dinilai benar oleh *teacher*, CSD mengungguli *Logit* KD pada ketiga metrik, termasuk BenefitCorr (+0,1170 [+0,0122; +0,2199]).",
+  ),
+  external: l(
+    "On DeepDRiD Set-C CSD still ranks first on all three metrics, and its CosAgree is conclusively higher than No Distillation's and Logit KD's. External ShiftL1 is not conclusive because the signal to imitate weakens: the teacher's mean shift falls from 0.4097 to 0.2659 and its dual-view gain from +0.0500 to +0.0073.",
+    "Pada DeepDRiD Set-C, CSD tetap peringkat pertama pada ketiga metrik, dan CosAgree-nya konklusif lebih tinggi daripada Tanpa Distilasi dan *Logit* KD. ShiftL1 eksternal belum konklusif karena sinyal yang ditiru melemah: rerata *shift teacher* turun dari 0,4097 menjadi 0,2659 dan *dual-view gain*-nya dari +0,0500 menjadi +0,0073.",
+  ),
+  grade1: l(
+    "Grade 1 is hard for every model, the teacher included: recall is 0.000 for the teacher and 0.068 for CSD, and the errors lean milder — 72% of Grade-1 eyes are graded 0 by the teacher, 65.2% by CSD.",
+    "Grade 1 sulit bagi semua model, termasuk *teacher*: *recall* 0,000 untuk *teacher* dan 0,068 untuk CSD, dan kesalahannya condong lebih ringan — 72% mata Grade 1 dinilai Grade 0 oleh *teacher*, 65,2% oleh CSD.",
+  ),
+  stability: l(
+    "CSD stays first on BenefitCorr under both Pearson and Spearman, internally and on Set-C, and its ordinal threshold-score calibration (ECE 0.056) sits within the other students' range.",
+    "CSD tetap peringkat pertama BenefitCorr dengan Pearson maupun Spearman, internal maupun di Set-C, dan kalibrasi skor ambang ordinalnya (ECE 0,056) berada dalam kisaran *student* lain.",
+  ),
+  boundaries: l(
+    "Allowed: “CSD's ShiftL1 is lower than all three baselines (exploratory, 95% CI excludes zero).” Not allowed: “CSD is significant on all three mechanism metrics”, “BenefitCorr is significant”, or “CSD improves QWK”.",
+    "Boleh: “ShiftL1 CSD lebih rendah daripada ketiga pembanding (eksploratori, IK 95% tidak memuat nol).” Tidak boleh: “CSD signifikan pada ketiga metrik mekanisme”, “BenefitCorr signifikan”, atau “CSD meningkatkan QWK”.",
   ),
 } as const;
 
@@ -240,16 +388,16 @@ export const mechanismMetricMeta: Record<
  */
 export const rq1Verdict = {
   mechanism: l(
-    "CSD transferred the teacher's dual-view decision-shift structure more faithfully than no distillation, logit KD, or feature KD — ranking best on all three mechanism metrics, in all three independent runs.",
-    "CSD mentransfer struktur pergeseran keputusan *dual-view* milik *teacher* dengan lebih setia dibandingkan tanpa distilasi, *logit* KD, maupun *feature* KD — menempati peringkat terbaik pada ketiga metrik mekanisme, di ketiga *run* independen.",
+    "CSD transferred the teacher's dual-view decision-shift structure more faithfully than no distillation, logit KD, or feature KD — ranking best on all three mechanism metrics. On ShiftL1 the advantage over every baseline holds with a 95% interval that excludes zero (exploratory supplementary analysis).",
+    "CSD mentransfer struktur pergeseran keputusan *dual-view* milik *teacher* dengan lebih setia dibandingkan tanpa distilasi, *logit* KD, maupun *feature* KD — menempati peringkat terbaik pada ketiga metrik mekanisme. Pada ShiftL1, keunggulan atas setiap pembanding bertahan dengan interval 95% yang tidak memuat nol (analisis suplementer eksploratori).",
   ),
   predictive: l(
     "Stronger mechanism fidelity did not translate into a statistically conclusive in-domain QWK improvement: every interval is narrow and includes zero, placing CSD on a par with each baseline.",
     "Fidelitas mekanisme yang lebih kuat tidak menghasilkan peningkatan QWK *in-domain* yang konklusif secara statistik: setiap interval sempit dan memuat nol, sehingga CSD setara dengan setiap *baseline*.",
   ),
   synthesis: l(
-    "Taken together, the mechanism transfer was obtained at no measurable cost to predictive accuracy. The dissociation between the two axes is reported as the study's central finding rather than smoothed over.",
-    "Secara keseluruhan, transfer mekanisme diperoleh tanpa biaya yang terukur terhadap akurasi prediktif. Disosiasi antara kedua aspek ini dilaporkan sebagai temuan utama penelitian, bukan disamarkan.",
+    "Taken together, the mechanism transfer was obtained at no measurable cost to predictive accuracy. The dissociation between the two axes is reported as the study's central finding rather than smoothed over — and it has an exact explanation: the final output also depends on how each single view matches the teacher, a term CSD does not target.",
+    "Secara keseluruhan, transfer mekanisme diperoleh tanpa biaya yang terukur terhadap akurasi prediktif. Disosiasi antara kedua aspek ini dilaporkan sebagai temuan utama penelitian, bukan disamarkan — dan penjelasannya eksak: output akhir juga bergantung pada kemiripan prediksi tiap *view* dengan *teacher*, suku yang tidak ditargetkan CSD.",
   ),
   comparisons: [
     {
@@ -494,15 +642,22 @@ export const limitations = [
   {
     title: l("Mechanism gain is not a predictive guarantee", "Keunggulan mekanisme bukan jaminan prediktif"),
     body: l(
-      "CSD transferred the decision-shift structure more faithfully, yet that did not produce a statistically conclusive in-domain QWK improvement. The two are separate claims and are reported separately.",
-      "CSD mentransfer struktur pergeseran keputusan dengan lebih setia, tetapi hal itu tidak menghasilkan peningkatan QWK *in-domain* yang konklusif secara statistik. Keduanya merupakan klaim terpisah dan dilaporkan secara terpisah.",
+      "CSD transferred the decision-shift structure more faithfully, yet that did not produce a statistically conclusive in-domain QWK improvement. The decomposition identity shows why the two can separate. They are separate claims and are reported separately.",
+      "CSD mentransfer struktur pergeseran keputusan dengan lebih setia, tetapi hal itu tidak menghasilkan peningkatan QWK *in-domain* yang konklusif secara statistik. Identitas dekomposisi menunjukkan mengapa keduanya dapat terpisah. Keduanya merupakan klaim terpisah dan dilaporkan secara terpisah.",
+    ),
+  },
+  {
+    title: l("Mechanism inference is exploratory", "Inferensi mekanisme bersifat eksploratori"),
+    body: l(
+      "The supplementary analysis was designed after the main results were known and rests on five models per condition. Only 4 of 9 internal contrasts are conclusive; BenefitCorr points toward CSD but its intervals include zero, the nine intervals are not multiplicity-corrected, and DRTiD's resampling unit is the examined eye, not the patient.",
+      "Analisis suplementer dirancang setelah hasil utama diketahui dan didasarkan pada lima model per kondisi. Hanya 4 dari 9 kontras internal yang konklusif; BenefitCorr searah dengan CSD tetapi intervalnya memuat nol, kesembilan interval belum dikoreksi multiplisitas, dan unit resampling DRTiD adalah mata, bukan pasien.",
     ),
   },
   {
     title: l("Methods are closely matched on accuracy", "Akurasi antarmetode sangat berdekatan"),
     body: l(
-      "All four distillation conditions fall within a narrow band, and the selected method differed between runs. This is why the mechanism axis, not the accuracy axis, is where the contribution is claimed.",
-      "Keempat kondisi distilasi berada dalam rentang yang sempit, dan metode yang terpilih berbeda antar-*run*. Karena itulah kontribusi diklaim pada aspek mekanisme, bukan pada aspek akurasi.",
+      "All four distillation conditions fall within a narrow QWK band (0.5942–0.6161), and the paired differences between them are smaller than their seed-to-seed spread. This is why the mechanism axis, not the accuracy axis, is where the contribution is claimed.",
+      "Keempat kondisi distilasi berada dalam rentang QWK yang sempit (0,5942–0,6161), dan selisih berpasangan antarmetode lebih kecil daripada sebaran antar-*seed*-nya. Karena itulah kontribusi diklaim pada aspek mekanisme, bukan pada aspek akurasi.",
     ),
   },
   {
@@ -794,6 +949,42 @@ export const researchFigures: Record<string, ResearchFigure> = {
     caption: l(
       "The confirmatory external partition. No tuning, threshold adjustment, or selection happened here.",
       "Partisi eksternal konfirmatori. Tidak ada penyetelan, penyesuaian ambang, maupun pemilihan model yang dilakukan di sini.",
+    ),
+  },
+  mechanismForest: {
+    id: "fig_mechanism_effect_forest",
+    src: `${FIG}/fig_mechanism_effect_forest.png`,
+    title: l("Figure 17 — Mechanism-fidelity contrasts", "Gambar 17 — Kontras fidelitas mekanisme"),
+    caption: l(
+      "CSD minus each baseline on the internal test set, with 95% hierarchical-bootstrap intervals (B = 10,000). Lower ShiftL1 and higher CosAgree/BenefitCorr favour CSD. Exploratory.",
+      "CSD dikurangi tiap pembanding pada data uji internal, dengan interval 95% *hierarchical bootstrap* (B = 10.000). ShiftL1 lebih rendah serta CosAgree/BenefitCorr lebih tinggi menguntungkan CSD. Eksploratori.",
+    ),
+  },
+  internalExternalMechanism: {
+    id: "fig_internal_external_mechanism",
+    src: `${FIG}/fig_internal_external_mechanism.png`,
+    title: l("Figure 18 — Mechanism fidelity, internal and Set-C", "Gambar 18 — Fidelitas mekanisme, internal dan Set-C"),
+    caption: l(
+      "Circles: DRTiD internal test (resampling examined-eye records, n = 550). Squares: DeepDRiD Set-C (resampling patients, 100 patients / 200 eyes). Filled markers are intervals that exclude zero.",
+      "Lingkaran: data uji internal DRTiD (resampling *examined-eye record*, n = 550). Persegi: DeepDRiD Set-C (resampling pasien, 100 pasien / 200 mata). Penanda terisi adalah interval yang tidak memuat nol.",
+    ),
+  },
+  decomposition: {
+    id: "fig_mechanism_decomposition",
+    src: `${FIG}/fig_mechanism_decomposition.png`,
+    title: l("Figure 19 — Mechanism–prediction decomposition", "Gambar 19 — Dekomposisi mekanisme–prediksi"),
+    caption: l(
+      "Shift gap, base-aggregation gap and final-output gap to the teacher for each condition. CSD minimises the shift gap it targets; the base-aggregation gap, which it does not target, is the one QWK tracks more closely.",
+      "Selisih *shift*, selisih agregasi dasar, dan selisih output akhir terhadap *teacher* untuk tiap kondisi. CSD meminimalkan selisih *shift* yang ditargetkannya; selisih agregasi dasar, yang tidak ditargetkannya, lebih erat berkaitan dengan QWK.",
+    ),
+  },
+  confusionCore: {
+    id: "fig_confusion_core_models",
+    src: `${FIG}/fig_confusion_core_models.png`,
+    title: l("Figure 20 — Confusion matrices, core models", "Gambar 20 — *Confusion matrix* model inti"),
+    caption: l(
+      "Row-normalised; the diagonal is recall. Grade 1 is the weak spot for every model, the teacher included, and its errors lean toward Grade 0.",
+      "Ternormalisasi per baris; diagonal adalah *recall*. Grade 1 menjadi titik lemah semua model, termasuk *teacher*, dan kesalahannya condong ke Grade 0.",
     ),
   },
   internalVsExternal: {

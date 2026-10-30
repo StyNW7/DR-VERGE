@@ -8,6 +8,7 @@ import {
   ResearchGapSection,
   MethodSection,
   Rq1ResultsSection,
+  MechanismEvidenceSection,
   Rq2ResultsSection,
   ExternalValidationSection,
   FiguresSection,
@@ -17,7 +18,7 @@ import {
 } from "@/components/research/ResearchSections";
 import { paperMeta } from "@/data/researchContent";
 import { siteConfig, isLinkConfigured } from "@/config/siteConfig";
-import { DISCLAIMER_CLINICAL, runProvenance } from "@/data/researchMetrics";
+import { DISCLAIMER_CLINICAL, runProvenance, supplementaryProvenance } from "@/data/researchMetrics";
 import { useI18n } from "@/i18n/context";
 
 /** The paper button. While the PDF is not published it reads as "coming soon"
@@ -63,14 +64,17 @@ export default function ResearchPage() {
     {
       label: t("Integrity gates", "Gerbang integritas"),
       value: `${runProvenance.gatesPassed}/${runProvenance.gatesTotal}`,
-      detail: t("All passed, zero errors", "Semua lolos, tanpa *error*"),
+      detail: t(
+        `Main run · supplementary analysis ${supplementaryProvenance.gatesPassed}/${supplementaryProvenance.gatesTotal}`,
+        `*Run* utama · analisis suplementer ${supplementaryProvenance.gatesPassed}/${supplementaryProvenance.gatesTotal}`,
+      ),
     },
     {
       label: t("Self-audit", "Audit mandiri"),
       value: t(`${runProvenance.auditedValues} values`, `${runProvenance.auditedValues} nilai`),
       detail: t(
-        `Recomputed from predictions · ${runProvenance.auditMismatches} mismatches`,
-        `Dihitung ulang dari prediksi · ${runProvenance.auditMismatches} ketidakcocokan`,
+        `Recomputed from predictions · ${runProvenance.auditMismatches} mismatches · ${supplementaryProvenance.reproductionChecks}/${supplementaryProvenance.reproductionChecks} re-reproduced`,
+        `Dihitung ulang dari prediksi · ${runProvenance.auditMismatches} ketidakcocokan · ${supplementaryProvenance.reproductionChecks}/${supplementaryProvenance.reproductionChecks} direproduksi ulang`,
       ),
     },
     {
@@ -88,8 +92,8 @@ export default function ResearchPage() {
       <Seo
         title={ts("Research & Paper", "Penelitian & Makalah")}
         description={ts(
-          "DR-VERGE research: dual-view diabetic retinopathy grading through Complementarity-Shift Distillation and lightweight INT8 deployment. Research questions, method, results, and limitations.",
-          "Penelitian DR-VERGE: grading retinopati diabetik dual-view melalui Complementarity-Shift Distillation dan deployment INT8 yang ringan. Pertanyaan penelitian, metode, hasil, dan keterbatasan.",
+          "DR-VERGE research: dual-view diabetic retinopathy grading through Complementarity-Shift Distillation and lightweight INT8 deployment. Research questions, method, results, inferential mechanism evidence, and limitations.",
+          "Penelitian DR-VERGE: grading retinopati diabetik dual-view melalui Complementarity-Shift Distillation dan deployment INT8 yang ringan. Pertanyaan penelitian, metode, hasil, bukti inferensial mekanisme, dan keterbatasan.",
         )}
       />
 
@@ -182,6 +186,7 @@ export default function ResearchPage() {
       <ResearchGapSection />
       <MethodSection />
       <Rq1ResultsSection />
+      <MechanismEvidenceSection />
       <Rq2ResultsSection />
       <ExternalValidationSection />
       <FiguresSection />

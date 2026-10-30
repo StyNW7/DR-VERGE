@@ -28,6 +28,7 @@
 
 [![Integrity gates](https://img.shields.io/badge/integrity_gates-36%2F36_passed-2EA44F?style=flat-square)](experiments/results/tables/table_gate_report.csv)
 [![Results audit](https://img.shields.io/badge/results_audit-265%2F265_matched-2EA44F?style=flat-square)](experiments/results/tables/table_results_audit.csv)
+[![Supplementary gates](https://img.shields.io/badge/supplementary_v2-56%2F56_gates-2EA44F?style=flat-square)](experiments/results/supplementary/logs/gate_report.csv)
 [![Model size](https://img.shields.io/badge/model_INT8-0.95_MB-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
 [![CPU latency](https://img.shields.io/badge/CPU_latency-11.35_ms-8A2BE2?style=flat-square)](experiments/results/tables/table_efficiency.csv)
 [![Status](https://img.shields.io/badge/status-research_prototype-lightgrey?style=flat-square)](#-limitations-and-disclaimer)
@@ -55,6 +56,7 @@
 - [Architecture and Research Workflow](#-architecture-and-research-workflow)
 - [Data and Experimental Protocol](#-data-and-experimental-protocol)
 - [Main Results](#-main-results)
+- [Supplementary Analysis v2: Inferential Mechanism Evidence](#-supplementary-analysis-v2-inferential-mechanism-evidence)
 - [Limitations and Disclaimer](#-limitations-and-disclaimer)
 - [Contributions](#-contributions)
 - [Repository Structure](#-repository-structure)
@@ -78,10 +80,12 @@ DR-VERGE is a five-grade diabetic retinopathy (DR) grading framework built on **
 </div>
 
 - **The dual-view premise holds** — a student that reads both views (QWK 0.6042) outperforms students that read only the macula (0.5175) or only the optic disc (0.5502).
-- **RQ1 — an honest dissociation.** CSD is the most aligned with the teacher's prediction shift on all three metrics (ShiftL1 0.3509 · CosAgree 0.4361 · BenefitCorr 0.3075), but its QWK differences against NoDistill, Logit-KD and Feature-KD are **not statistically significant**.
+- **RQ1 — the mechanism transfers, accuracy does not follow.** CSD is the most aligned with the teacher's prediction shift on all three metrics (ShiftL1 0.3509 · CosAgree 0.4361 · BenefitCorr 0.3075), but its QWK differences against NoDistill, Logit-KD and Feature-KD are **not conclusive** (every 95% CI includes zero).
+- **Inferential mechanism evidence (supplementary analysis v2, exploratory).** CSD's ShiftL1 is **lower than all three baselines with 95% CIs that exclude zero**, its CosAgree is higher than Logit-KD's, and **no contrast favours a baseline**. On DeepDRiD Set-C, CSD still **ranks first on all three metrics**.
+- **The dissociation now has a mathematical explanation.** An exact identity — _output gap = base-aggregation gap + shift gap_ — shows that CSD only aligns the second term, which is why mechanism fidelity does not automatically become QWK.
 - **RQ2 — compression that holds.** QAT INT8 retains **98.96%** of the FP32 student's QWK with an artifact **under 1 MB** and **11.35 ms** latency on a single CPU thread.
 - **External generalisation.** On DeepDRiD Set-C, the FP32 student retains **84.4%** of the teacher's QWK.
-- **Auditable.** The pipeline verifies itself: **36/36 integrity gates passed** and **265/265 headline values** matched when recomputed from per-sample predictions.
+- **Auditable.** Main run: **36/36 integrity gates** and **265/265 headline values** matched on recomputation. Supplementary analysis: **56/56 gates**, **156/156** reproduction checks, and SHA-256 of every checkpoint identical before and after the analysis.
 
 ---
 
@@ -140,7 +144,7 @@ $$
 
 | | Question | Short answer |
 |:---:|---|---|
-| **RQ1** | To what extent can CSD transfer the prediction shift from the teacher to a lightweight student, compared with NoDistill, Logit-KD and Feature-KD? | **Dissociation** — CSD is descriptively best on all three shift-fidelity metrics, but not significantly better in QWK |
+| **RQ1** | To what extent can CSD transfer the prediction shift from the teacher to a lightweight student, compared with NoDistill, Logit-KD and Feature-KD? | **Mechanism transfers, accuracy on par** — CSD is best on all three shift-fidelity metrics; ShiftL1 is lower than all three baselines with a 95% CI excluding zero (exploratory); QWK does not differ conclusively |
 | **RQ2** | To what extent do PTQ and QAT INT8 affect QWK retention, artifact size and CPU inference latency of the selected lightweight model? | **QAT retains 98.96% of QWK**, 0.9507 MB artifact, 11.35 ms — 162.1× smaller and 55.3× faster than the teacher |
 
 ---
@@ -165,7 +169,7 @@ $$
 
 **DR grades are ordinal, and the code treats them that way.** CORAL produces monotone cumulative probabilities, and the final grade is the **number of thresholds passed** — never an argmax. Misreading grade 3 as grade 0 is far more harmful than misreading it as grade 2, which is why **Quadratic Weighted Kappa (QWK)** is the primary metric.
 
-The research workflow has six stages. **Every decision is made on validation data only**; the internal test set and the external data are opened only after everything has been locked.
+The research workflow has six main stages plus one supplementary-analysis stage. **Every decision is made on validation data only**; the internal test set and the external data are opened only after everything has been locked. Stage 7 only **reads** the frozen models.
 
 ```mermaid
 flowchart LR
@@ -174,11 +178,14 @@ flowchart LR
     C --> D["4 · Student + distillation<br/>NoDistill · Logit-KD<br/>Feature-KD · CSD (RQ1)"]
     D --> E["5 · INT8 quantization<br/>PTQ · QAT · FT-PTQ<br/>select deployment (RQ2)"]
     E --> F["6 · Evaluation & verification<br/>DRTiD internal test<br/>DeepDRiD Set-C · ONNX export"]
+    F -.-> G["7 · Supplementary analysis v2<br/>inference-only · exploratory<br/>inferential mechanism evidence"]
 
     classDef sel fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
     classDef ev fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+    classDef sup fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
     class A,B,C,D,E sel;
     class F ev;
+    class G sup;
 ```
 
 ---
@@ -205,7 +212,7 @@ flowchart LR
 - **Seeds** — tuning {42, 123, 2026}; main comparison over five core seeds {42, 123, 2026, 3407, 8888}.
 - **Decision threshold** — one global threshold per condition from the range 0.35–0.65 (step 0.05), chosen on validation.
 - **Method selection** — mean validation QWK over five seeds; differences < 0.005 are treated as ties, broken by Macro-F1 → severe error rate → MAE → complexity.
-- **Statistics** — 10,000 hierarchical paired cluster bootstrap replicates + 10,000 paired permutation iterations, with Holm correction within each hypothesis family. **A difference whose 95% confidence interval includes zero is not claimed.**
+- **Statistics** — 10,000 hierarchical paired cluster bootstrap replicates (cluster = eye on DRTiD, patient on DeepDRiD) + 10,000 paired permutation iterations, with Holm correction within each hypothesis family. **A difference whose 95% confidence interval includes zero is not claimed.**
 - **Quantization** — eager static quantization (x86 engine) on the backbone; InteractionFusion and the CORAL heads stay FP32 (mixed precision). Deterministic PTQ calibration on the 800 training records; QAT learning rate 3 × 10⁻⁵.
 - **Deployment criterion** — validation QWK retention ≥ 95% and no credible worsening of severe error; among eligible candidates the lowest median latency wins. The 95% threshold is an engineering criterion, **not** a clinical non-inferiority margin.
 - **Latency** — batch size 1, one CPU thread, 50 warm-up inferences, five blocks × 500 inferences, median.
@@ -252,9 +259,9 @@ Compared with the teacher, CSD retains **81.7%** of QWK with **122.7× fewer par
 
 | Comparison | ΔQWK | 95% CI | p (permutation) | p (Holm) | Verdict |
 |---|---:|---|---:|---:|---|
-| CSD vs no distillation | −0.0024 | [−0.0336; +0.0285] | 0.8003 | 0.8003 | not significant |
-| CSD vs Logit-KD | +0.0077 | [−0.0304; +0.0463] | 0.3640 | 0.7279 | not significant |
-| CSD vs Feature-KD | −0.0143 | [−0.0445; +0.0153] | 0.1650 | 0.4950 | not significant |
+| CSD vs no distillation | −0.0024 | [−0.0336; +0.0285] | 0.8003 | 0.8003 | not conclusive |
+| CSD vs Logit-KD | +0.0077 | [−0.0304; +0.0463] | 0.3640 | 0.7279 | not conclusive |
+| CSD vs Feature-KD | −0.0143 | [−0.0445; +0.0153] | 0.1650 | 0.4950 | not conclusive |
 
 <div align="center">
 <img src="experiments/results/figures/fig_12_forest.png" alt="Forest plot of paired comparisons" width="760" />
@@ -279,7 +286,7 @@ CSD achieves the **lowest ShiftL1 and the highest CosAgree and BenefitCorr** —
 </div>
 
 > [!TIP]
-> **Both halves are the finding.** The mechanism transferred, but accuracy did not improve significantly with it. Fidelity to the prediction shift and predictive performance **did not move together**, so they must be evaluated as two distinct aspects.
+> **Both halves are the finding.** The mechanism transferred, but accuracy did not improve conclusively with it. Fidelity to the prediction shift and predictive performance **did not move together**, so they must be evaluated as two distinct aspects. The v2 supplementary analysis [below](#-supplementary-analysis-v2-inferential-mechanism-evidence) tests this mechanism advantage inferentially and explains the dissociation mathematically.
 
 ### 4. RQ2 — Efficiency and quantization
 
@@ -341,13 +348,127 @@ The FP32 student retains **84.4%** of the teacher's QWK in the external domain. 
 
 ---
 
+## 🔬 Supplementary Analysis v2: Inferential Mechanism Evidence
+
+The RQ1 results above show CSD is **descriptively best** on all three mechanism metrics. The v2 supplementary analysis answers the follow-up questions: is that advantage **statistically supported**, does it **hold on external data**, and **why** does it not turn into higher QWK?
+
+> [!IMPORTANT]
+> **Inference-only and exploratory.** The analysis only reads the 21 frozen checkpoints of the main run — no training, tuning, threshold change or model re-selection. Before any new statistic is computed, the original results are reproduced first: **156/156** checks matched (teacher QWK 0.736401 identical; max difference 1.2 × 10⁻⁴). SHA-256 of the 21 checkpoints and 59 source files is identical before and after the analysis; **56/56 gates passed**. Because it was designed after the main results were known, every result in this section is labelled **exploratory post-hoc**. Tables I–III, the RQ2 results and the deployment decision are **unchanged**.
+
+### 1. CSD aligns best with the teacher's shift — now inferentially
+
+CSD − baseline differences on the 550 DRTiD test eyes, five matched seeds, 95% CIs from a hierarchical paired bootstrap (B = 10,000) that resamples examined-eye records **and** seeds jointly:
+
+| Baseline | ΔShiftL1 ↓ | ΔCosAgree ↑ | ΔBenefitCorr ↑ |
+|---|---|---|---|
+| NoDistill | **−0.0249\*** [−0.0477; −0.0043] | +0.0852 [−0.0134; +0.1870] | +0.0882 [−0.0342; +0.2329] |
+| Logit-KD | **−0.0331\*** [−0.0567; −0.0103] | **+0.1503\*** [+0.0263; +0.3011] | +0.1280 [−0.0038; +0.2643] |
+| Feature-KD | **−0.0209\*** [−0.0408; −0.0012] | +0.0546 [−0.0225; +0.1407] | +0.1132 [−0.0390; +0.2662] |
+| Seeds favouring CSD | 5/5 · 4/5 · 4/5 | 3/5 · 4/5 · 4/5 | 3/5 · 4/5 · 3/5 |
+
+<sub>\* 95% CI excludes zero and favours CSD. Seed row order: NoDistill · Logit-KD · Feature-KD. Source: [`table_mechanism_internal_stats.csv`](experiments/results/supplementary/tables/table_mechanism_internal_stats.csv).</sub>
+
+| Evidence layer | Result | Meaning |
+|---|---|---|
+| Hierarchical bootstrap (primary) | **4/9** contrasts conclusive, all favouring CSD · **0/9** favour a baseline | The primary inferential evidence |
+| Per-seed direction | **34/45** seed-contrast pairs favour CSD | Not driven by a single seed |
+| Leave-one-seed-out | **9/9** contrasts keep their direction | Point estimates are stable |
+| Record-only bootstrap (models fixed) | **9/9** CIs exclude zero | For the same trained models, the gap is real |
+| Conditional permutation + Holm (9 contrasts) | **9/9** p<sub>Holm</sub> ≤ 0.0034 | Consistent with the row above |
+| BenefitCorr with Spearman | Conclusive vs Logit-KD: +0.1637 [+0.0411; +0.3170] | Supports the BenefitCorr direction |
+
+**ShiftL1 — the metric that most directly measures CSD's target — is conclusive against all three baselines.** BenefitCorr points toward CSD against all three (+0.09 to +0.13), but its CIs still include zero. Since the fixed-model analysis is conclusive 9/9 while the hierarchical analysis is 4/9, the remaining uncertainty comes almost entirely from **the number of training seeds** (five models per condition), not from the size of the test set.
+
+<div align="center">
+<img src="experiments/results/supplementary/figures/fig_internal_external_mechanism.png" alt="CSD fidelity differences against three baselines, internal and external" width="860" />
+<br />
+<sub>CSD − baseline fidelity differences on internal DRTiD (circles) and DeepDRiD Set-C (squares). Filled markers = 95% CI excludes zero.</sub>
+</div>
+
+### 2. The mechanism pattern holds on DeepDRiD Set-C
+
+Same FP32 models, thresholds and field order; **patient-clustered** bootstrap (100 patients · 200 eyes).
+
+| Metric | NoDistill | Logit-KD | Feature-KD | **CSD** | CSD rank (internal → Set-C) |
+|---|---:|---:|---:|---:|:---:|
+| ShiftL1 ↓ | 0.3128 | 0.3079 | 0.3044 | **0.2975** | 1 → **1** |
+| CosAgree ↑ | 0.2548 | 0.2223 | 0.3312 | **0.3831** | 1 → **1** |
+| BenefitCorr ↑ | 0.1161 | 0.1251 | 0.1466 | **0.2357** | 1 → **1** |
+
+CSD's CosAgree is conclusively higher than NoDistill's (+0.1283 [+0.0250; +0.2505]) and Logit-KD's (+0.1608 [+0.0358; +0.3036]), both in the same direction on 5/5 seeds. External ShiftL1 is not conclusive because the signal to imitate weakens: on Set-C the teacher's mean |Δ<sub>T</sub>| falls from 0.4097 to 0.2659, and the teacher's dual-view gain over its best auxiliary head falls from +0.0500 to +0.0073.
+
+### 3. Why mechanism fidelity does not automatically raise QWK
+
+For every eye the following identity holds exactly (numerical residual 0):
+
+$$
+\underbrace{p^{S}_{\text{dual}} - p^{T}_{\text{dual}}}_{\text{final-output gap}} \;=\; \underbrace{\big(\bar p^{S} - \bar p^{T}\big)}_{\text{base-aggregation gap}} \;+\; \underbrace{\big(\Delta^{S} - \Delta^{T}\big)}_{\text{shift gap — CSD's target}}, \qquad \bar p = \tfrac{1}{2}\,(p_{\text{mac}} + p_{\text{disc}})
+$$
+
+| Condition (DRTiD internal) | Shift gap ↓ | Base-aggregation gap ↓ | Joint-output gap ↓ | Same grade as teacher | QWK |
+|---|---:|---:|---:|---:|---:|
+| NoDistill | 0.376 | 0.427 | **0.545** | 61.4% | 0.604 |
+| Logit-KD | 0.384 | 0.448 | 0.587 | 64.8% | 0.594 |
+| Feature-KD | 0.372 | **0.422** | 0.569 | **66.1%** | **0.616** |
+| **CSD** | **0.351** | 0.436 | 0.558 | 65.5% | 0.602 |
+
+CSD wins on the term it targets (the shift), but its base-aggregation gap — how closely each student view matches the teacher's — is not a CSD target and is in fact slightly larger than Feature-KD's. Across the 20 student models, QWK tracks the base-aggregation gap (ρ = −0.52) more than ShiftL1 (ρ = −0.35). **The "mechanism ≠ prediction" dissociation now has a mathematical explanation, not just an observation.**
+
+### 4. When CSD helps most
+
+| \|Δ<sub>T</sub>\| quartile (DRTiD) | n eyes | Mean \|Δ<sub>T</sub>\| | Relative ShiftL1\* | Conclusive contrasts favouring CSD |
+|---|---:|---:|---|:---:|
+| Q1 (smallest) | 138 | 0.103 | 2.24–2.38 | 1 of 6 |
+| Q2 | 137 | 0.274 | 0.93–0.97 | 0 of 6 |
+| Q3 | 137 | 0.461 | 0.73–0.81 | 0 of 6 |
+| Q4 (largest) | 138 | 0.801 | 0.73–0.83 | **4 of 6** |
+
+<sub>\* Student shift error divided by teacher shift magnitude (range over the four conditions). A value > 1 means the error exceeds the signal.</sub>
+
+- In the **largest teacher-shift quartile**, CSD's ShiftL1 is lower than NoDistill's (−0.0557 [−0.1042; −0.0093]) and Logit-KD's (−0.0842 [−0.1360; −0.0416]). The same pattern appears on Set-C (vs NoDistill −0.0620 [−0.1113; −0.0083]).
+- In the smallest quartile, every student's shift error is 2.2–2.4× the teacher's own shift — the signal there is dominated by noise.
+- On the 325 eyes the **teacher grades correctly**, CSD conclusively beats Logit-KD on **all three** metrics, including BenefitCorr (+0.1170 [+0.0122; +0.2199]).
+
+### 5. Grade 1, sensitivity and calibration
+
+- **Grade 1 (mild NPDR) is hard for every model, the teacher included.** Grade-1 recall: teacher 0.000, CSD 0.068, Feature-KD 0.080. The errors are **systematically toward milder**: 72% of Grade-1 eyes are predicted Grade 0 by the teacher and 65.2% by CSD.
+- **Stable to the metric choice.** CSD stays first on BenefitCorr under Pearson (0.3075) and Spearman (0.4532) on DRTiD, and on Set-C (0.2357 / 0.2964).
+- **Ordinal threshold-score calibration** of CSD (ECE 0.056) sits within the other students' range (0.050–0.060); the teacher is best calibrated (0.038). This is a threshold-score diagnostic, **not** a clinical probability.
+
+<table>
+<tr>
+<td width="50%"><img src="experiments/results/supplementary/figures/fig_mechanism_decomposition.png" alt="Mechanism-prediction decomposition" /></td>
+<td width="50%"><img src="experiments/results/supplementary/figures/fig_confusion_core_models.png" alt="Confusion matrices of the core models" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Decomposition: shift gap vs base-aggregation gap vs joint-output gap</sub></td>
+<td align="center"><sub>Row-normalised confusion matrices — teacher and the four core conditions</sub></td>
+</tr>
+</table>
+
+| Claim | Evidence status |
+|---|---|
+| CSD descriptively best on the 3 mechanism metrics | Re-verified (156/156) |
+| CSD's ShiftL1 lower than all three baselines | **Inferential**, exploratory |
+| CSD's CosAgree higher than Logit-KD's | **Inferential**, exploratory |
+| CSD's BenefitCorr higher | Same direction, **not conclusive** |
+| Mechanism pattern holds on Set-C | Descriptive 3/3 + inferential 2/9, exploratory |
+| Fidelity ≠ accuracy | **Mathematical identity** + data |
+| CSD improves QWK | **Not supported** — unchanged from the main results |
+
+Every table, figure, reproduction log and the claim ledger: [`experiments/results/supplementary/`](experiments/results/supplementary/).
+
+---
+
 ## ⚠️ Limitations and Disclaimer
 
-- **RQ1 is null on prediction** — CSD's advantage is in mechanism fidelity only, not QWK.
+- **RQ1 is not conclusive on prediction** — CSD's advantage is in mechanism fidelity, not QWK; every ΔQWK CI includes zero.
+- **The supplementary analysis is exploratory post-hoc** and rests on **five models per condition**. Resampling the data does not add models, which is why BenefitCorr is not yet conclusive despite a consistent direction. The nine main CIs are not multiplicity-corrected, and the quartile/subgroup analyses add further comparisons.
+- **Δ is an operational proxy** for the prediction shift, not a measure of anatomical complementarity; it is also affected by head differences and calibration.
 - **Absolute QWK is moderate** (students 0.5942–0.6161) and Macro-F1 is low (0.3362 for CSD).
 - **Severe error rate 0.2582** — roughly one eye in four is off by ≥ 2 grades.
-- **Grade-1 recall is very low**, so the model is not fit for standalone diagnostic use.
-- **No patient identifier in DRTiD** — internal splitting and bootstrap are eye-level, not patient-level.
+- **Grade-1 recall is very low for every model, the teacher included** (CSD 0.068; teacher 0.000), and the errors lean toward Grade 0, so the model is not fit for standalone diagnostic use.
+- **No patient identifier in DRTiD** — internal splitting and bootstrap are at the examined-eye-record level; only Set-C is patient-clustered, and with 100 patients its precision is limited.
 - **Evaluation is computational only** — no prospective validation, no testing across fundus cameras, no testing on target CPU devices, and no clinical trial yet.
 - **No claim of generality** to other imaging domains.
 
@@ -359,8 +480,10 @@ DR-VERGE is a research prototype and is **not intended for standalone clinical d
 
 1. **Algorithmic** — formulates CSD, which uses the signed joint-vs-individual cumulative ordinal prediction shift as its distillation target; distinct from Logit-KD (final output) and from feature/relational distillation.
 2. **Measurement** — three shift-fidelity metrics (ShiftL1, CosAgree, BenefitCorr) plus a counterfactual control, so mechanism transfer is tested directly and separately from accuracy.
-3. **Empirical** — a controlled test of CSD against NoDistill, Logit-KD and Feature-KD under one pre-registered protocol, reported as it came out: a dissociation.
+3. **Empirical** — a controlled test of CSD against NoDistill, Logit-KD and Feature-KD under one pre-registered protocol, reported as it came out: a dissociation; strengthened by an inference-only supplementary analysis that gives (exploratory) inferential evidence on ShiftL1, re-tests the mechanism pattern on external data, and explains the dissociation through an exact decomposition identity.
 4. **Practical** — a characterisation of how INT8 affects a lightweight dual-view DR grader, yielding a 0.95 MB / 11.35 ms model that runs in the browser.
+
+DR-VERGE therefore separates four aspects cleanly: **the mechanism that is transferred** (with its statistical evidence), **cross-domain robustness**, **why mechanism does not automatically become accuracy**, and **deployment efficiency**.
 
 ---
 
@@ -372,8 +495,10 @@ DR-VERGE/
 ├── README.en.md              main documentation (English)
 │
 ├── experiments/              experiments — code and evidence
-│   ├── notebooks/            full_pipeline_notebook_enhanced.ipynb  ← the final notebook
+│   ├── notebooks/            full_pipeline_notebook_enhanced.ipynb        ← the final notebook (main run)
+│   │                         DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb ← supplementary analysis
 │   ├── results/              final-run outputs: tables, figures, per-sample predictions, configs
+│   │   └── supplementary/    v2 supplementary-analysis outputs (inference-only, 56/56 gates)
 │   ├── src/                  modular components: models, losses, datasets, pre-training
 │   ├── configs/              one YAML per training condition
 │   ├── scripts/              make_splits.py + verification/
@@ -393,8 +518,9 @@ Each directory carries a `README.md` (Indonesian) and a `README.en.md` (English)
 1. This document — the full picture of the research.
 2. [`experiments/README.en.md`](experiments/README.en.md) — how the experiments are organised and run.
 3. [`experiments/results/README.en.md`](experiments/results/README.en.md) — a map of every output of the final run.
-4. [`research/math.md`](research/math.md) — the full mathematical derivation.
-5. [`frontend/`](frontend/) — the web prototype that runs the model in the browser.
+4. [`experiments/results/supplementary/README.en.md`](experiments/results/supplementary/README.en.md) — the inferential mechanism evidence and its decomposition.
+5. [`research/math.md`](research/math.md) — the full mathematical derivation.
+6. [`frontend/`](frontend/) — the web prototype that runs the model in the browser.
 
 ---
 
@@ -439,6 +565,10 @@ The exact package versions of the final run are recorded in [`experiments/result
 ### Pipeline integrity
 
 The pipeline verifies itself through **36 integrity gates** — data schema, partition disjointness, metric correctness, ordinal-head monotonicity, grid and seed completeness, equal quantization scope across PTQ/QAT/FT-PTQ, ONNX export fidelity, and statistical procedure. A run that fails a blocking gate stops instead of reporting a number. The final gate recomputes every headline value from the per-sample prediction files: **265/265 matched**.
+
+### Supplementary analysis (inference-only)
+
+[`experiments/notebooks/DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb`](experiments/notebooks/DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb) reads the main-run artifacts (`artifacts_enhanced_v1_20260811/`) **read-only** and writes only to a new output folder. It has no training function, disables autograd globally, and stops if any of the following fails: strict loading of the 21 checkpoints, the split hash match, or the reproduction of the original QWK and mechanism metrics. Phases P0–P6 (preflight → internal inference → Set-C → decomposition → per-grade → sensitivity → deployment summary) are guarded by **56 gates**, including an identical-method test (effect = 0), contrast reversal, row-order shuffling, RNG reproducibility and unsplit patient clusters. On an A100 the final run finished in about 3 minutes because it reused a hash-validated inference cache. Its outputs: [`experiments/results/supplementary/`](experiments/results/supplementary/).
 
 ---
 
@@ -570,7 +700,7 @@ In the example above, sample **p24-R** is predicted as **Grade 3 (Severe NPDR)**
 </tr>
 </table>
 
-This page presents the abstract, research questions, research gap, method, RQ1 and RQ2 results, external validation, a figure gallery, limitations and the SDG 3 impact — every number comes from the same final run as this README.
+This page presents the abstract, research questions, research gap, method, RQ1 and RQ2 results, **the inferential mechanism evidence from the v2 supplementary analysis** (the nine-contrast table, Set-C generalisation, the decomposition identity and when CSD helps most), external validation, a figure gallery, limitations and the SDG 3 impact — every number comes from the same final run and supplementary analysis as this README.
 
 ### 📱 Responsive on mobile
 

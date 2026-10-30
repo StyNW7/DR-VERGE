@@ -1,0 +1,94 @@
+dataset,contrast,baseline,metric,analysis,effect,ci_low,ci_high,excludes_zero,p_value,note
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,hierarchical_bootstrap (primary),-0.015230531594963393,-0.04862794204854472,0.018248183523499786,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,record_only_bootstrap (models fixed),-0.015230531594963393,-0.03212155756841564,0.0017095060347916853,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_42,-0.012847116167558847,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_123,-0.02186101747540306,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_2026,-0.014803666487750888,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_3407,-0.0029347520696865054,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_8888,-0.02370610577441766,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,ShiftL1,conditional_permutation (Holm over 9),-0.015230531594963395,,,,0.38096190380961903,raw p=0.07619; P=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,hierarchical_bootstrap (primary),0.12827978327806883,0.024985491260885482,0.2504696435488195,True,,B=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,record_only_bootstrap (models fixed),0.12827978327806883,0.06754201328561694,0.19065659022649034,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_42,0.1433995960012164,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_123,0.12052193142652391,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_2026,0.08685157412346692,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_3407,0.1440497893334162,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_8888,0.1465760255057208,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,CosAgree,conditional_permutation (Holm over 9),0.12827978327806883,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,hierarchical_bootstrap (primary),0.11962734421622527,-0.02784022601520157,0.2572802795407916,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,record_only_bootstrap (models fixed),0.11962734421622527,-0.013133450761373568,0.23929332159031713,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_42,0.13181124644715114,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_123,0.09981995431077781,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_2026,0.11221346973721555,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_3407,0.1318009982653087,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_8888,0.12249105232067317,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorr,conditional_permutation (Holm over 9),0.11962734421622528,,,,0.38096190380961903,raw p=0.1119; P=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09099857496437412,-0.016511800025258004,0.19405291868177782,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.09099857496437412,0.020747065060092246,0.15943073239143635,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_42,0.10901260031500788,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_123,0.06297457436435912,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_2026,0.08410710267756695,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_3407,0.09703855096377413,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_8888,0.10186004650116254,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,hierarchical_bootstrap (primary),-0.01034681353803899,-0.04350992333597209,0.025430440594865236,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,record_only_bootstrap (models fixed),-0.01034681353803899,-0.02579837616743317,0.005599364788752383,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_42,-0.0020744940548866053,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_123,-0.0134705787693747,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_2026,-0.01358355469403251,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_3407,-0.0012515869427261322,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_8888,-0.021353853229175004,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,ShiftL1,conditional_permutation (Holm over 9),-0.010346813538038988,,,,0.40535946405359463,raw p=0.2027; P=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,hierarchical_bootstrap (primary),0.16084319983088613,0.03578619876790446,0.30355484096184543,True,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,record_only_bootstrap (models fixed),0.16084319983088613,0.09937979376855893,0.22183129340938457,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_42,0.19883515411426383,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_123,0.1456689637018489,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_2026,0.18457573718259937,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_3407,0.16517256431981156,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_8888,0.10996357983590697,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,CosAgree,conditional_permutation (Holm over 9),0.16084319983088613,,,,0.0015998400159984002,raw p=0.0002; P=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,hierarchical_bootstrap (primary),0.11062580441345546,-0.01045967478196634,0.25601682861675823,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,record_only_bootstrap (models fixed),0.11062580441345546,0.019082011992021745,0.18210833187014866,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_42,0.1363419848596319,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_123,0.12125635334623952,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_2026,0.11628532718784251,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_3407,0.10497410830069574,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_8888,0.0742712483728677,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorr,conditional_permutation (Holm over 9),0.11062580441345549,,,,0.2253774622537746,raw p=0.0322; P=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09219800495012379,-0.029677183050753602,0.23023732566877048,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.09219800495012379,0.019177285144395168,0.16515088871353817,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_42,0.12762619065476638,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_123,0.09222980574514365,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_2026,0.11653903847596192,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_3407,0.07292207305182632,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_8888,0.051672916822920585,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,hierarchical_bootstrap (primary),-0.00691795780605754,-0.03943222884932915,0.02840638547244308,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,record_only_bootstrap (models fixed),-0.00691795780605754,-0.02000686216270771,0.006228894209516852,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_42,-0.0054287912747895545,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_123,-0.015260285532749565,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_2026,-0.0040401114011547334,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_3407,0.006267640062578711,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_8888,-0.016128240884172557,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,ShiftL1,conditional_permutation (Holm over 9),-0.0069179578060575295,,,,0.40535946405359463,raw p=0.3093; P=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,hierarchical_bootstrap (primary),0.051914838406212326,-0.02935551613203937,0.13204607928649797,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,record_only_bootstrap (models fixed),0.051914838406212326,0.004943784803324057,0.10010622509868258,True,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_42,0.046142651666705226,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_123,0.07678143763265526,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_2026,0.04862649474987808,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_3407,0.05277241720511763,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_8888,0.03525119077670544,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,CosAgree,conditional_permutation (Holm over 9),0.05191483840621231,,,,0.2253774622537746,raw p=0.0336; P=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,hierarchical_bootstrap (primary),0.0891206464061748,-0.04609272602898949,0.24848149156185054,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,record_only_bootstrap (models fixed),0.0891206464061748,-0.006713236182417002,0.1626115030147772,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_42,0.12162168859789335,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_123,0.08038120311698539,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_2026,0.09522359320881185,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_3407,0.10193830576077179,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_8888,0.046438441346411605,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorr,conditional_permutation (Holm over 9),0.0891206464061748,,,,0.38096190380961903,raw p=0.08379; P=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.0422359558988975,-0.03564542272603582,0.12272594645260909,False,,B=10000
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.0422359558988975,-0.014538413513077686,0.0990814078218458,False,,conditional on the five trained seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_42,0.04633240831020778,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_123,0.04795507387684695,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_2026,0.042497937448436225,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_3407,0.04359521488037205,,,,,point estimate over 4 seeds
+DeepDRiD Set-C (exploratory),CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_8888,0.03079914497862448,,,,,point estimate over 4 seeds

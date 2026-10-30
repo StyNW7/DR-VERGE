@@ -1,0 +1,4 @@
+x,y,spearman_rho_20_models,note
+ShiftL1,QWK,-0.3533834586466165,descriptive; 20 models share data and teacher -- not independent
+base_discrepancy_L1,QWK,-0.5233082706766917,descriptive; 20 models share data and teacher -- not independent
+dual_discrepancy_L1,QWK,-0.5218045112781955,descriptive; 20 models share data and teacher -- not independent

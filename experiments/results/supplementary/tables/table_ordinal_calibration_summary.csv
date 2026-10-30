@@ -1,0 +1,11 @@
+dataset,model,OrdinalThreshold_Brier_mean,OrdinalThreshold_Brier_std,OrdinalThreshold_ECE_mean,OrdinalThreshold_ECE_std,interpretation
+DRTiD internal test,Teacher,0.10663151741027832,,0.03765058313581077,,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DRTiD internal test,NoDistill,0.1287926822900772,0.001506370993591359,0.050055834949185904,0.004712411197959328,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DRTiD internal test,Logit-KD,0.13353216648101807,0.009039070503389191,0.05826021422293376,0.02124811245938275,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DRTiD internal test,Feature-KD,0.13061875700950623,0.0035306386461620995,0.059484068977392536,0.015299908967774748,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DRTiD internal test,CSD,0.1338168352842331,0.004245652302233153,0.05562996567159214,0.0100957621232389,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DeepDRiD Set-C,Teacher,0.0881258025765419,,0.03280287852743641,,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DeepDRiD Set-C,NoDistill,0.12923570424318315,0.006228822455662632,0.06488096060510726,0.006508901380659529,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DeepDRiD Set-C,Logit-KD,0.12777140140533447,0.010397471388779542,0.05321778755541891,0.020178036544467454,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DeepDRiD Set-C,Feature-KD,0.12225341498851776,0.010579689623443914,0.0702307705306448,0.03780232195857695,ordinal threshold score calibration diagnostic; NOT clinical risk probability
+DeepDRiD Set-C,CSD,0.12331928610801697,0.010267860343777113,0.06067525848932563,0.022683353500353453,ordinal threshold score calibration diagnostic; NOT clinical risk probability

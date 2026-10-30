@@ -1,0 +1,12 @@
+phase,dataset,spec_gate,check,passed,detail
+P2,SetC,G18,identical_ShiftL1,True,max|effect|=0.0e+00
+P2,SetC,G19,reversal_ShiftL1,True,"CI -0.0494,0.0180 vs reversed -0.0180,0.0494"
+P2,SetC,G18,identical_CosAgree,True,max|effect|=0.0e+00
+P2,SetC,G19,reversal_CosAgree,True,"CI 0.0309,0.2578 vs reversed -0.2578,-0.0309"
+P2,SetC,G18,identical_BenefitCorr,True,max|effect|=0.0e+00
+P2,SetC,G19,reversal_BenefitCorr,True,"CI -0.0353,0.2561 vs reversed -0.2561,0.0353"
+P2,SetC,G16,explicit_loop_equivalence,True,20 replicates x 4 metrics x 2 conditions: max |diff| 2.2e-16
+P2,SetC,G21,rng_reproducible,True,draw hash 97b2a6aa1e99
+P2,SetC,G18,permutation_identical,True,p=1.0
+P2,SetC,G17,cluster_weights_shared,True,"100 units, never split"
+P2,SetC,G20,shuffled_order_invariance,True,ID-joined arrays identical after shuffling

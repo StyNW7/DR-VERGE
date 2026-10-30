@@ -4,7 +4,9 @@
 
 | File | Role |
 |---|---|
-| [`full_pipeline_notebook_enhanced.ipynb`](full_pipeline_notebook_enhanced.ipynb) | **The final DR-VERGE notebook** — the executed version with all cell outputs. Every number in the paper and in the README comes from this notebook. |
+| [`full_pipeline_notebook_enhanced.ipynb`](full_pipeline_notebook_enhanced.ipynb) | **The final DR-VERGE notebook** — the executed version with all cell outputs. Every main-run number (Tables I–III, RQ2, deployment) comes from this notebook. |
+| [`DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb`](DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb) | **Supplementary analysis v2** — inference-only over the frozen models of the notebook above; executed version (56/56 gates). Source of the inferential mechanism evidence, Set-C generalisation and decomposition. Outputs: [`../results/supplementary/`](../results/supplementary/). |
+| [`DRVERGE_Enhanced_Supplementary_Analysis.ipynb`](DRVERGE_Enhanced_Supplementary_Analysis.ipynb) | Supplementary analysis v1 — **superseded by v2**. Kept for provenance: v2 can reuse the v1 inference cache once all its hashes validate. |
 
 The notebook is **self-contained**: data, models, losses, metrics, statistics, quantization, export, figures and tables are all implemented inside it. The outputs it writes are stored in [`../results/`](../results/).
 
@@ -74,3 +76,21 @@ Before a full run, the notebook can be checked statically with the scripts in [`
 7. `tables/table_external_deepdrid.csv` + `tables/table_external_ci.csv` — external Set-C results.
 
 The full map is in [`../results/README.en.md`](../results/README.en.md).
+
+---
+
+## 🔬 The v2 supplementary-analysis notebook
+
+This notebook **trains nothing**. It strict-loads the 21 frozen checkpoints from `artifacts_enhanced_v1_20260811/`, reproduces the original results, and only then computes new statistics. Every output goes to a new folder; the original artifacts are SHA-256-checked before and after.
+
+| Phase | Content | Stop rule |
+|---|---|---|
+| P0 | Inventory, SHA-256 hashes, strict load of 21 checkpoints, config/threshold/M\* verification, smoke reproduction | Fail → stop |
+| P1 | 3-head inference for 20 students + teacher, full reproduction, 9 internal contrasts + sensitivity | Reproduction fails → stop |
+| P2 | DeepDRiD Set-C: 100/200/400 integrity, external QWK reproduction, patient-clustered statistics | Fail → only P2 stops |
+| P3 | Decomposition identity, teacher-correctness subgroups, teacher-shift-magnitude quartiles | Identity fails → stop |
+| P4 | Per-grade precision/recall/F1, direction of Grade-1 errors | Diagnostic |
+| P5 | Pearson vs Spearman, ordinal threshold-score calibration | Fail → only P5 stops |
+| P6 | Summary of the original deployment benchmark (re-read, not re-measured) | — |
+
+**Running it:** open in Colab with a GPU, make sure `MyDrive/DR-VERGE/artifacts_enhanced_v1_20260811/` and the datasets are available, then Run All. Set `STAT_MODE = "debug"` (B = 500, **never reported**) for a rehearsal, then `STAT_MODE = "final"` (B = 10,000) for any number you quote. The run is complete only if `SUPPLEMENTARY_RUN_COMPLETE.txt` is written. `RNG_SEED = 20261029`.

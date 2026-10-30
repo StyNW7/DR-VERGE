@@ -1,0 +1,11 @@
+phase,stage,seconds,note
+P0,environment + preflight,69.04,21 checkpoints hashed + strict-loaded
+P0,smoke reproduction,4.8,
+P1,internal inference (20 students),35.91,{'imported_v1': 21}
+P1,P1 statistics,6.93,B=10000
+P2,external inference + statistics,54.51,teacher 0.7923; CSD 0.6688
+P3,decomposition + subgroups + shift bins,3.18,
+P4,per-grade errors,2.11,
+P5,Pearson/Spearman + calibration,0.18,
+FINAL,gates + claim ledger + paper_ready,1.46,
+FINAL,overview + audit + marker,0.09,

@@ -1,0 +1,1 @@
+Gambar suplementer. Matriks konfusi ternormalisasi baris pada data uji internal DRTiD (student: rerata lima seed; teacher: satu checkpoint), dengan ambang keputusan beku.

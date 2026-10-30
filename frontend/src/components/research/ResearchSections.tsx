@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, AlertTriangle, Quote } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
@@ -28,6 +28,16 @@ import {
   limitations,
   mechanismResults,
   mechanismMetricMeta,
+  mechanismEvidence,
+  mechanismInferenceInternal,
+  mechanismInferenceExternal,
+  baselineLabels,
+  decompositionRows,
+  shiftQuartiles,
+  supplementaryFindings,
+  supplementaryProvenance,
+  type MechanismContrast,
+  type MechanismMetricKey,
   modelStats,
   researchFigures,
   rq1Verdict,
@@ -547,6 +557,398 @@ export function Rq1ResultsSection() {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Mechanism evidence — supplementary analysis v2 (exploratory)                 */
+/* -------------------------------------------------------------------------- */
+
+type EvidenceDataset = "internal" | "external";
+
+/**
+ * One contrast as an interval on a shared axis. ShiftL1 is lower-is-better, so
+ * its sign is flipped: in every row, right of zero means "favours CSD". The
+ * printed numbers keep their original sign.
+ */
+function CiBar({ contrast, extent }: { contrast: MechanismContrast; extent: number }) {
+  const flip = mechanismMetricMeta[contrast.metric].direction === "lower" ? -1 : 1;
+  const lo = Math.min(contrast.ciLow * flip, contrast.ciHigh * flip);
+  const hi = Math.max(contrast.ciLow * flip, contrast.ciHigh * flip);
+  const pos = (v: number) => `${((v + extent) / (2 * extent)) * 100}%`;
+  return (
+    <div className="relative h-5" aria-hidden="true">
+      <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border" />
+      <div className="absolute top-0 h-full w-px bg-foreground/40" style={{ left: "50%" }} />
+      <div
+        className={
+          "absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full " +
+          (contrast.conclusive ? "bg-foreground colorful:bg-brand" : "bg-foreground/35")
+        }
+        style={{ left: pos(lo), width: `calc(${pos(hi)} - ${pos(lo)})` }}
+      />
+      <div
+        className={
+          "absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 " +
+          (contrast.conclusive
+            ? "border-foreground bg-foreground colorful:border-brand colorful:bg-brand"
+            : "border-foreground/60 bg-card")
+        }
+        style={{ left: pos(contrast.delta * flip) }}
+      />
+    </div>
+  );
+}
+
+export function MechanismEvidenceSection() {
+  const { t, ts, tr, trs, pick, num, lang } = useI18n();
+  const [dataset, setDataset] = useState<EvidenceDataset>("internal");
+  const contrasts = dataset === "internal" ? mechanismInferenceInternal : mechanismInferenceExternal;
+
+  const metricKeys = ["shiftL1", "cosAgree", "benefitCorr"] as const;
+  // One axis per metric, wide enough for both datasets, so toggling does not rescale.
+  const extentFor = (key: MechanismMetricKey) =>
+    Math.max(
+      ...[...mechanismInferenceInternal, ...mechanismInferenceExternal]
+        .filter((c) => c.metric === key)
+        .flatMap((c) => [Math.abs(c.ciLow), Math.abs(c.ciHigh)]),
+    ) * 1.08;
+
+  const provenance = [
+    {
+      value: `${supplementaryProvenance.gatesPassed}/${supplementaryProvenance.gatesTotal}`,
+      label: t("Integrity gates", "Gerbang integritas"),
+    },
+    {
+      value: `${supplementaryProvenance.reproductionChecks}/${supplementaryProvenance.reproductionChecks}`,
+      label: t("Original results reproduced", "Hasil asli tereproduksi"),
+    },
+    {
+      value: num(supplementaryProvenance.checkpointsHashed, 0),
+      label: t("Checkpoints, SHA-256 unchanged", "*Checkpoint*, SHA-256 tidak berubah"),
+    },
+    {
+      value: `B = ${num(supplementaryProvenance.bootstrapResamples, 0)}`,
+      label: t("Hierarchical bootstrap", "*Hierarchical bootstrap*"),
+    },
+  ];
+
+  const layers = [
+    {
+      value: `${mechanismEvidence.conclusiveForCsd}/${mechanismEvidence.contrasts}`,
+      label: t("contrasts conclusive, all for CSD", "kontras konklusif, semuanya untuk CSD"),
+    },
+    {
+      value: `${mechanismEvidence.conclusiveForBaseline}/${mechanismEvidence.contrasts}`,
+      label: t("favour a baseline", "menguntungkan pembanding"),
+    },
+    {
+      value: `${mechanismEvidence.seedPairsFavouringCsd}/${mechanismEvidence.seedPairs}`,
+      label: t("seed-contrast pairs favour CSD", "pasangan *seed*-kontras searah CSD"),
+    },
+    {
+      value: `${mechanismEvidence.looStable}/${mechanismEvidence.contrasts}`,
+      label: t("stable under leave-one-seed-out", "stabil pada *leave-one-seed-out*"),
+    },
+  ];
+
+  const maxGap = Math.max(...decompositionRows.flatMap((r) => [r.shiftGap, r.baseGap]));
+
+  return (
+    <Section id="mechanism-evidence" tone="surface">
+      <SectionHeader
+        eyebrow={t("Supplementary Analysis · Exploratory", "Analisis Suplementer · Eksploratori")}
+        index="06"
+        title={pick(
+          <>
+            The mechanism advantage, <em>tested</em>
+          </>,
+          <>
+            Keunggulan mekanisme, <em>diuji</em>
+          </>,
+        )}
+        description={t(
+          "An inference-only analysis on the frozen checkpoints asks three follow-up questions: is CSD's mechanism advantage statistically supported, does it hold on external data, and why does it not become higher QWK? Nothing was retrained, re-thresholded or re-selected.",
+          "Analisis *inference-only* pada *checkpoint* beku menjawab tiga pertanyaan lanjutan: apakah keunggulan mekanisme CSD didukung secara statistik, apakah bertahan pada data eksternal, dan mengapa tidak menjadi QWK yang lebih tinggi? Tidak ada model yang dilatih ulang, diubah ambangnya, atau dipilih ulang.",
+        )}
+        size="lg"
+      />
+
+      {/* Provenance first: the original numbers were reproduced before anything new was computed. */}
+      <Reveal>
+        <dl className="mt-14 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card lg:grid-cols-4">
+          {provenance.map((p, i) => (
+            <div
+              key={i}
+              className={
+                "flex flex-col gap-1.5 p-5 sm:p-6 " +
+                (i % 2 === 1 ? "border-l border-border " : "") +
+                (i >= 2 ? "border-t border-border lg:border-t-0 " : "") +
+                (i === 2 ? "lg:border-l" : "")
+              }
+            >
+              <dt className="order-2 text-12 leading-snug text-muted-foreground">{p.label}</dt>
+              <dd className="order-1 mono text-xl font-bold tracking-tight tabular-nums sm:text-2xl colorful:text-brand">
+                {p.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </Reveal>
+
+      {/* The nine contrasts. */}
+      <Reveal delay={0.06}>
+        <div className="mt-6 card-premium p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-2xl">
+              <h3 className="text-lg font-bold tracking-tight">
+                {t("CSD minus each baseline, with 95% intervals", "CSD dikurangi tiap pembanding, dengan interval 95%")}
+              </h3>
+              <p className="mt-2 text-14 leading-relaxed text-muted-foreground">
+                {tr(mechanismEvidence.headline)}
+              </p>
+            </div>
+            <div
+              role="group"
+              aria-label={ts("Dataset", "Dataset")}
+              className="inline-flex shrink-0 self-start rounded-full border border-border bg-surface p-1"
+            >
+              {(
+                [
+                  { key: "internal", label: t("DRTiD internal", "DRTiD internal") },
+                  { key: "external", label: t("DeepDRiD Set-C", "DeepDRiD Set-C") },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setDataset(opt.key)}
+                  aria-pressed={dataset === opt.key}
+                  className={
+                    "rounded-full px-4 py-1.5 text-12 font-medium transition-colors " +
+                    (dataset === opt.key
+                      ? "brand-fill text-background colorful:text-white"
+                      : "text-muted-foreground hover:text-foreground")
+                  }
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
+            {metricKeys.map((key) => {
+              const meta = mechanismMetricMeta[key];
+              const rows = contrasts.filter((c) => c.metric === key);
+              const conclusive = rows.filter((c) => c.conclusive).length;
+              const extent = extentFor(key);
+              return (
+                <div key={key} className="flex flex-col">
+                  <div className="flex items-baseline justify-between gap-3 border-b border-border pb-3">
+                    <span className="mono text-12 font-semibold uppercase tracking-[0.14em]">
+                      {tr(meta.label)} {meta.arrow}
+                    </span>
+                    <span className="mono text-11 uppercase tracking-[0.12em] text-subtle">
+                      {conclusive}/3 {t("conclusive", "konklusif")}
+                    </span>
+                  </div>
+                  <ul className="mt-4 flex flex-col gap-5">
+                    {rows.map((c) => (
+                      <li key={c.baseline} className="flex flex-col gap-1.5">
+                        <div className="flex items-baseline justify-between gap-3 text-13">
+                          <span className="font-medium">
+                            {t("vs", "vs")} {baselineLabels[c.baseline]}
+                          </span>
+                          <span className="mono tabular-nums">
+                            {signed(c.delta, lang)}
+                            {c.conclusive && <span className="ml-0.5 font-bold colorful:text-brand">*</span>}
+                          </span>
+                        </div>
+                        <CiBar contrast={c} extent={extent} />
+                        <div className="mono flex justify-between gap-3 text-11 tabular-nums text-subtle">
+                          <span>{ciText(c.ciLow, c.ciHigh, lang)}</span>
+                          <span>
+                            {c.seedsFavouringCsd}/5 {t("seeds", "*seed*")}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="mono mt-8 border-t border-border pt-5 text-11 leading-relaxed text-subtle">
+            {t(
+              "* 95% interval excludes zero. Bars are drawn so that right of the centre line always favours CSD (ShiftL1 is flipped because lower is better); the printed values keep their sign.",
+              "* Interval 95% tidak memuat nol. Batang digambar sehingga sisi kanan garis tengah selalu menguntungkan CSD (ShiftL1 dibalik karena makin rendah makin baik); nilai yang tercetak tetap bertanda aslinya.",
+            )}{" "}
+            {dataset === "internal"
+              ? t(
+                  `Resampling unit: examined-eye record (n = ${supplementaryProvenance.internalRecords}).`,
+                  `Unit resampling: *examined-eye record* (n = ${supplementaryProvenance.internalRecords}).`,
+                )
+              : t(
+                  `Resampling unit: patient (${supplementaryProvenance.externalPatients} patients, both eyes together).`,
+                  `Unit resampling: pasien (${supplementaryProvenance.externalPatients} pasien, kedua mata bersama).`,
+                )}
+          </p>
+        </div>
+      </Reveal>
+
+      {/* Supporting layers. */}
+      <Reveal delay={0.08}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:col-span-7">
+            {layers.map((s, i) => (
+              <div key={i} className="bg-card p-5 sm:p-6">
+                <div className="mono text-2xl font-bold tracking-tight tabular-nums colorful:text-brand">
+                  {s.value}
+                </div>
+                <div className="mt-2 text-13 leading-snug text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="grain inverse relative flex flex-col justify-center overflow-hidden rounded-2xl p-7 lg:col-span-5">
+            <span className="mono text-11 uppercase tracking-[0.16em] opacity-60">
+              {t("Where the uncertainty comes from", "Asal ketidakpastian")}
+            </span>
+            <p className="mt-4 text-15 leading-relaxed">{tr(mechanismEvidence.seedNote)}</p>
+          </div>
+        </div>
+      </Reveal>
+
+      {/* Why fidelity does not become QWK, and when CSD helps. */}
+      <Reveal delay={0.08}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="card-premium flex flex-col p-7 sm:p-8">
+            <Badge tone="outline" className="self-start">{t("Why fidelity ≠ QWK", "Mengapa fidelitas ≠ QWK")}</Badge>
+            <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-surface px-4 py-4">
+              <p className="mono whitespace-nowrap text-center text-13 sm:text-sm">
+                p<sub>dual</sub><sup>S</sup> − p<sub>dual</sub><sup>T</sup> = (p̄<sup>S</sup> − p̄<sup>T</sup>) + (Δ<sup>S</sup> − Δ<sup>T</sup>)
+              </p>
+              <p className="mono mt-2 text-center text-11 uppercase tracking-[0.12em] text-subtle">
+                {t("output gap = base-aggregation gap + shift gap", "selisih output = selisih agregasi dasar + selisih shift")}
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-4">
+              {decompositionRows.map((r) => (
+                <div key={r.shortMethod}>
+                  <div className="mb-1.5 flex items-baseline justify-between gap-3 text-13">
+                    <span className={r.isProposed ? "font-bold" : "font-medium"}>{r.shortMethod}</span>
+                    <span className="mono text-12 tabular-nums text-subtle">QWK {num(r.qwk, 3)}</span>
+                  </div>
+                  {(
+                    [
+                      { k: "shift", v: r.shiftGap, label: t("shift gap", "selisih *shift*") },
+                      { k: "base", v: r.baseGap, label: t("base-aggregation gap", "selisih agregasi dasar") },
+                    ] as const
+                  ).map((bar) => (
+                    <div key={bar.k} className="flex items-center gap-3">
+                      <span className="w-36 shrink-0 text-11 text-muted-foreground sm:w-40">{bar.label}</span>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className={
+                            "h-full rounded-full " +
+                            (r.isProposed
+                              ? "bg-foreground colorful:bg-brand"
+                              : "bg-foreground/35 colorful:bg-brand/35")
+                          }
+                          style={{ width: `${(bar.v / maxGap) * 100}%` }}
+                        />
+                      </div>
+                      <span className="mono w-12 shrink-0 text-right text-12 tabular-nums">{num(bar.v, 3)}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 border-t border-border pt-5 text-14 leading-relaxed text-muted-foreground">
+              {tr(supplementaryFindings.decomposition)}
+            </p>
+          </div>
+
+          <div className="card-premium flex flex-col p-7 sm:p-8">
+            <Badge tone="outline" className="self-start">{t("When CSD helps most", "Kapan CSD paling bermanfaat")}</Badge>
+            <p className="mt-5 text-13 text-muted-foreground">
+              {t(
+                "Conclusive ShiftL1/CosAgree contrasts favouring CSD, out of 6, by quartile of the teacher's own shift magnitude |Δ_T| (DRTiD).",
+                "Kontras ShiftL1/CosAgree yang konklusif menguntungkan CSD, dari 6, per kuartil besarnya *shift teacher* |Δ_T| (DRTiD).",
+              )}
+            </p>
+            <div className="mt-6 grid grid-cols-4 items-end gap-3" style={{ height: 160 }}>
+              {shiftQuartiles.map((q) => (
+                <div key={q.bin} className="flex h-full flex-col items-center justify-end gap-2">
+                  <span className="mono text-13 font-semibold tabular-nums">{q.conclusive}/6</span>
+                  <div
+                    className={
+                      "w-full rounded-t-lg " +
+                      (q.conclusive >= 4
+                        ? "bg-foreground colorful:bg-brand"
+                        : "bg-foreground/25 colorful:bg-brand/30")
+                    }
+                    style={{ height: `${Math.max(4, (q.conclusive / 6) * 100)}%` }}
+                    aria-hidden="true"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 grid grid-cols-4 gap-3 text-center">
+              {shiftQuartiles.map((q) => (
+                <div key={q.bin} className="flex flex-col gap-0.5">
+                  <span className="mono text-12 font-semibold">{q.bin}</span>
+                  <span className="mono text-11 tabular-nums text-subtle">|Δ_T| {num(q.meanShift, 3)}</span>
+                  <span className="mono text-10 tabular-nums text-subtle">
+                    {t("rel.", "rel.")} {num(q.relativeLow, 2)}–{num(q.relativeHigh, 2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 border-t border-border pt-5 text-14 leading-relaxed text-muted-foreground">
+              {tr(supplementaryFindings.whenItHelps)}
+            </p>
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.08}>
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <Callout tone="research" title={t("Holds on Set-C", "Bertahan di Set-C")}>
+            {tr(supplementaryFindings.external)}
+          </Callout>
+          <Callout tone="caution" title={t("Grade 1 stays hard", "Grade 1 tetap sulit")}>
+            {tr(supplementaryFindings.grade1)}
+          </Callout>
+          <Callout tone="note" title={t("Stable to the metric choice", "Stabil terhadap pilihan metrik")}>
+            {tr(supplementaryFindings.stability)}
+          </Callout>
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ResearchFigure figure={researchFigures.internalExternalMechanism} />
+          <ResearchFigure figure={researchFigures.decomposition} />
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ResearchFigure figure={researchFigures.mechanismForest} />
+          <ResearchFigure figure={researchFigures.confusionCore} />
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <Callout tone="caution" title={t("How far these results reach", "Sejauh mana hasil ini berlaku")} className="mt-8">
+          {tr(supplementaryFindings.boundaries)}{" "}
+          <span className="mono text-12">{trs(mechanismEvidence.method)}</span>
+        </Callout>
+      </Reveal>
+    </Section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* 6.8 RQ2 results                                                              */
 /* -------------------------------------------------------------------------- */
 
@@ -565,7 +967,7 @@ export function Rq2ResultsSection() {
     <Section id="rq2-results" tone="surface">
       <SectionHeader
         eyebrow={t("Results · RQ2", "Hasil · RQ2")}
-        index="06"
+        index="07"
         title={pick(
           <>
             Efficiency Without Large <em>Performance Sacrifice</em>
@@ -752,7 +1154,7 @@ export function ExternalValidationSection() {
     <Section id="external">
       <SectionHeader
         eyebrow={t("External Validation", "Validasi Eksternal")}
-        index="07"
+        index="08"
         title={pick(
           <>
             DeepDRiD <em>Set-C</em>
@@ -902,7 +1304,7 @@ export function FiguresSection() {
     <Section id="figures" tone="surface">
       <SectionHeader
         eyebrow={t("Supplementary Figures", "Gambar Pendukung")}
-        index="08"
+        index="09"
         title={pick(
           <>
             Where the model succeeds and where it <em>fails</em>
@@ -944,7 +1346,7 @@ export function LimitationsSection() {
     <Section id="limitations">
       <SectionHeader
         eyebrow={t("Limitations", "Keterbatasan")}
-        index="09"
+        index="10"
         title={pick(
           <>
             What this work does <em>not</em> establish
@@ -1063,6 +1465,7 @@ const tocSteps = [
   { id: "gap", label: l("Gap", "Celah") },
   { id: "method", label: l("Method", "Metode") },
   { id: "rq1-results", label: l("RQ1 Results", "Hasil RQ1") },
+  { id: "mechanism-evidence", label: l("Evidence", "Bukti") },
   { id: "rq2-results", label: l("RQ2 Results", "Hasil RQ2") },
   { id: "external", label: l("External", "Eksternal") },
   { id: "figures", label: l("Figures", "Gambar") },

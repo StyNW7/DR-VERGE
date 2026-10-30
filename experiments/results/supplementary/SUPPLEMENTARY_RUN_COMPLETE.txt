@@ -1,0 +1,8 @@
+completed_at=2026-10-29T17:54:13
+phase_status={"P0": "PASSED", "P1": "PASSED", "P2": "PASSED", "P3": "PASSED", "P4": "PASSED", "P5": "PASSED", "P6": "PASSED", "FINAL": "PASSED"}
+gates_passed=56/56
+spec_gates_covered=25/25
+source_unchanged=True
+device=cuda
+stat_mode=final
+B_FINAL=10000

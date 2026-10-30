@@ -1,0 +1,1 @@
+Gambar suplementer. Dekomposisi selisih output student terhadap teacher: |pS_dual − pT_dual| ≤ |p̄S − p̄T| + |ΔS − ΔT| (identitas eksak per mata). Batang = rerata lima seed, garis = ±1 SB antar-seed. CSD hanya menargetkan suku shift; suku agregasi dasar tidak ditargetkan.

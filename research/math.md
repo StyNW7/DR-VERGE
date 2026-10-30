@@ -48,6 +48,7 @@ Singkatan lokasi: **NB-E** = notebook enhanced (run final), **NB-S** = notebook 
 18. [Konstanta dan angka kunci](#18-konstanta-dan-angka-kunci)
 19. [Evolusi rumus: rencana → kode lama → run final](#19-evolusi-rumus-rencana--kode-lama--run-final)
 20. [Simbol tipografis di dokumen dan tabel hasil](#20-simbol-tipografis-di-dokumen-dan-tabel-hasil)
+21. [Analisis suplementer v2: dekomposisi dan inferensi mekanisme](#21-analisis-suplementer-v2-dekomposisi-dan-inferensi-mekanisme)
 
 ---
 
@@ -265,6 +266,9 @@ Dihitung pada test DRTiD untuk tiap model dual-view.
 | $G_{\mathrm{aux}}$ | $\mathrm{QWK}(\hat y_{\mathrm{dual}}) - \max\big(\mathrm{QWK}(\hat y_m), \mathrm{QWK}(\hat y_d)\big)$ dari head **model yang sama** | Gain terhadap head auxiliary sendiri. Gate3 teacher (val): $0.8133 - 0.7664 = +0.0469 > 0$ | `dual_view_gain` |
 | $G_{\mathrm{independent}}$ | $\mathrm{QWK}_{\mathrm{dual}}(s) - \max\big(\mathrm{QWK}_{\texttt{macula\_only}}(s), \mathrm{QWK}_{\texttt{disc\_only}}(s)\big)$ | Gain terhadap student single-view yang dilatih **terpisah**, dicocokkan **per seed** | NB-E cell 56 |
 | Premis dual-view | macula-only $0.5175$ < disc-only $0.5502$ < dual $0.6042$ | Dual-view lebih baik dari salah satu view → ada shift yang layak didistilasi | README |
+
+> Uji inferensial atas ketiga metrik ini (CSD vs tiap pembanding), dekomposisi mekanisme–prediksi,
+> dan analisis per kuartil shift teacher ada di [§21](#21-analisis-suplementer-v2-dekomposisi-dan-inferensi-mekanisme).
 
 ---
 
@@ -542,6 +546,44 @@ paper adalah kolom **run final**.
 | `CF_` | Metrik versi counterfactual (same-head) | `CF_ShiftL1` |
 | FP32 / INT8 | Presisi float 32-bit / integer 8-bit | `best_fp32`, `qat_int8` |
 | ✓ / ✗ | Ada / tidak ada (tabel gap); lolos / gagal (gate) | tabel research gap |
+
+---
+
+## 21. Analisis suplementer v2: dekomposisi dan inferensi mekanisme
+
+Sumber: `experiments/notebooks/DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb` (**NB-Sup**),
+keluaran di `experiments/results/supplementary/`. Analisis ini *inference-only* atas checkpoint beku
+run final dan berlabel **eksploratori pasca-hoc**. Definisi ShiftL1, CosAgree, dan BenefitCorr
+disalin verbatim dari §8.
+
+| Simbol / Nama | Rumus / Definisi | Arti & Makna | Lokasi |
+|---|---|---|---|
+| $\bar p$ — agregasi dasar | $\bar p = \tfrac12\,(p_{\mathrm{mac}} + p_{\mathrm{disc}})$ | Rata-rata dua prediksi individual-view (sama dengan $p_{\mathrm{agg}}$ di §7) | NB-Sup P3 |
+| **Identitas dekomposisi** | $p^S_{\mathrm{dual}} - p^T_{\mathrm{dual}} = (\bar p^S - \bar p^T) + (\Delta^S - \Delta^T)$ | Eksak karena $p_{\mathrm{dual}} = \bar p + \Delta$. Selisih output akhir = selisih agregasi dasar + selisih shift. **CSD hanya menargetkan suku kedua.** Residual numerik terukur $0$ | `table_mechanism_decomposition.csv` |
+| Batas segitiga | $\lVert p^S_{\mathrm{dual}} - p^T_{\mathrm{dual}}\rVert_1 \le \lVert\bar p^S - \bar p^T\rVert_1 + \mathrm{ShiftL1}$ (per mata) | ShiftL1 kecil saja **tidak cukup** untuk output akhir yang dekat dengan teacher | idem |
+| Selisih agregasi dasar | $\tfrac1N\sum_i\lVert\bar p^S_i - \bar p^T_i\rVert_1$ | CSD $0.4361$ vs Feature-KD $0.4217$ vs NoDistill $0.4269$ (DRTiD) | idem |
+| Asosiasi dengan QWK | Spearman atas 20 model student | $\rho(\text{agregasi dasar}, \mathrm{QWK}) = -0.52$; $\rho(\mathrm{ShiftL1}, \mathrm{QWK}) = -0.35$. Deskriptif — 20 model berbagi data dan teacher | `table_mechanism_performance_association.csv` |
+| Kontras mekanisme | $\hat\delta_{\mathcal{M}} = \overline{\mathcal{M}}_{\mathrm{CSD}} - \overline{\mathcal{M}}_{\mathrm{base}}$, rerata 5 seed | 3 pembanding × 3 metrik = **9 kontras**. Efek selalu ditulis CSD − pembanding | `table_mechanism_internal_stats.csv` |
+| Bootstrap hierarkis (mekanisme) | tiap replikasi: resample unit **dan** indeks seed $j_1..j_5$; penarikan yang sama untuk CSD, pembanding, dan teacher; $\mathcal{M}$ dihitung ulang dari sampel hasil resampling (termasuk Pearson BenefitCorr) | Berbeda dari §12 karena metrik mekanisme (korelasi) tidak dapat dirata-ratakan per sampel. $B = 10{,}000$, replikasi tidak valid $0$ | NB-Sup P1 |
+| Vektor multiplisitas | $w_i$ = berapa kali unit $i$ terambil; mean dan korelasi dihitung sebagai momen berbobot $w$ | Setara eksak dengan resampling eksplisit (selisih $\le 1.7\times10^{-16}$, diverifikasi tiap run) | NB-Sup |
+| Unit resampling | DRTiD: *examined-eye record* ($N = 550$); Set-C: pasien (100 pasien, 200 mata) | DRTiD tidak memiliki ID pasien → internal **bukan** berklaster pasien | idem |
+| Bootstrap record saja | seed tetap, hanya unit yang diresampling | Ketidakpastian akibat data uji saja (model dianggap tetap). Hasil: 9/9 CI tidak memuat nol | `table_mechanism_sensitivity.csv` |
+| Permutasi bersyarat | swap CSD↔pembanding di dalam unit, sama untuk semua seed; $P = 10{,}000$; Holm atas 9 kontras | Pelengkap; asumsi output kedua kondisi dapat dipertukarkan dengan model tetap. $p_{\mathrm{Holm}} \le 0.0034$ | idem |
+| *Leave-one-seed-out* | $\hat\delta^{(-s)}$ atas 4 seed tersisa | Apakah satu seed mendominasi. 9/9 kontras tetap searah | idem |
+| Arah per seed | $\mathbf{1}[\mathcal{M}_{\mathrm{CSD},s}$ lebih baik dari $\mathcal{M}_{\mathrm{base},s}]$ | $34/45$ pasangan seed-kontras menguntungkan CSD | `table_mechanism_seed_consistency.csv` |
+| Kuartil shift teacher | kuartil dari $\lVert\Delta^T_i\rVert_1$ milik teacher | Q4 (terbesar): 4/6 kontras ShiftL1/CosAgree konklusif. Tidak ada ambang baru untuk model | `table_teacher_shift_bins.csv` |
+| ShiftL1 relatif | $\mathrm{ShiftL1}_{\mathrm{bin}} \,/\, \overline{\lVert\Delta^T\rVert_1}_{\mathrm{bin}}$ | $>1$ = galat shift student melebihi sinyal teacher (Q1: $2.24$–$2.38$) | idem |
+| Kalibrasi skor ambang | Brier dan ECE gabungan atas 4 ambang kumulatif (fungsi `calibration()` asli) | Diagnostik, **bukan** probabilitas klinis. CSD ECE $0.056$; teacher $0.038$ | `table_ordinal_calibration_summary.csv` |
+| `RNG_SEED` | $20261029$ | Seed acak analisis; hash penarikan bootstrap dicatat di `logs/run_manifest.json` | NB-Sup |
+
+| Hasil kunci (DRTiD, B = 10.000) | ΔShiftL1 ↓ | ΔCosAgree ↑ | ΔBenefitCorr ↑ |
+|---|---|---|---|
+| CSD − NoDistill | $-0.0249\ [-0.0477, -0.0043]^{\ast}$ | $+0.0852\ [-0.0134, +0.1870]$ | $+0.0882\ [-0.0342, +0.2329]$ |
+| CSD − Logit-KD | $-0.0331\ [-0.0567, -0.0103]^{\ast}$ | $+0.1503\ [+0.0263, +0.3011]^{\ast}$ | $+0.1280\ [-0.0038, +0.2643]$ |
+| CSD − Feature-KD | $-0.0209\ [-0.0408, -0.0012]^{\ast}$ | $+0.0546\ [-0.0225, +0.1407]$ | $+0.1132\ [-0.0390, +0.2662]$ |
+
+$^{\ast}$ CI 95% tidak memuat nol. Hanya kontras bertanda $^{\ast}$ yang boleh disebut konklusif;
+BenefitCorr **tidak** konklusif terhadap pembanding mana pun.
 
 ---
 

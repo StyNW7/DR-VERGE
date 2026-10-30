@@ -187,7 +187,7 @@ official green `#4C9F38`, because that colour is how the goal is recognised. It 
 inline as SVG and its title follows the language ("Kehidupan Sehat dan Sejahtera").
 Emphasis is carried by **fill and weight**, never by hue — charts distinguish the proposed
 method from baselines with fill opacity, and the "medical" callout uses a heavier left
-rule rather than a red box. Theme is applied before first paint by an inline script, so
+rule rather than a red box. Theme is applied before first paint by `public/theme-init.js` (a blocking same-origin script, so the CSP can forbid inline scripts), so
 dark-mode visitors never see a white flash.
 
 **No emoji anywhere** — all icons are `lucide-react`, enforced by the audit.
@@ -207,7 +207,10 @@ faint `grain` texture on inverted blocks. Shadows are drawn in black at low alph
   The picker is blind: reference grades appear only after inference, next to the
   curation notice and the unfiltered Set-C numbers from the manifest.
 - **Research** has a sticky, scroll-aware *On this page* bar, a provenance strip
-  (run ID, 36/36 gates, audited values), and every figure opens in a lightbox.
+  (run ID, 36/36 main-run gates + 56/56 supplementary gates, audited values), an
+  **Evidence** section with the nine mechanism contrasts (DRTiD / Set-C toggle, 95% CI
+  bars), the decomposition identity and the teacher-shift quartiles, and every figure
+  opens in a lightbox.
 - Privacy claims ("images never leave your device") are gated on
   `runsOnDevice` in `siteConfig`, so they disappear if the site is pointed at a
   remote API or mock mode.
@@ -218,8 +221,9 @@ faint `grain` texture on inverted blocks. Shadows are drawn in black at low alph
   optic-disc-centered, with the field-of-view ring on the structure each is centred on),
   the dual-field overlap, the architecture, and the CSD shift. Drawn in `currentColor`, so
   they invert with the theme and stay sharp at any size.
-- **15 real research figures** from the DR-VERGE evaluation run, converted to grayscale
-  and downscaled (≈1 MB total, lazy-loaded). They are inverted in dark mode — lossless for
+- **20 real research figures** — 16 from the DR-VERGE evaluation run and 4 from the
+  inference-only supplementary analysis (`experiments/results/supplementary/figures/`),
+  lazy-loaded. The monochrome palette shows them in grayscale and inverts them in dark mode — lossless for
   a grayscale image, and it turns a glaring white matplotlib canvas into a native-looking
   dark chart. A figure that fails to load shows a labelled placeholder, not a broken image.
 
@@ -297,7 +301,22 @@ wait for it.
 
 ## Deploy
 
-Vercel-ready. `vercel.json` already rewrites all paths to `/` for client-side routing.
+Vercel-ready. `vercel.json` rewrites all paths to `/` for client-side routing and sets
+security headers on every response:
+
+| Header | Value / purpose |
+|---|---|
+| `Content-Security-Policy` | `default-src 'self'`; scripts only from the site itself plus `'wasm-unsafe-eval'` for ONNX Runtime Web; fonts from Google Fonts; no inline scripts, no framing, no `<object>` |
+| `X-Frame-Options` · `frame-ancestors` | `DENY` / `'none'` — the site cannot be embedded |
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | camera, microphone, geolocation, payment and USB disabled |
+| `Cache-Control` on `/assets/*` | one year, immutable (file names are content-hashed) |
+
+The CSP was verified against a local build served with these exact headers: every page
+renders and an in-browser inference completes with no CSP violation. **If you set
+`VITE_MODEL_API_URL`**, add that origin to `connect-src`, or the browser will block the
+request.
 
 ```
 Build command:      npm run build

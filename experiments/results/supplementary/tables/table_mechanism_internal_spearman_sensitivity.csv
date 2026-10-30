@@ -1,0 +1,4 @@
+dataset,contrast,baseline,metric,analysis,effect,ci_low,ci_high,excludes_zero,p_value,note
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09349791870085823,-0.0272219512353448,0.2127144387874875,False,,B=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.16372106173754447,0.04111593380320091,0.31702537810422976,True,,B=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.07327934307220853,-0.030432937653957118,0.18271948303707286,False,,B=10000

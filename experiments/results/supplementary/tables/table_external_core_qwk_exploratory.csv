@@ -1,0 +1,6 @@
+model,condition,threshold,n_seeds,QWK_mean,QWK_sd,per_seed,MacroF1_mean,SER_mean,note
+Teacher,teacher,0.5,1,0.7922540436266509,,0.7923,,,exploratory; CSD row = published external FP32 CSD result (unchanged); no external winner is selected and deployment is unchanged
+NoDistill,dual_no_distill,0.4,5,0.6466952494634042,0.03753443713520082,0.6867; 0.6226; 0.6493; 0.6779; 0.5969,0.35074258917634143,0.203,exploratory; CSD row = published external FP32 CSD result (unchanged); no external winner is selected and deployment is unchanged
+Logit-KD,dual_logitkd,0.5,5,0.6393264919776422,0.05262809688754814,0.5661; 0.6334; 0.6171; 0.6859; 0.6942,0.3660506186614422,0.192,exploratory; CSD row = published external FP32 CSD result (unchanged); no external winner is selected and deployment is unchanged
+Feature-KD,dual_featkd,0.5,5,0.6753764509650738,0.02664074938819891,0.7086; 0.6855; 0.6787; 0.6684; 0.6357,0.369133197503858,0.182,exploratory; CSD row = published external FP32 CSD result (unchanged); no external winner is selected and deployment is unchanged
+CSD,dual_csd,0.5,5,0.6688289454797254,0.04151134778996165,0.6282; 0.6505; 0.6435; 0.7298; 0.6921,0.3439154596467373,0.17400000000000002,exploratory; CSD row = published external FP32 CSD result (unchanged); no external winner is selected and deployment is unchanged

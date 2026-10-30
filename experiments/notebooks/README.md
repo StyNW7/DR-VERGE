@@ -4,7 +4,9 @@
 
 | Berkas | Peran |
 |---|---|
-| [`full_pipeline_notebook_enhanced.ipynb`](full_pipeline_notebook_enhanced.ipynb) | **Notebook final DR-VERGE** — versi yang sudah dieksekusi beserta seluruh keluaran selnya. Setiap angka di paper dan di README berasal dari notebook ini. |
+| [`full_pipeline_notebook_enhanced.ipynb`](full_pipeline_notebook_enhanced.ipynb) | **Notebook final DR-VERGE** — versi yang sudah dieksekusi beserta seluruh keluaran selnya. Seluruh angka run utama (Tabel I–III, RQ2, _deployment_) berasal dari notebook ini. |
+| [`DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb`](DRVERGE_Enhanced_Supplementary_Analysis_v2.ipynb) | **Analisis suplementer v2** — _inference-only_ atas model beku notebook di atas; versi tereksekusi (56/56 _gates_). Sumber bukti inferensial mekanisme, generalisasi Set-C, dan dekomposisi. Keluaran: [`../results/supplementary/`](../results/supplementary/). |
+| [`DRVERGE_Enhanced_Supplementary_Analysis.ipynb`](DRVERGE_Enhanced_Supplementary_Analysis.ipynb) | Analisis suplementer v1 — **digantikan oleh v2**. Disimpan untuk provenans: v2 dapat memakai ulang _cache_ inferensi v1 setelah seluruh hash-nya tervalidasi. |
 
 Notebook ini **mandiri**: data, model, _loss_, metrik, statistik, kuantisasi, ekspor, gambar, dan tabel seluruhnya diimplementasikan di dalamnya. Keluaran yang ditulisnya disimpan di [`../results/`](../results/).
 
@@ -74,3 +76,21 @@ Sebelum run penuh, notebook dapat diperiksa secara statis dengan skrip di [`../s
 7. `tables/table_external_deepdrid.csv` + `tables/table_external_ci.csv` — hasil eksternal Set-C.
 
 Peta lengkapnya ada di [`../results/README.md`](../results/README.md).
+
+---
+
+## 🔬 Notebook analisis suplementer v2
+
+Notebook ini **tidak melatih apa pun**. Ia memuat 21 _checkpoint_ beku dari `artifacts_enhanced_v1_20260811/` secara _strict_, mereproduksi hasil asli, lalu menghitung statistik baru. Semua keluaran ditulis ke folder baru; artefak asli diperiksa SHA-256-nya sebelum dan sesudah.
+
+| Fase | Isi | Aturan berhenti |
+|---|---|---|
+| P0 | Inventaris, hash SHA-256, _strict load_ 21 _checkpoint_, verifikasi config/ambang/M\*, uji reproduksi awal | Gagal → berhenti |
+| P1 | Inferensi 3 _head_ untuk 20 _student_ + _teacher_, reproduksi penuh, 9 kontras internal + sensitivitas | Reproduksi gagal → berhenti |
+| P2 | DeepDRiD Set-C: integritas 100/200/400, reproduksi QWK eksternal, statistik berklaster pasien | Gagal → hanya P2 dihentikan |
+| P3 | Identitas dekomposisi, subgrup kebenaran _teacher_, kuartil besarnya _shift teacher_ | Identitas gagal → berhenti |
+| P4 | _Precision/recall/F1_ per _grade_, arah kesalahan Grade 1 | Diagnostik |
+| P5 | Pearson vs Spearman, kalibrasi skor ambang ordinal | Gagal → hanya P5 dihentikan |
+| P6 | Ringkasan _benchmark deployment_ asli (dibaca ulang, tidak diukur ulang) | — |
+
+**Menjalankan:** buka di Colab dengan GPU, pastikan `MyDrive/DR-VERGE/artifacts_enhanced_v1_20260811/` dan dataset tersedia, lalu _Run All_. Atur `STAT_MODE = "debug"` (B = 500, **tidak pernah dilaporkan**) untuk gladi, lalu `STAT_MODE = "final"` (B = 10.000) untuk angka yang dikutip. Run dianggap selesai hanya jika `SUPPLEMENTARY_RUN_COMPLETE.txt` tertulis. `RNG_SEED = 20261029`.

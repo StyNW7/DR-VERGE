@@ -134,7 +134,14 @@ check("novelty worded carefully", "did not identify prior work" in BLOB)
 check("does not claim INT8 improves accuracy",
       "does not improve grading accuracy" in BLOB)
 check("RQ1 null result is visible", "Not conclusive" in BLOB and "not translate into a statistically conclusive" in BLOB)
-check("external caveat present", "should not be overstated" in BLOB)
+check("external caveat present", "Do not overstate this" in BLOB)
+check("supplementary mechanism evidence section present",
+      "MechanismEvidenceSection" in BLOB and 'id="mechanism-evidence"' in BLOB)
+check("supplementary analysis labelled exploratory",
+      "Supplementary Analysis · Exploratory" in BLOB and "Mechanism inference is exploratory" in BLOB)
+# Only the "Not allowed" list may contain these phrases.
+check("BenefitCorr never called significant",
+      BLOB.count("BenefitCorr is significant") <= 1 and BLOB.count("BenefitCorr signifikan") <= 1)
 check("SDG says potential contribution not proven impact",
       "Potential contribution, not proven impact" in BLOB or "potential contribution" in BLOB.lower())
 check("grades not presented as self-diagnosis", "Not a self-diagnosis tool" in BLOB)
@@ -202,7 +209,10 @@ check(".env.example NOT gitignored", "!.env.example" in read(".gitignore"))
 check("SPA rewrite for deploy", "rewrites" in read("vercel.json"))
 check("SEO title set", "DR-VERGE | Dual-View" in read("index.html"))
 check("Open Graph metadata", 'property="og:title"' in read("index.html"))
-check("no-flash theme script", "dr-verge-theme" in read("index.html"))
+check("no-flash theme script",
+      '<script src="/theme-init.js">' in read("index.html")
+      and "dr-verge-theme" in read("public", "theme-init.js"))
+check("CSP forbids inline scripts", "script-src 'self' 'wasm-unsafe-eval';" in read("vercel.json"))
 
 # ---------------------------------------------------------------- build output
 dist = os.path.join(ROOT, "dist")
@@ -214,7 +224,7 @@ if os.path.isdir(dist):
     check("no chunk over 600 kB", not big, str(big))
     check("research figures bundled", os.path.isdir(os.path.join(dist, "research", "figures")))
     n = len(os.listdir(os.path.join(dist, "research", "figures"))) if os.path.isdir(os.path.join(dist, "research", "figures")) else 0
-    check("all 16 figures present", n == 16, f"{n} found")
+    check("all 20 figures present", n == 20, f"{n} found")
 
 print("=" * 84)
 print("DR-VERGE FRONTEND — acceptance audit (prompts/dr-verge-fe.md section 20)")

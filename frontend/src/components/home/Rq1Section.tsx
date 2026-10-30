@@ -1,11 +1,12 @@
-import { TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { TrendingDown, TrendingUp, Minus, ArrowRight } from "lucide-react";
 import { Section } from "@/components/layout/PageContainer";
 import { SectionHeader, Reveal, Badge } from "@/components/common/Primitives";
 import { LazyMonoBarChart } from "@/components/common/LazyChart";
 import {
   mechanismResults,
   mechanismMetricMeta,
-  mechanismReplication,
+  mechanismEvidence,
   rq1Verdict,
   type MechanismMetricKey,
 } from "@/data/researchMetrics";
@@ -102,20 +103,59 @@ export default function Rq1Section() {
         ))}
       </div>
 
-      {/* Replication is the reason this ordering is worth reporting at all. */}
+      {/* The ordering above is descriptive; this strip is what the inference-only
+          supplementary analysis adds on top of it. */}
       <Reveal delay={0.1}>
-        <div className="mt-5 card-premium flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:gap-7 sm:p-7">
+        <div className="mt-5 card-premium flex flex-col gap-6 p-6 sm:p-7 lg:flex-row lg:items-center lg:gap-8">
           <div className="flex shrink-0 items-baseline gap-2">
-            <span className="mono text-3xl font-bold tracking-tight colorful:text-brand-gradient">
-              {mechanismReplication.wins}/{mechanismReplication.measurements}
+            <span className="mono text-4xl font-bold tracking-tight colorful:text-brand-gradient">
+              3/3
             </span>
-            <span className="mono text-11 uppercase tracking-[0.14em] text-muted-foreground">
-              {t("measurements", "pengukuran")}
+            <span className="mono max-w-[9rem] text-11 uppercase leading-snug tracking-[0.14em] text-muted-foreground">
+              {t("baselines, ShiftL1", "pembanding, ShiftL1")}
             </span>
           </div>
-          <p className="text-14 leading-relaxed text-muted-foreground">
-            {tr(mechanismReplication.note)}
-          </p>
+          <div className="min-w-0 flex-1">
+            <Badge tone="outline">{t("Supplementary analysis · exploratory", "Analisis suplementer · eksploratori")}</Badge>
+            <p className="mt-3 text-14 leading-relaxed text-foreground">
+              {tr(mechanismEvidence.headline)}
+            </p>
+            <dl className="mono mt-4 flex flex-wrap gap-x-6 gap-y-2 text-12 text-muted-foreground">
+              <div>
+                <dt className="sr-only">{t("Conclusive contrasts", "Kontras konklusif")}</dt>
+                <dd>
+                  <span className="font-semibold text-foreground">
+                    {mechanismEvidence.conclusiveForCsd}/{mechanismEvidence.contrasts}
+                  </span>{" "}
+                  {t("contrasts conclusive", "kontras konklusif")}
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">{t("Contrasts favouring a baseline", "Kontras yang menguntungkan pembanding")}</dt>
+                <dd>
+                  <span className="font-semibold text-foreground">
+                    {mechanismEvidence.conclusiveForBaseline}/{mechanismEvidence.contrasts}
+                  </span>{" "}
+                  {t("favour a baseline", "menguntungkan pembanding")}
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">DeepDRiD Set-C</dt>
+                <dd>
+                  Set-C:{" "}
+                  <span className="font-semibold text-foreground">{t("rank 1", "peringkat 1")}</span>{" "}
+                  {t("on 3/3 metrics", "pada 3/3 metrik")}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <Link
+            to="/research#mechanism-evidence"
+            className="group inline-flex shrink-0 items-center gap-1.5 self-start text-13 font-semibold text-foreground underline-offset-4 hover:underline colorful:text-brand lg:self-center"
+          >
+            {t("See the evidence", "Lihat buktinya")}
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </Link>
         </div>
       </Reveal>
 

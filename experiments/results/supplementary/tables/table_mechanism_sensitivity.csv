@@ -1,0 +1,94 @@
+dataset,contrast,baseline,metric,analysis,effect,ci_low,ci_high,excludes_zero,p_value,note
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,hierarchical_bootstrap (primary),-0.02493316694101404,-0.04765793871292921,-0.0042937972207106635,True,,B=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,record_only_bootstrap (models fixed),-0.02493316694101404,-0.034884666372637395,-0.015098511429345563,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_42,-0.02985817526289876,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_123,-0.017194995456110612,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_2026,-0.021148938215708124,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_3407,-0.03015815917888011,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,leave_out_seed_8888,-0.026305566591472596,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,ShiftL1,conditional_permutation (Holm over 9),-0.024933166941014034,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,hierarchical_bootstrap (primary),0.08515213973216798,-0.013388746982678707,0.18701375913580048,False,,B=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,record_only_bootstrap (models fixed),0.08515213973216798,0.04765982423887604,0.12264234389441159,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_42,0.11217379212380794,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_123,0.05416144463521145,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_2026,0.06125772088509968,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_3407,0.11473415164735867,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,leave_out_seed_8888,0.08343358936936213,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,CosAgree,conditional_permutation (Holm over 9),0.08515213973216797,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,hierarchical_bootstrap (primary),0.08822632643957276,-0.03424238623442854,0.2328724915224103,False,,B=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,record_only_bootstrap (models fixed),0.08822632643957276,0.03254410868581238,0.14422756645300816,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_42,0.12187260873385523,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_123,0.026761173231555732,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_2026,0.09120758872574926,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_3407,0.11487763490213675,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,leave_out_seed_8888,0.08641262660456683,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorr,conditional_permutation (Holm over 9),0.08822632643957276,,,,0.0033996600339966003,raw p=0.0023; P=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.09349791870085823,-0.0272219512353448,0.2127144387874875,False,,B=10000
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.09349791870085823,0.052038849404490016,0.13592800430508087,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_42,0.12791870987402215,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_123,0.062088638009021244,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_2026,0.0633474250403232,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_3407,0.13232015492763466,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - NoDistill,dual_no_distill,BenefitCorrSpearman,leave_out_seed_8888,0.08181466565328992,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,hierarchical_bootstrap (primary),-0.033118494625732485,-0.05672039630162528,-0.010348764609804552,True,,B=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,record_only_bootstrap (models fixed),-0.033118494625732485,-0.043275453303051194,-0.02313527110189537,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_42,-0.03416967183782785,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_123,-0.027571156929777574,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_2026,-0.041699163966153405,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_3407,-0.03563045823115153,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,leave_out_seed_8888,-0.026522022163752074,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,ShiftL1,conditional_permutation (Holm over 9),-0.03311849462573247,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,hierarchical_bootstrap (primary),0.15030924872327156,0.02626692766233298,0.30110559857997926,True,,B=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,record_only_bootstrap (models fixed),0.15030924872327156,0.11209937703475525,0.19006925440616698,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_42,0.17067303462777583,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_123,0.13953274107310698,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_2026,0.1918582388271529,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_3407,0.16628616518835115,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,leave_out_seed_8888,0.08319606389997097,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,CosAgree,conditional_permutation (Holm over 9),0.15030924872327156,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,hierarchical_bootstrap (primary),0.12799843589207976,-0.0038452421334567535,0.2643331058739878,False,,B=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,record_only_bootstrap (models fixed),0.12799843589207976,0.08098906118619034,0.1776125610008734,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_42,0.13220128164104578,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_123,0.10892815700672101,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_2026,0.17972880684108988,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_3407,0.14163146199100135,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,leave_out_seed_8888,0.0775024719805407,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorr,conditional_permutation (Holm over 9),0.12799843589207976,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.16372106173754447,0.04111593380320091,0.31702537810422976,True,,B=10000
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.16372106173754447,0.12439503787450358,0.2028629542372988,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_42,0.18808811689535263,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_123,0.1566684427807275,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_2026,0.2012595804223545,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_3407,0.1781332770746951,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Logit-KD,dual_logitkd,BenefitCorrSpearman,leave_out_seed_8888,0.09445589151459254,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,hierarchical_bootstrap (primary),-0.020904739063063803,-0.04084677690280815,-0.0012360598567698992,True,,B=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,record_only_bootstrap (models fixed),-0.020904739063063803,-0.030501906333810044,-0.011328726482487412,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_42,-0.02207449357168198,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_123,-0.01587159638486231,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_2026,-0.02183523706733302,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_3407,-0.028019320264164968,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,leave_out_seed_8888,-0.01672304802727674,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,ShiftL1,conditional_permutation (Holm over 9),-0.020904739063063806,,,,0.0008999100089991002,raw p=9.999e-05; P=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,hierarchical_bootstrap (primary),0.05457204154609543,-0.022508265509690623,0.14074496802266995,False,,B=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,record_only_bootstrap (models fixed),0.05457204154609543,0.020567566689265092,0.08924450551153122,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_42,0.05743860812028792,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_123,0.046767535930544224,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_2026,0.06601192969055587,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_3407,0.08088849636483507,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,leave_out_seed_8888,0.021753637624254057,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,CosAgree,conditional_permutation (Holm over 9),0.05457204154609539,,,,0.0033996600339966003,raw p=0.0017; P=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,hierarchical_bootstrap (primary),0.11320763156419482,-0.039027493534317295,0.266232044724985,False,,B=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,record_only_bootstrap (models fixed),0.11320763156419482,0.04056795127406498,0.1877747196278998,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_42,0.14393033297783264,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_123,0.10240876018665171,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_2026,0.11121523265883282,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_3407,0.15724370837200646,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,leave_out_seed_8888,0.0512401236256505,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorr,conditional_permutation (Holm over 9),0.11320763156419483,,,,0.0023997600239976003,raw p=0.0007999; P=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,hierarchical_bootstrap (primary),0.07327934307220853,-0.030432937653957118,0.18271948303707286,False,,B=10000
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,record_only_bootstrap (models fixed),0.07327934307220853,0.035541057862108046,0.11086688752305657,True,,conditional on the five trained seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_42,0.08925368047798206,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_123,0.06319038770676633,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_2026,0.07275942309651515,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_3407,0.11167941952625539,,,,,point estimate over 4 seeds
+DRTiD internal test,CSD - Feature-KD,dual_featkd,BenefitCorrSpearman,leave_out_seed_8888,0.029513804553523704,,,,,point estimate over 4 seeds

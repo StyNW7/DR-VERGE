@@ -37,6 +37,12 @@ but a specific claim about which distillation mechanism has not been tried:
 > anticipated**. Where plan and results differ, the results in
 > [`../experiments/results/`](../experiments/results/) are
 > authoritative.
+>
+> The dissociation was later examined by an inference-only, exploratory supplementary analysis
+> ([`../experiments/results/supplementary/`](../experiments/results/supplementary/)): CSD's ShiftL1
+> is lower than all three baselines with 95% CIs excluding zero, and an exact identity —
+> *output gap = base-aggregation gap + shift gap* — explains why aligning the shift alone does not
+> raise QWK. The derivation is in [`math.md` §21](math.md#21-analisis-suplementer-v2-dekomposisi-dan-inferensi-mekanisme).
 
 ---
 

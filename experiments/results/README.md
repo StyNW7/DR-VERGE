@@ -34,7 +34,9 @@ results/
 ├── metrics/       5 berkas diagnostik (metrik mentah per run, peringatan collapse, gradien CSD, ...)
 ├── predictions/   prediksi per sampel: test/ (70 berkas) · validation/ (30 berkas)
 ├── configs/       konfigurasi yang dikunci sebelum run + catatan lingkungan
-└── splits/        partisi tingkat mata yang persis dipakai (train 800 · val 200 · test 550)
+├── splits/        partisi tingkat mata yang persis dipakai (train 800 · val 200 · test 550)
+│
+└── supplementary/ analisis suplementer v2 (inference-only, eksploratori) — lihat README-nya
 ```
 
 ---
@@ -56,6 +58,8 @@ results/
 | Stage A (resolusi & _sampling_) | [`tables/table_stage_a_recipe_selection.csv`](tables/table_stage_a_recipe_selection.csv) |
 | Ketika CI dan permutasi tidak sepakat | [`tables/table_ci_permutation_disagreement.csv`](tables/table_ci_permutation_disagreement.csv) |
 | Label resmi setiap kondisi | [`tables/table_condition_labels.csv`](tables/table_condition_labels.csv) |
+| Apakah keunggulan mekanisme CSD didukung secara inferensial? | [`supplementary/`](supplementary/) — [`table_mechanism_internal_stats.csv`](supplementary/tables/table_mechanism_internal_stats.csv) (eksploratori) |
+| Mengapa fidelitas mekanisme tidak menaikkan QWK? | [`supplementary/tables/table_mechanism_decomposition.csv`](supplementary/tables/table_mechanism_decomposition.csv) |
 
 ---
 

@@ -1,0 +1,4 @@
+contrast,metric,effect_point,ci_low,ci_high,boot_mean,boot_se,n_valid,n_invalid,ci_excludes_zero,B,unit,role
+CSD - NoDistill,QWK,0.02213369601632138,-0.04201899008622657,0.08668173010183551,0.023100723797409288,0.032623836832273455,10000,0,False,10000,patient,"exploratory; predictive, not a mechanism metric"
+CSD - Logit-KD,QWK,0.029502453502083137,-0.01180735079758013,0.07810734425315888,0.03014496463968897,0.022668826447964703,10000,0,False,10000,patient,"exploratory; predictive, not a mechanism metric"
+CSD - Feature-KD,QWK,-0.006547505485348393,-0.0733149500016244,0.05897077703587858,-0.006165331301324908,0.032662968280963024,10000,0,False,10000,patient,"exploratory; predictive, not a mechanism metric"

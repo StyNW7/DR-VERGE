@@ -1,0 +1,3 @@
+dataset,n_eyes,teacher_QWK_dual,teacher_QWK_aux_macula,teacher_QWK_aux_disc,teacher_G_aux,mean_L1_deltaT,median_L1_deltaT,mean_benefitT,frac_benefitT_positive,note
+DRTiD internal test,550,0.7364012657793695,0.6863530294110218,0.6639593686376672,0.050048236368347654,0.4097180925293519,0.36993446410633624,0.03715309515649367,0.6690909090909091,G_aux here is a test/external descriptive quantity; the published +0.0469 is on validation
+DeepDRiD Set-C,200,0.7922540436266509,0.7284953057599595,0.7849270788261345,0.007326964800516311,0.2658679092683451,0.22476602758979425,0.06704869852292601,0.68,G_aux here is a test/external descriptive quantity; the published +0.0469 is on validation
